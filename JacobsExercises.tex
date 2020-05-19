@@ -1,0 +1,1830 @@
+\documentclass{article}
+
+\usepackage{amscd}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{stmaryrd}
+\usepackage{mathpartir}
+\usepackage{multicol}
+\usepackage{enumitem}
+\usepackage[section]{placeins} % float barriers
+\usepackage{natbib}
+\usepackage{xcolor} 
+\usepackage{bussproofs} 
+\usepackage{diagrams}
+\usepackage{tikz}
+
+\usetikzlibrary{cd}
+
+\newtheorem{lemma}{Lemma}
+
+%example: \limit{j \in J}{F_j}
+\newcommand{\limit}[2]{\underset{\overset{\longleftarrow}{#1}}{\text{lim}}~#2}
+\newcommand{\lims}[1]{\underset{\longleftarrow}{\text{lim}}~#1}
+\newcommand{\mbf}{\mathbf}
+
+\newcommand{\vrt}[2]{
+\pile{
+#1 \\
+\downarrow \\
+#2
+}
+}
+
+\newcommand{\ddisp}[3]{
+\left(
+\scriptsize
+\begin{tikzcd}
+#1 \ar[d, "\footnotesize{#2}"] \\
+#3
+\end{tikzcd}
+\normalsize
+\right)
+}
+
+\newcommand{\disp}[3]{
+\left(
+\tiny
+\begin{array}{c}
+#1 \\
+\downarrow\\
+#3
+\end{array}
+\begin{array}{l}
+~ \\
+#2 \\
+~
+\end{array}
+\normalsize
+\right)
+}
+
+\newcommand{\dispp}[3]{
+\tiny
+\begin{tikzcd}
+#1 \ar[d, "#2"] \\
+#3
+\end{tikzcd}
+\normalsize
+}
+
+\title{Solutions: Jacobs \emph{Cateogorical Type Theory} }
+
+\begin{document}
+
+\maketitle
+
+\section*{1.1}
+
+\subsection*{1.1.1}
+
+\subsubsection*{i}
+\begin{tikzcd}
+X \arrow[dd, dotted, "\varphi"] \arrow[rrd, "f"] & & \\ % \arrow[dd, "\phi"] \arrow[dr, "\psi"] & &   \\
+  & & Y \\
+X' \ar[rru, "f'"] \ar[uu, dotted] & &  \\
+ & & \\
+I \ar[rr, "u = pf = pf'"] \ar[loop left, "I = p \varphi"] & & J
+\end{tikzcd}
+\\~\\~\\
+Since $f' : X' \to Y$ is Cartesian over $u$ and $pf = I;pf = I;u$, we have a
+unique $\varphi : X \to X'$ such that $p \varphi = I$ and $\varphi;f' = f$.
+Likewise, we have a unique $\varphi^{-1} : X' \to X$ such that $p \varphi^{-1} = I$ 
+and $\varphi^{-1};f = f'$. Thus $\varphi$ and $\varphi^{-1}$ are vertical isos.
+
+\subsubsection*{ii} 
+
+Not sure I fully understand this. I have the following diagram.
+
+\begin{tikzcd}
+Z \ar[r, shift left, "g" above] \ar[r, shift right, "h" below] \ar[rr, bend left = 50, "k=g;f=h;f" above] & X \ar[r, "f" above] & Y \\
+   &   &   \\
+pZ \ar[r, shift left, "pg" above] \ar[r, shift right, "ph" below] \ar[rr, bend left = 50, "pk=pg;pf=ph;pf"] & I \ar[r, "pf" below] & J
+\end{tikzcd}
+\\~\\
+Since $f$ is Cartesian and $pk$ factors through $pf$ via $pg$, we should have a unique arrow $\varphi : Z \to X$ above
+$pg$ with $\varphi;f = k$. Obviously, this arrow is $g$. But this says nothing about $h$; I don't think we know that
+$h$ is above $pg$. Perhaps Jacobs meant to say that $w$ as well as $h$ must be unique in his definition. 
+
+BUT WAIT! $w$ must be unique in Jacobs' definition, for otherwise $h$ would not be unique. Okay, problem solved.
+The key to reading this definition is that the unique arrow $h$ \emph{happens to be above $w$} it is not unique \emph{among
+the arrows above $w$}. 
+
+\subsection*{1.1.2}
+
+$\Leftarrow$. As a shorthand, let's define $g \doteq f \circ (-)$, and write $g^{-1}$ for its inverse.
+To show that $f$ is cartesian, we first assume the following situation.
+
+\begin{tikzcd}
+Z \ar[rrd, "t"] &               &   \\
+                & X \ar[r, "f" below] & Y \\
+                &               &   
+                &               &   \\
+pZ \ar[rrd, "pt"] \ar[rd, "v" below] & & \\
+ & I \ar[r, "u" below] & J              
+\end{tikzcd}
+
+Here $v;u = pt$. Now, since $t$ is over $v;u$, we can map $t$ through $g^{-1}$ to get an arrow
+$s$ over $v$ such that $s;f = t$. To show uniqueness, assume an arrow $s' : Z \to X$ such that
+$s';f = t$. Then $s' = g^{-1}(g(s')) = g^{-1}(s';f) = g^{-1}(t) = s$.
+\\~\\
+$\Rightarrow$. Right-to-left is rather straightforward: The premise of a cartesian morphism $f : X \to Y$ is that
+each arrow $t : Z \to Y$ over $v;u$ factors through $f$ via a unique arrow $s : Z \to X$, which happens to be over $v$. 
+This defines a function which can be inverted simply by composing an arrow $s$ over $v$ with $f$ to get $s;f = t$ over $v;u$.
+
+\subsection*{1.1.3}
+
+\subsubsection*{i} 
+
+Intuitively, my first instinct is to think of this as a formalization of the fact that any given arrow in the total category
+(analogous to a derivation in a refinement system) may have a precondition that is not maximally weak given its postcondition.
+We can therefore factor it into a vertical morphism (which serves the purpose of weakening to the point of maximality)
+and a cartesian morphism (i.e. a morphism whose precondition is maximally weak given its postcondition). Now to prove this 
+formally.
+Consider an arbitrary arrow $f$ in $\mathbb E$ and its mapping through $p$.\\~\\
+\begin{tikzcd}
+X \ar[rr, "f"] & & Y \\
+ & & \\
+pX \ar[rr, "pf"] & & pY
+\end{tikzcd}\\~\\
+We apply the definition of fibrations, using $Y$ as the object of $\mathbb E$ and $pf$ as the arrow
+of $\mathbb B$ going into $pY$ to get a Cartesian arrow $c : Z \to Y$ in $\mathbb E$ over $pf$:\\
+\begin{tikzcd}
+X \ar[rr, "f"] & & Y \\
+ & Z \ar[ur, "c"] & \\
+pX \ar[rr, "pf = pc"] & & pY
+\end{tikzcd}\\~\\
+Since $c$ is Cartesian and $pf = pX;pc$, we have an arrow $s : X \to Z$ such that $ps = pX$ ($s$ is vertical)
+and $s;c = f$.
+
+\subsubsection*{ii}
+
+Let $f : X \to Y$ be a cartesian arrow over an isomorphism $pf$, and consider the identity map $Y$.\\
+\begin{tikzcd}
+X \ar[r, "f"] & Y \ar[loop right] \\
+pX \ar[r, "pf"] & pY \ar[l, "(pf)^{-1}"]
+\end{tikzcd}\\~\\
+$pY$ factors to $(pf)^{-1};pf$. Hence (by the definition of \emph{Cartesian arrow}) there is some $s : Y \to X$
+over $(pf)^{-1}$ such that $s;f = Y$. We also have $f;s;f = f;Y = X;f$. Hence, by 1.1.1 (ii) we have
+$f;s = X$, and so $f$ and $s$ are an iso pair. 
+\\~\\
+It's important to note that we have proved something slightly stronger than the problem statement:
+not only is $f$ an iso, but its inverse is over the inverse of the iso in $\mathbb B$, i.e.
+$s = f^{-1}$ is over $(pf)^{-1}$.
+\subsection*{1.1.4}
+
+\subsubsection*{i}
+
+This is a straightforward consequence of 1.1.2. 
+
+\subsubsection*{ii}
+
+To show that $f;g$ is Cartesian, we begin with the following scenario.
+
+\begin{tikzcd}
+S \ar[rrd, "x"] & & \\
+X \ar[r, "f" below] & Y \ar[r, "g" below] & Z \\
+ & & \\
+pS \ar[rrd, "px"] \ar[d, "w" left] & & \\
+pX \ar[r, "pf" below] & pY \ar[r , "pg" below] & pZ 
+\end{tikzcd}\\~\\
+
+Since $g$ is Cartesian and $px$ factors through $pg$ (via $w;pf$), 
+We have a unique arrow $s : S \to Y$ such that $s;g = x$, which happens to be above $w;pf$.  
+
+\begin{tikzcd}
+S \ar[rrd, "x"] \ar[dr, dotted, "s" below] & & \\
+X \ar[r, "f" below] & Y \ar[r, "g" below] & Z \\
+ & & \\
+pS \ar[rrd, "px"] \ar[d, "w" left] \ar[dr , "ps" below] & & \\
+pX \ar[r, "pf" below] & pY \ar[r , "pg" below] & pZ 
+\end{tikzcd}\\~\\
+
+Since $f$ is Cartesian and $ps$ factors through $ps$ (via $w$), we have a unique arrow
+$s' : S \to X$ such that $s';f = s$, which happens to be above $w$.
+
+\begin{tikzcd}
+S \ar[rrd, "x"] \ar[dr, dotted, "s" below] \ar[d, dotted, "s'" left] & & \\
+X \ar[r, "f" below] & Y \ar[r, "g" below] & Z \\
+ & & \\
+pS \ar[rrd, "px"] \ar[d, "w" left] \ar[dr , "ps" below] & & \\
+pX \ar[r, "pf" below] & pY \ar[r , "pg" below] & pZ 
+\end{tikzcd}\\~\\
+
+Substituting $s';f$ for $s$ in $s;g = x$ gives $s';f;g = x$. $s'$ is the unique arrow with 
+this property, for suppose that $t';f;g = x$. Then $t';f = s$ by the uniqueness of $s$.
+Then $t' = s'$ by the uniqueness of $s'$.  
+
+\subsubsection*{iii}
+
+To show that $f$ is Cartesian, we begin with the following scenario
+
+\begin{tikzcd}
+Q \ar[dr , "x"] &   &   \\
+X \ar[r , "f" below] & Y \ar[r , "g" below] & Z \\
+  &   &   \\
+pQ \ar[dr, "px"] \ar[d , "w" left] & & \\
+pX \ar[r , "pf" below] & pY \ar[r , "pg" below] & pZ
+\end{tikzcd}
+
+By composition, we get:
+
+\begin{tikzcd}
+Q \ar[dr , "x" left] \ar[drr , "x;g" right] &   &   \\
+X \ar[r , "f" below] & Y \ar[r , "g" below] & Z \\
+  &   &   \\
+pQ \ar[dr, "px" left] \ar[d , "w" left] \ar[drr , "p(x;g)"] & & \\
+pX \ar[r , "pf" below] & pY \ar[r , "pg" below] & pZ
+\end{tikzcd}\\~\\
+
+$p(x;g)$ factors through $pg$ via $w;pf$. Hence, there exists a unique arrow ($x$) 
+such that $x;g = (x;g)$, which happens to be above $px$: i.e. $$(*)~\forall y .~ y;g=x;g \Rightarrow x=y$$
+
+Furthermore, $p(x;g)$ factors through $pf;pg$ via $w$. Hence, there is a unique arrow (called $s$, pictured below)
+such that $s;f;g = (x;g)$, where $s$ happens to be above $w$; for this reason, we rename $w$ to $ps$:
+
+\begin{tikzcd}
+Q \ar[dr , dotted, "x" left] \ar[d, dotted, "s"] \ar[drr , "x;g" right] &   &   \\
+X \ar[r , "f" below] & Y \ar[r , "g" below] & Z \\
+  &   &   \\
+pQ \ar[dr, "px" left] \ar[d , "ps" left] \ar[drr , "p(x;g)"] & & \\
+pX \ar[r , "pf" below] & pY \ar[r , "pg" below] & pZ
+\end{tikzcd}\\~\\
+
+Instantiating $y$ in $(*)$ with $s;f$, we have $s;f = x$. Suppose $t : Q \to X$ has the property
+that $t;f = x$. Then $t;f;g = x;g$. Hence, by the uniqueness of $s$, $t=s$. 
+
+\subsection*{iv}
+
+I guess I don't understand this, because it seems like a simple fact that has nothing to do with $iii$.
+
+\section*{1.1.5}
+
+These are both straightforward consequences of the fact that pullback squares are cartesian morphisms
+with respect to the cod fibration.
+
+\section*{1.1.6}
+
+I tried $\Rightarrow$ and had a bit of trouble. Maybe next time try $\Leftarrow$ first?
+
+\section*{1.1.7}
+
+Example 1: $\dispp{\mathbb B \times \mathbb C}{fst}{\mathbb C}$ \\~\\
+
+Suppose we have some object $B_2 \times C$ of $\mathbb B \times \mathbb C$, 
+and some arrow $B_1 \rTo^{f} B_2$ of $\mathbb B$. Then we have an arrow
+$f \times C$ above $f$; we'll show this arrow is Cartesian.\\~\\
+\begin{tikzcd}
+B_1 \times C \ar[r , "f \times C"] & B_2 \times C \\
+B_1 \ar[r, "f"] & B_2
+\end{tikzcd}
+
+Consider some $B_3 \times C_3 \rTo^{g \times h} B_2 \times C$ such that $fst (g \times h) = g$ factors through
+$fst(f \times C) = f$, i.e. there is some $B_3 \rTo^{d} B_1$ with $d;f = g$. Then $g \times h$ factors through
+$f \times C$ in $\mathbb B \times \mathbb C$ through a unique arrow: that arrow is $d \times h$, which is over
+$d$.
+
+\begin{tikzcd}
+B_3 \times C_3 \ar[dr , "g \times h"] \ar[d , "d \times h" left] & ~ \\
+B_1 \times C \ar[r , "f \times C" below] & B_2 \times C \\
+B_3 \ar[dr, "g"] \ar[d, "d" left] & ~ \\
+B_1 \ar[r, "f" below] & B_2
+\end{tikzcd}\\~\\
+
+Example 2: $\dispp{\mathbb B}{id}{\mathbb B}$\\~\\
+Straightforward.\\~\\
+Example 3: $\dispp{\mathbb B}{id}{1=\{ \ast \}}$\\~\\
+Straightforward.
+Example 4: Yup, they're trivial.
+ 
+\section*{1.2}
+
+\subsection*{1.2.1}
+
+First we assume that $(u, (f_i)_{i \in I})$ is Cartesian
+and show that every $f_i$ is an iso.\\~\\
+$(\Rightarrow)$.\\~\\
+\begin{tikzcd}
+(K, (B_{k})_{k \in K}) \ar[dr, "(v \text{,}~(h_k) : B_k \to D_{v(k)})" right] \ar[d, dotted, "(w \text{,}~(g_k) : B_k \to C_{w(k)})" left] & ~ \\
+(I, (C_i)_{i \in I}) \ar[r, "\pile{ ~ \\ ~ \\ (u \text{,}~(f_i) : C_i \to D_{u(i)}) }" below] & (J, (D_j)_{j \in J})
+ & \\
+K \ar[d, "w" left] \ar[dr, "v"] & \\
+I \ar[r, "u" below] & J 
+\end{tikzcd}\\~\\
+An arrow in $Fam(\mathbb C)$ above $w$ is a family of arrows $(g_k)_{k \in K}$ of $\mathbb C_1$ such that 
+$$B_k \rTo^{g_k} C_{w(k)} \rTo^{f_{w(k)}} D_{u(w(k))} = B_k \rTo^{h_k} D_{v(k)}$$
+We can construct such a family by defining $g_k \triangleq h_k;f_{w(k)}^{-1}$.
+In fact, for some other such family $(g'_k)$ we have for $k \in K$, $g'_k;f_{w(k)} = h_k = g_k;f_{w(k)}$. Since isos are
+split monos, we have $g'_k = g_k$, and so $(w, g_k)$ is the unique family above $w$ making the top triangle commute.\\~\\
+($\Leftarrow$)  On the other hand, assume $(u, (f_i) : C_i \to D_{u(i)})$ above is Cartesian. Dude. I absolutely cannot figure this out. Oh well.
+
+\subsection*{1.2.2}
+
+$(\Rightarrow)$
+
+Let $f$ be monic.
+Consider $f_i : X_i \to Y_i$, and $a,b : Z \to X_i$ with $a;f_i = b;f_i$. We define the 
+family $(Z_k)_{k \in I}$ as $Z_i \doteq Z$ and for $j \neq i$, $Z_j \doteq X_j$.
+Also define the family $(h_k)_{k \in I}$ as $h_i \doteq a$ and for $j \neq i$, $h_j \doteq 1_{X_j}$.
+Likewise, define $(g_k)_{k \in I}$ as $g_i \doteq b$ and for $j \neq i$, $h_j \doteq 1_{X_j}$.
+
+Then $((h_k)_{k \in I};f)_i = a;f_i$ and for $j \neq i \in I$, $((h_k)_{k \in I};f)_j = 1_{X_j};f_j = f_j$.
+Likewise, $((g_k)_{k \in I};f)_i = b;f_i$ and for $j \neq i \in I$, $((g_k)_{k \in I};f)_j = 1_{X_j};f_j = f_j$.
+Since $a;f_i = b;f_i$ by assumption, we have $(h_k)_{k \in I};f = (g_k)_{k \in I};f$. Since $f$ is monic,
+$(h_k)_{k \in I} = (g_k)_{k \in I}$. But this implies that $a = h_i = g_i = b$.
+~\\~\\
+$(\Leftarrow)$
+Suppose that each $f_i$ for $i \in I$ is monic, and consider $g,h : (Z_i \rightrightarrows X_i)_{i \in I}$.
+Suppose $f;g = f;h$. Then for $i \in I$, $(f_i;g_i) = (f;g)_i = (f;h)_i = (f_i;h_i)$. Since $f_i$ is monic,
+for each $i \in I$ we have $g_i = h_i$. Hence, $g = h$.
+
+\subsection*{1.2.3}
+
+\subsubsection*{(i)}
+
+We start with an arrow $u : I \to J$ in $\mathbb B$ and an object $(\vrt{X}{J}\varphi, s)$ above $J$.
+
+\begin{mathpar}
+\begin{tikzcd}
+              & X \ar[d, bend right = 20, "\varphi" left] \\
+I \ar[r,"u" below]  & J \ar[u, bend right = 20, "s" right]  
+\end{tikzcd}
+\and
+s;\varphi = 1_J
+\end{mathpar}
+
+To construct a Cartesian arrow over $u$, we first take the pullback of $u$ and $\varphi$.
+
+\begin{mathpar}
+\begin{tikzcd}
+I \times_J X \ar[r, "\pi_1"] \ar[d, "\pi_2" left] \ar[dr, phantom, "\lrcorner", very near start] & X \ar[d, bend right = 20, "\varphi" left] \\
+I \ar[r, "u" below]  & J \ar[u, bend right = 20, "s" right]  
+\end{tikzcd}
+\and
+\pi_1;\varphi = \pi_2;u
+\end{mathpar}
+
+$\pi_2$ is the display of our Cartesian arrow's domain. We form its section using the pullback universal property.
+
+\begin{mathpar}
+\begin{tikzcd}
+ I \ar[ddr, bend right = 10, "1_I~~" below] \ar[drr, bend left = 10, "u;s"] \ar[dr, dotted, "t"] & & \\
+ & I \times_J X \ar[r, "\pi_1"] \ar[d, "\pi_2" left] \ar[dr, phantom, "\lrcorner", very near start] & X \ar[d, bend right = 20, "\varphi" left] \\
+ & I \ar[r, "u" below]  & J \ar[u, bend right = 20, "s" right]  
+\end{tikzcd}
+\and
+t;\pi_1 = u;s 
+\and
+t;\pi_2 = 1_I
+\end{mathpar}
+
+First, note that $(\vrt{I \times_J X}{I}\pi_2,t)$ is an object of $\mathbb B_{\bullet}^{\to}$, since $t;\pi_2 = 1_I$.
+Also, $(\pi_1, u) : (\vrt{I \times_J X}{I}\pi_2,t) \to (\vrt{X}{J}\varphi,s)$ is an arrow,
+since $\pi_2;u = \pi_1;\varphi$ and $t;\pi_1 = u;s$.
+
+Now, we must prove that $(\pi_1,u)$ is Cartesian over $u$.
+Assume some object $(\vrt{Z}{K}\psi,r)$ and an arrow $(f,v;u) : (\vrt{Z}{K}\psi,r) \to (\vrt{X}{J}\varphi,s)$.
+Since $(f,v;u)$ is an arrow, it preserves points $v;u;s = r;f$.
+
+Any arrow $(h;w)$ factoring $(f,v;u)$ through $(\pi_1,u)$ must have $h;\pi_1 = f$
+and $h;\pi_2 = \psi;w$.   
+Since $f : Z \to X$ and $\psi;v : Z \to I$, by the pullback property there exists a unique arrow
+$z : Z \to I \times_J X$ with $z;\pi_1 = f$ and $z;\pi_2 = \psi;v$.
+Thus $h = z$.
+
+The arrow $(z,v) : (\vrt{Z}{K}\psi,r) \to (\vrt{I \times_J X}{I}\pi_2,t)$ is then the unique arrow
+over $v$ factoring through $(\pi_1,u)$. We need only prove it is an arrow this point, since we've established 
+its uniqueness. It commutes, since $z;\pi_2 = \phi;v$. It also preserves points, since
+$v;t;\pi_1 = v;u;s = r;f = r;z;\pi_1$ and $\pi_1$ is monic.
+
+\subsubsection*{(ii)}
+
+First, we define an equivalence of categories 
+$F : Fam(\mbf{Sets_{\bullet}}) \overset{\simeq}{\longleftrightarrow} \mbf{Sets_{\bullet}^{\to}} : U$.
+$$F(I, (X_i,a_i)_{i \in I}) \doteq (\vrt{\coprod_{i \in I} X_i}{I}\pi, i \mapsto (i, a_i))$$
+
+
+\begin{mathpar}
+F( (u : I \to J, (f_i)_{i \in I} : X_i \to Y_{u(i)}) : (I, (X_i,a_i)_{i \in I}) \to (J, (Y_j,b_j)_{j \in J}) \doteq
+\and
+\begin{tikzcd}
+\coprod_{i \in I} X_i \ar[rrr, "{(i , x_i) \mapsto (u(i), f_i(x_i))}"] \ar[d, "\pi_I" left, bend right = 15] & ~ & ~ & \coprod_{j \in J} Y_j \ar[d, bend left = 15, "\pi_J"] \\
+I \ar[rrr, "u" below] \ar[u, "{i \mapsto (i,a_i)}" right, bend right = 15] & ~ & ~ & J \ar[u, bend left = 15, "{j \mapsto (j,b_j)}"] 
+\end{tikzcd} 
+\end{mathpar}
+
+$$U(\vrt{X}{I}\varphi,s) \doteq (I, (\varphi^{-1}(i), s(i))_{i \in I})$$
+
+$$U( (u : I \to J, f : X \to Y) : (\vrt{X}{I} \varphi, s) \to (\vrt{Y}{J}\psi,t) ) \doteq (u, (f \mid_{\varphi^{-1}(i)})_{i \in I})$$
+
+An equivalence of categories consists of two natural isos, first $\eta : 1_{Fam(\mbf{Sets_{\bullet}})} \overset{\sim}{\longrightarrow} UF$
+
+We need an arrow from $(I, (X_i, a_i)_{i \in I})$ to $(I, (\{i\} \times X_i, (i,a_i))_{i \in I})$, and choose the obvious one:
+$$\eta_{(I, (X_i, a_i)_{i \in I})} \doteq (1_I, (x \mapsto (i,x))_{i \in I})$$
+$$\eta^{-1}_{(I, (X_i, a_i)_{i \in I})} \doteq (1_I, ((i,x) \mapsto x)_{i \in I})$$
+
+They are clearly an iso pair, and are both point-preserving. We show that $\eta$ is natural.
+Let $(u,(f_i)_{i \in I}) : (I, (X_i,a_i)_{i \in I}) \to (J, (Y_j, b_j)_{j \in J}) \in Fam(\mbf{Sets_\bullet})_1$. 
+
+Then we have 
+$$F(u,(f_i)_{i \in I}) = (u, g)  : (\vrt{\coprod_{i \in I} X_i}{I}\pi_I, i \mapsto (i, a_i)) \to 
+  (\vrt{\coprod_{j \in J} Y_j}{J}\pi_J, j \mapsto (j, b_j))$$ % (J, (Y_j,b_j)_{j \in J})$$
+where $g(i,x_i) \doteq (u(i),f_i(x_i))$,
+and
+$UF(u,(f_i)_{i \in I}) = (u, (g \mid_{\{i\} \times X_i})_{i \in I})$. %= (u, ((i,x_i) \mapsto (u(i),f_i(x_i)))_{i \in I})$$
+For naturality of $\eta$:
+$$(u,(f_i)_{i \in I});\eta_{(J, (Y_j, b_j)_{j \in J})} = (u, (x \mapsto (u(i), f_i(x)))_{i \in I}) = 
+  \eta_{(I, (X_i,a_i)_{i \in I})};(u,g)$$ 
+
+Now we need another natural iso $\epsilon : 1_{\mbf{Sets_{\bullet}^{\to}}} \overset{\sim}{\longrightarrow} FU$.
+Let $A \doteq (\vrt{X}{I}\varphi,s)$ be an object of $\mbf{Sets_{\bullet}^{\to}}$.
+Then $FU(\vrt{X}{I}\varphi,s) = (\vrt{\coprod_{i \in I} \varphi^{-1}(i)}{I}\pi, \langle 1_I, s \rangle)$.
+Let $A \doteq $ We define
+$$\epsilon_{A} \doteq (1_I, \langle \varphi, 1_X\rangle) $$
+$$\epsilon^{-1}_A \doteq (1_I, \pi') $$
+Clearly this is an iso pair that preserves points. We must show that $\epsilon$ is natural.
+Let $B \doteq (\vrt{Y}{J}\psi,t)$ and let $(u,f) : (\vrt{X}{I}\varphi,s) \to (\vrt{Y}{J}\psi,t)$ be an arrow in 
+$\mbf{Sets^{\to}_{\bullet}}$.
+Then $U(u,f) = (u,(f\mid_{\varphi^{-1}(i)})_{i \in I})$ and $FU(u,f) = (u, u \times f)$.\\~\\
+$(u,f);\epsilon_B = (u,f);(1_J, \langle \psi, 1_Y \rangle) = (u, \langle f;\psi, f \rangle)
+= (u, \langle \varphi;u, f \rangle) = \epsilon_A;(u, u \times f)$
+\\~\\
+*****TODO********
+We're not quite done yet. We must show that a triangle like the one on pg 10012 commutes.
+
+\subsection*{1.2.4}
+
+Suppose $aRb$. Then by symmetry, $bRa$. By transitivity, $aRa$ and $bRb$.
+
+\subsection*{1.2.5}
+
+\subsubsection*{(i)}
+
+Call the set of partitions $Part(I)$ and the set of equivalence relations $ER(I)$.
+We define a bijection $\phi : Part(I) \to ER(I)$.
+$$\phi(Q) \doteq \{ (i,j) \mid \exists a \in Q. i \in a, j \in a \}$$
+If $Q$ is a partition then $\phi(Q)$ is an equivalence relation.
+\begin{itemize}
+\item It's symmetric: if $(i,j) \in \phi(Q)$ then $\exists a \in q. i \in Q, j \in Q$. Hence $(j,i) \in Q$.
+\item It's transitive: if $(i,j), (j,k) \in \phi(Q)$ then $\exists a~b \in Q. i \in a, j \in a, j \in b, k \in b$.
+ Since $j \in a$ and $j \in b$ we have $a = b$, and so $k \in b = a$; hence, $(i,k) \in \phi(Q)$.
+\item It's reflexive: letting $i \in I$, since $\bigcup Q = I$ there exists some $a \in Q$ with $i \in A$.
+ Then $(i,i) \in \phi(Q)$.
+\end{itemize}
+
+Note that only reflexivity relies on the totality of the partition.
+We also define an inverse:
+$$[n]_R \doteq \{ m \mid nRm \}$$
+$$\phi^{-1}(R) = \{ [n] \mid nRn \}$$
+
+If $R$ is a PER then $\phi^{-1}(R)$ is a partition.
+\begin{itemize}
+\item Let $a \in \phi^{-1}(R)$. Then $a = [n]$ for some $n$ with $nRn$. Therefore $n \in a$, and so $a$ is non-empty.
+\item Let $a,b \in \phi^{-1}(R)$. Suppose $a \cap b \neq \emptyset$. Then there exists an $i \in I$ with $i \in a$ and
+ $i \in b$. If $j \in I$ then $j \in a \Leftrightarrow jRi \Leftrightarrow j \in b$. Hence $a = b$.
+\item Let $i \in I$. Then $iRi$. Hence $[i] \in \phi^{-1}(R)$, and so $i \in \bigcup \phi^{-1}(R)$.
+\end{itemize}
+
+The last of the above points relies on reflexivity. 
+
+To cement the deal, we must prove that $\phi$ and $\phi^{-1}$ are inverses.
+Let $R$ be a $PER$. We prove that $\phi(\phi^{-1}(R)) = R$. To this end,\\~\\
+$(i,j) \in \phi(\phi^{-1}(R)) \Leftrightarrow$\\
+$\exists a \in \phi^{-1}(R).~i \in a \wedge j \in a \Leftrightarrow$\\
+$\exists n \in I.~iRn \wedge jRn \Leftrightarrow$\\
+$iRj \Leftrightarrow$\\
+$(i,j) \in R$\\~\\
+
+Finally, let $Q \in Part(I)$. We prove $\phi^{-1}(\phi(Q)) = Q$.\\~\\
+$a \in \phi^{-1}(\phi(Q)) \Leftrightarrow$
+$\exists n \in I.~a = [n] \wedge (n,n) \in \phi(Q) \Leftrightarrow$\\
+$\exists n \in I. a = [n] \wedge \exists b \in Q.~n \in b \Leftrightarrow$\\
+$a \in Q$
+
+
+%let $(i,j) \in \phi(\phi^{-1}(R))$. Then $(i,j) = \phi([n])$ for some $n$ with $nRn$.
+%Then $$
+
+\subsubsection*{(ii)}
+
+We write $EqSub(I)$ for the set of equivalence relations on subsets of $I$; an element of $EqSub(I)$ has the form
+$(X, R)$ where $X \subseteq I$ and $R$ is an equivalence relation on $X$. 
+We show a bijective correspondence $\psi : PPart(I) \to EqSub(I)$ between the partial partitions on $I$ and 
+equivalence relations on subsets on $I$: the remainder follows transitively from $(i)$.
+
+$$\psi(Q) \doteq (\bigcup Q, R)$$
+$$iRj \overset{def}{\Leftrightarrow} (\exists a \in Q.~i \in a \wedge j \in a)$$
+
+Above, clearly $\bigcup Q \subseteq I$ and $R$ is an equivalence relation.
+We prove it's a bijection by providing an inverse:
+
+$$\psi^{-1}(X,R) \doteq \{ [i] \mid iRi \}$$
+ 
+First, note that every set in $\psi^{-1}(X,R)$ is non-empty, since $i \in [i]$.
+Second, assume some $a,b \in \psi^{-1}(X,R)$. Then $a = [i]$ and $b = [j]$ for some $i,j \in I$ with $iRi$ and $jRj$.
+Assume some $k \in I$ with $k \in a = [i]$ and $k \in b = [j]$. Then $kRi$ and $kRj$. Transitively, $iRj$. 
+Thus, if $l \in I$ then\\~\\
+$l \in [a] \Leftrightarrow$\\
+$lRi \Leftrightarrow$\\
+$lRj \Leftrightarrow$\\
+$l \in b$\\~\\
+Hence $a = b$.
+
+\subsection*{1.2.6}
+
+Umm.... homsets in $\omega$-$\mbf{Sets}$ are not all countable.
+What if we give a $\omega$-set an uncountable carrier set whose existence predicate maps each 
+element to $\{ 0 \}$. There are uncountably many constant endofunctions on this omega set!!!
+ 
+
+\section*{1.3}
+
+\subsection*{1.3.1}
+
+\subsubsection*{(i)}
+
+Show that in the total category $s(\mathbb B)$ of a simple fibration $\vrt{s(\mathbb B)}{\mathbb B}$ a morphism
+$(u,f) : (I,X) \to (J,Y)$ is Cartesian if and only if there is an isomorphism $h : I \times X \overset{\cong}{\to} I \times Y$
+in $\mathbb B$ such that $\pi \circ h = \pi$ and $\pi' \circ h = f$.
+\\~\\
+We utilize the following lemma
+\begin{lemma}
+\label{lemma:one}
+The arrow $(u, \pi') : (I,Y) \to (J,Y)$ is Cartesian over $u$.
+\end{lemma}
+
+\begin{proof}
+Let $v : K \to I$ be an arrow in $\mathbb B$ and let $(v;u,f) : (K,Z) \to (J,Y)$ be an arrow in $s(\mathbb B)$.
+Clearly, $(v,f) : (K,Z) \to (I,Y)$ is over $v$ and $(v,f);(u,\pi') = (v;u,f)$.\\~\\
+\begin{center}
+\begin{tikzcd}
+(K,Z) \ar[dr, "(v \text{,} f)~~~~~" below] \ar[drr, "(v;u \text{,} f)"] & & \\
+ & (I,Y) \ar[r,"(u \text{,} \pi')" below] & (J,Y) \\
+ & & \\
+K \ar[dr, "v~~~" below] \ar[drr, "v;u"] & & \\
+ & I \ar[r,"u" below] & J 
+\end{tikzcd}
+\end{center}
+
+Furthermore, $(v,f)$ is the unique arrow above $v$ with this property. For let $(v,h) : (K,Z) \to (I,Y)$ be another such
+arrow; i.e., $(v,h);(u,\pi') = (v;u,f)$. Then by the definition of composition in $s(\mathbb B)$, $h = f$. 
+
+\end{proof}
+~\\
+$(\Rightarrow)$ Let $(u,f) : (I,X) \to (J,Y)$ be Cartesian. 
+Since $(u,\pi')$ is Cartesian by the above lemma, there exists a unique $a : (I,X) \to (I,Y)$ over $1_I$ 
+such that $a;(u,\pi') = (u,f)$. The arrow $(1_I,f)$ satisfies this property, and so $a = (1_I, f)$. 
+%Note that $h;\pi' = f$ and $h;\pi = \pi$.
+
+On the other hand, since $(u,f)$ is Cartesian by assumption, 
+there exists a unique arrow $b : (I,Y) \to (I,X)$ over $1_I$ such that
+$b;(u,f) = (u,\pi')$. Thus, $1_{(I,X)};(u,f) = (u,f) = a;(u,\pi') = (a;b);(u,f)$. 
+Since $b : (I,Y) \to (I,X)$ is over $1_I$, $b = (1_I, g)$ for some $g : I \times Y \to X$.
+
+Since $(u,f)$ is Cartesian,
+there can only exist one arrow $x : (I,X) \to (I,X)$ over $1_I$ such that $x;(u,f) = (u,f)$; hence, 
+$(1_I, \pi') = 1_{(I,X)} = a;b = (1_I, \langle \pi_{I,X};1_I , f \rangle; g) = (1_I, \langle \pi_{I,X} , f \rangle; g)$,
+and so $\pi' = \langle \pi_{I,X} , f \rangle; g$.
+
+We define $h : I \times X \to I \times Y \in \mathbb B_1$ as $h \doteq \langle \pi_{I,X}, f \rangle$. Then we have $h;\pi_{I,Y} = \pi_{I,X}$ and
+$h;\pi' = f$. Furthermore, $h$ has an inverse $h^{-1} = \langle \pi_{I,X}, g \rangle$.
+$$ h;h^{-1} = \langle \pi_{I,X}, f \rangle; \langle \pi_{I,Y}, g \rangle = \langle \langle \pi_{I,X}, f \rangle; \pi_{I,Y} 
+  , \langle \pi_{I,X}, f \rangle; g \rangle = \langle \pi_{I,X} , \pi'_{I,X} \rangle = 1_{I \times X}$$
+ 
+$(\Leftarrow)$ Suppose there exists an isomorphism $h : I \times X \overset{\cong}{\to} I \times Y$
+in $\mathbb B$ such that $h;\pi = \pi$ and $h;\pi' = f$. The following diagram commutes
+\begin{center}
+\begin{tikzcd}
+(I, Y) \ar[d, "(1_I \text{,} h^{-1};\pi')" left, bend right = 20 ] \ar[rr, "(u \text{,} \pi')" above] & & (J,Y) \\
+(I, X) \ar[u,"(1_I \text{,} h;\pi')" right, bend right = 20] \ar[rru, "(u \text{,} f)" below, bend right = 10] &
+\end{tikzcd}
+\end{center}
+
+Since $(1_I, h;\pi')$ is an iso in $s(\mathbb B)$, it is Cartesian by exercise $1.1.4~(i)$. By the lemma \ref{lemma:one},
+$(u,\pi')$ is Cartesian. The composition of two Cartesian arrows is Cartesian by exercise
+$1.1.4~(ii)$, and so $(1_I, h;\pi');(u,\pi') = (u,f)$ is Cartesian. 
+
+We now show that the diagram commutes.
+$$(1_I, h;\pi');(u,\pi') = (u, \langle \pi;1_I,h;\pi' \rangle;\pi' = (u, \langle \pi;1_I, f \rangle ; \pi' = (u,f) $$
+
+and that $(1_I, h;\pi')$ is an iso
+\begin{center}
+\begin{tabular}{ll}
+$(1_I, h;\pi');(1_I,h^{-1};\pi')$ & $=$ \\ 
+$(1_I \langle \pi;1_I, h;\pi' \rangle;(h^{-1};\pi'))$ & $=$ \\
+$(1_I, \langle h;\pi, h;\pi' \rangle;h^{-1};\pi)$ & $=$ \\
+$(1_I, h;\langle \pi, \pi' \rangle;h^{-1};\pi)$ & $=$ \\
+$(1_I, h;h^{-1};\pi)$ & $=$ \\
+$(1_I, \pi)$ & $=$ \\
+$1_{(I,X)}$ &   
+\end{tabular}
+\end{center}
+ 
+Before proving the other direction, note that $h^{-1};\pi = h^{-1};(h;\pi) = \pi$.
+
+\begin{center}
+\begin{tabular}{ll}
+$(1_I, h^{-1};\pi');(1_I,h;\pi')$ & $=$ \\ 
+$(1_I \langle \pi;1_I, h^{-1};\pi' \rangle;(h;\pi'))$ & $=$ \\
+$(1_I, \langle h^{-1};\pi, h^{-1};\pi' \rangle;h;\pi)$ & $=$ \\
+$(1_I, h^{-1};\langle \pi, \pi' \rangle;h;\pi)$ & $=$ \\
+$(1_I, h^{-1};h;\pi)$ & $=$ \\
+$(1_I, \pi)$ & $=$ \\
+$1_{(I,Y)}$ &   
+\end{tabular}
+\end{center}
+
+\subsubsection*{(ii)}
+
+Show that the assignment $(I, X) \mapsto I*(X) = \ddisp{I \times X}{\pi}{I}$ extends to a full and faithful functor
+$s(\mathbb B) \to \mathbb B^{\to}$. Prove that it maps Cartesian morphisms to pullback squares.\\~\\
+For an arrow $(u : I \to J, f : I \times X \to Y)$ we let $(u,f) \mapsto (u,\langle \pi;u, f \rangle)$.
+
+To see that this functor is full, consider some commuting pair $(a : I \to J, b : I \times X \to J \times Y)$
+between $I*(X)$ and $J*(Y)$. Then $b;\pi = \pi;a$, and we have $(a, b;\pi') \mapsto (a, \langle \pi;a, b;\pi' \rangle)
+ = (a, \langle b;\pi, b;\pi' \rangle) = (a, b; \langle \pi, \pi' \rangle) = (a,b)$.
+ 
+To see that this functor is faithful, consider distinct arrows $(u : I \to J, f : I \times X \to Y)$ and 
+$(v : I \to J, g : I \times X \to Y)$. Repsectively, they map to $(u, \langle \pi;u, f \rangle)$ and 
+$(v, \langle \pi;v, g \rangle)$. Since $(u, f)$ and $(v, g)$ are distinct, either $u \neq v$ or $f \neq g$
+\begin{description}
+\item[Case $u \neq v$:]~\\
+Since $u \neq v$, $(u, \langle \pi;u, f \rangle) \neq (v, \langle \pi;v, g \rangle)$.
+\item[Case $f \neq g$]~\\
+For contradiction, suppose $\langle \pi;u , f \rangle = \langle \pi;v, g \rangle$. By the 
+UMP of products, we have $f = \langle \pi;u , f \rangle;\pi' = \langle \pi;v, g \rangle;\pi' = g$. $\Rightarrow \Leftarrow$.~\\~\\
+Hence, $\langle \pi;u , f \rangle \neq \langle \pi;v, g \rangle$.
+
+
+\end{description}
+ 
+
+\subsection*{1.3.2}
+\newcommand{\dd}{/\!/}
+ 
+\subsubsection*{i}
+
+Consider the fibre $\mathbb B \dd I$. 
+
+First we show it has binary products. We make the obvious choice that, given two arbitrary objects of $\mathbb B / \! / I$
+$(I,A)$ and $(I,B)$, their product in $B \dd I$ is $(I, A \times B)$. It projections are $(1_I, \pi';\pi)$ and 
+$(1_I, \pi';\pi')$.
+
+We prove that this actually is a product. To this end,
+let $(I,X) \in B \dd I$ and let $(1_I, f) : (I,X) \to (I,A)$ and $(1_I, g) : (I,X) \to (I,B)$ be arrows in $B \dd I$.
+Since $f : I \times X \to A$ and $g : I \times X \to B$ in $\mathbb B$ we have $\langle f, g \rangle : I \times X \to A \times B$ in $\mathbb B$. Thus, $(1_I, \langle f,g \rangle) : (I,X) \to (I, A \times B)$ in $\mathbb B \dd I$.
+Furthermore, we have $(1_I, \langle f,g \rangle);(1_I,\pi';\pi) = (1_I, \langle \pi;1_I, \langle f,g \rangle \rangle;\pi';\pi)
+ = (1_I, f)$ and
+$(1_I, \langle f,g \rangle);(1_I,\pi';\pi') = (1_I, \langle \pi;1_I, \langle f,g \rangle \rangle;\pi';\pi')
+ = (1_I, g)$.
+
+We show $(1_I, \langle f,g \rangle)$ is the unique arrow in $\mathbb B \dd I$ with this property.
+Let $(1_I,z) : (I,X) \to (I, A \times B) \in (\mathbb B \dd I)_1$ with $(1_I, z);(1_I,\pi';\pi) = (1_I, f)$
+and $(1_I, z);(1_I,\pi';\pi) = (1_I, f)$.
+Then $\langle \pi;1_I, z \rangle;\pi';\pi = f$, i.e. $z;\pi = f$ and $z;\pi' = g$. By the $UMP$ of $\langle f,g \rangle$ 
+in $\mathbb B$ we have $z = \langle f, g \rangle$. Thus, $(1_I,z) = (1_I, \langle f,g \rangle)$.
+
+Now we show it has a nullary product, i.e. a terminal object. For the terminal object, we consider the obvious choice of 
+$(I,1)$ where $1$ is the terminal object of $\mathbb B$. Let $(I,X)$ be an object of $\mathbb B \dd I$. Then
+we have an arrow $(1_I, \pi';\bigcirc_{X}) : (I,X) \to (I,1)$ where $\bigcirc_X : X \to 1$ is $X$'s terminal
+arrow in $\mathbb B$. This arrow is unique, for any other arrow of matching signature in $\mathbb B \dd I$
+must have the form $(1_I,z)$ where $z : I \times X \to 1$, and by the UMP of terminal objects in $\mathbb B$, we have
+$z = \pi';\bigcirc_{X}$.
+
+By the nature of products in $\mathbb B \dd I$, as we've described above, 
+it's clear that $I^* : \mathbb B \to \mathbb B \dd I$ preserves products.
+
+Finally, note that since $\langle (1_I, f) , (1_I, g) \rangle = (1_I, \langle f,g \rangle)$,
+we have \\
+$(1_I, f) \times (1_I, g) = \langle (1_I,\pi';\pi);(1_I, f), (1_I,\pi';\pi');(1_I,g) \rangle$\\ 
+$= \langle (1_I,\langle \pi;1_I, \pi';\pi \rangle;f), (1_I, \langle \pi;1_I, \pi';\pi' \rangle;g) \rangle$\\
+$= \langle (1_I,\langle \pi, \pi';\pi \rangle;f), (1_I, \langle \pi, \pi';\pi' \rangle;g) \rangle$\\
+$= (1_I, \langle \langle \pi, \pi';\pi \rangle;f, \langle \pi, \pi';\pi' \rangle;g \rangle)$\\
+Damn, that's the most I could simplify it.
+
+\subsubsection*{ii}
+
+$(a \Rightarrow b)$ -- Note that going from $b$ to $a$ might be alot easier; that may be the intended direction.
+
+Suppose that $\mathbb B$ is Cartesian closed. By $(i)$ we know that $\mathbb B \dd I$ has finite products.
+We must show $\mathbb B \dd I$ has exponentials. For the exponential $(I,A)^{(I,B)}$ we choose $(I,A^B)$.
+
+Suppose, then, some arrow $(I, A \times B) \overset{(1_I,f)}{\longrightarrow} (I,C)$.
+We make the obvious guess of $\overline{(1_I,f)}=(1_I, \overline{f})$ and
+$ev_{(I,A),(I,C)} = (1_I, ev_{A,C})$. **** These guesses are nonsense, because $\overline{f}$ is does
+not have signature $I \times (A \times B) \to C^A$.
+We need to map $f$ through several isomorphisms to get the right signature:\\~\\
+$I \times (A \times B) \to C$\\
+$(I \times A) \times B \to C$\\
+$(A \times I) \times B \to C$\\
+$A \times (I \times B) \to C$\\
+$I \times B \to C^A$\\~\\
+
+%\\~\\
+%\begin{tabular}{ll}
+%$(1_{(I,A)} \times \overline{(1_I,f)});ev_{(I,A),(I,C)}$ & \\
+%$((1_I,\pi'_{I,A}) \times (1_I,\overline{f}));(1_I,ev_{A,C})$ & $=$ \\
+%$(1_I, \langle \langle \pi, \pi';\pi \rangle;\pi'_{I,A}, \langle \pi, \pi';\pi' \rangle;\overline{f} \rangle);(1_I, ev_{A,C})$ %& 
+% $=$ \\
+%$(1_I, \langle \pi'_{I,A \times B};\pi_{A,B}, \langle \pi_{I,A \times B}, \pi'_{I,A \times B};\pi'_{A,B}\rangle;\overline{f} \r%angle);
+%(1_I, ev_{A,C})$ & $=$ \\
+%$(1_I, \langle \pi_{I,A \times B}, \langle \pi'_{I,A \times B};\pi_{A,B}, \langle \pi_{I,A \times B}, \pi'_{I,A \times B};\pi'_%{A,B}\rangle;\overline{f} \rangle);
+%(1_I, ev_{A,C}) \rangle$ & $=$ \\
+%\end{tabular}
+
+$(b) \Rightarrow (a)$
+
+\newcommand{\sar}{\overset{\ast}{\Rightarrow}}
+
+Should use the fact that $\mathbb B \dd 1 \cong \mathbb B$. If two categories is equivalent and one is Cartesian closed,
+does that mean the other is Cartesian closed? I suspect the answer is yes. TODO: prove this.
+
+$(a) \Rightarrow (c)$
+
+We rename the $I \Rightarrow (-)$ functor to $I \overset{\ast}{\Rightarrow} (-)$, using $I \Rightarrow (-)$ instead
+for the covariant exponential functor in $\mathbb B$.
+
+For $I^* \dashv I \sar (-)$, we need the following adjunction diagram to hold.
+\begin{center}
+\begin{tikzcd}
+I \sar (I,C) \ar[r,"I \sar (1_I \text{,} g)"] & I \sar (I,D) \\
+C \ar[u, " "] \ar[ur, "f" below] &
+ & & \\
+(I,C) \ar[r, "(1_I \text{,} g)"] \ar[dr, "I^*(f)~~~~" below] & (I,D) \\
+ & (I, I \sar (I,D)) \ar[u, " "]
+\end{tikzcd}
+\end{center}
+
+First, we need a bijection between arrows $g : I \times C \to D$ and $f : C \to I \sar (I,D)$.
+Such a bijection exists if we define $I \sar (I,C) \doteq I \Rightarrow C$, falling
+out of the adjunction $(-) \times I \dashv I \Rightarrow (-)$.
+We define $I \sar (1_I, g : I \times C \to D) \doteq \Lambda(s_{I \Rightarrow C, I};\langle \pi_{I,I \Rightarrow C}, ev_{I,C}\rangle;g)$.
+\begin{center}
+\begin{tikzcd}
+I \Rightarrow C \ar[r,"I \sar (1_I\text{,}g)"] & I \Rightarrow D \\
+C \ar[u, " "] \ar[ur, "\Lambda{g}" below] &
+ & & \\
+(I,C) \ar[r, "(1_I \text{,} g)"] \ar[dr, "(1_I \text{,} \pi';\Lambda g)~~~~~~~" below] & (I,D) \\
+ & (I, I \Rightarrow D) \ar[u, " "]
+\end{tikzcd}
+\end{center}
+
+We just need natural transformations making these triangles commute. Here is what we propose:
+
+\begin{center}
+\begin{tikzcd}
+I \Rightarrow C \ar[r,"I \sar (1_I\text{,}g)"] & I \Rightarrow D \\
+C \ar[u, "\Lambda \pi'_{I,C}"] \ar[ur, "\Lambda g" below] &
+ & & \\
+(I,C) \ar[r, "(1_I \text{,} g)"] \ar[dr, "(1_I \text{,} \pi';\Lambda g)~~~~~~~" below] & (I,D) \\
+ & (I, I \Rightarrow D) \ar[u, "(1_I\text{,} ev_{I,D})" right]
+\end{tikzcd}
+\end{center}
+
+TODO: show that these commute and that they are natural.
+
+$(c) \Rightarrow (b)$
+
+\subsection*{1.3.3}
+
+TODO.
+
+\subsection*{1.3.4}
+
+First, we review the functoriality of $I \times (-) : \mathbb B \to \mathbb B$.
+We have $I \times (A) \doteq I \times A$, $I \times (f : A \to B) \doteq 1_I \times f : I \times A \to I \times B$.
+This preserves identities, since 
+$I \times 1_A = 1_I \times 1_A = \langle \pi;1_I, \pi';1_A \rangle = \langle \pi, \pi' \rangle = 1_{(I \times A)}$.
+Also, it preserves composition, since 
+$I \times (f;g) = 1_I \times (f;g) = (1_I;1_I) \times (f;g) = (1_I \times f) ; (1_I \times g)$.\\~\\
+We define $\delta_A : I \times A \to I \times (I \times A)$ as 
+$\delta_A \doteq \langle \pi_{I,A}, 1_{I \times A}\rangle$. We define $\epsilon_A : I \times A \to A$ as 
+$\epsilon_A \doteq \pi'_{I,A}$.
+We must show the comonad laws.\\~\\
+1.) $\delta_{A};\delta_{I \times A} = \delta_{A};(I \times \delta_A)$\\~\\
+\begin{tabular}{lll}
+$\delta_A;\delta_{I \times A}$ & $=$ & \\
+$\langle \pi_{I,A},1_{I \times A} \rangle;\langle \pi_{I, I \times A}, 1_{I \times (I \times A)} \rangle$ & $=$ & \\ 
+$\langle \langle \pi_{I,A},1_{I \times A} \rangle;\pi_{I, I \times A}, \langle \pi_{I,A};1_{I \times A} \rangle;1_{I \times (I \times A)} \rangle$ & $=$ & \\ 
+$\langle \pi_{I,A}, \langle \pi_{I,A},1_{I \times A} \rangle \rangle$ & $=$ & \\
+
+$\langle \pi_{I,A}, \delta_A \rangle$ & $=$ & \\
+
+$\langle \pi_{I,A}, 1_{I \times A};\delta_A \rangle$ & $=$ & \\
+
+$\langle \langle \pi_{I,A},1_{I \times A} \rangle;\pi_{I,I \times A}, \langle \pi_{I,A},1_{I \times A} \rangle;\pi'_{I,I \times A};\delta_A \rangle$ & $=$ & \\
+
+$\langle \pi_{I,A},1_{I \times A} \rangle;\langle \pi_{I,I \times A}, \pi'_{I,I \times A};\delta_A \rangle$ & $=$ & \\
+$\langle \pi_{I,A},1_{I \times A} \rangle;\langle \pi_{I,I \times A};1_I, \pi'_{I,I \times A};\delta_A \rangle$ & $=$ & \\
+$\delta_A;(I \times \delta_A)$ & &
+
+\end{tabular}
+\\~\\~\\
+2.) $\delta_A;(I \times \epsilon_A) = \delta_{A};\epsilon_{I \times A}$\\~\\
+\begin{tabular}{lll}
+$\delta_A;(I \times \epsilon_A)$ & $=$ & \\
+$\langle \pi_{I,A}, 1_{I \times A}\rangle; \langle \pi_{I,I \times A};1_I, \pi'_{I,I \times A};\epsilon_A \rangle$ & $=$ & \\
+$\langle \pi_{I,A}, 1_{I \times A}\rangle; \langle \pi_{I,I \times A}, \pi'_{I,I \times A};\epsilon_A \rangle$ & $=$ & \\
+$\langle \langle \pi_{I,A}, 1_{I \times A}\rangle;\pi_{I,I \times A}, \langle \pi_{I,A}, 1_{I \times A}\rangle;\pi'_{I,I \times A};\epsilon_A \rangle$ & $=$ & \\
+$\langle \pi_{I,A}, 1_{I \times A};\epsilon_A \rangle$ & $=$ & \\
+$\langle \pi_{I,A}, \pi'_{I,A} \rangle$ & $=$ & \\
+$1_{I \times A}$ & $=$ & \\
+$\langle \pi_{I,A}, 1_{I \times A} \rangle;\pi'_{I,I \times A} $ & $=$ & \\
+$\delta_A;\epsilon_{I \times A}$ & &
+\end{tabular}
+
+\subsubsection*{ii}
+
+The (co)Kleisli category generated by this monad is as follows. Objects are objects of $\mathbb B$.
+An arrow $f : A \to B$ is an arrow $f^* : (I \times A) \to B$ of $\mathbb B$.
+
+We defined the composition of two arrows $f : A \to B$ and $g : B \to C$ as
+$f;g \doteq \delta_{A};(I \times f^*);g^*$.\\~\\
+Then,\\~\\
+\begin{tabular}{lll}
+$f;g$ & $=$ & \\
+$\delta_{A};(I \times f^*);g^*$ & $=$ & \\
+$\langle \pi_{I,A}, 1_{I \times A} \rangle;(I \times f^*);g^*$ & $=$ & \\
+$\langle \pi_{I,A}, 1_{I \times A} \rangle;\langle \pi_{I, I \times A};1_I, \pi'_{I, I \times A};f^* \rangle;g^*$ & $=$ & \\
+$\langle \pi_{I,A}, 1_{I \times A} \rangle;\langle \pi_{I, I \times A}, \pi'_{I, I \times A};f^* \rangle;g^*$ & $=$ & \\
+$\langle \langle \pi_{I,A}, 1_{I \times A} \rangle;\pi_{I, I \times A}, \langle \pi_{I,A}, 1_{I \times A} \rangle;\pi'_{I, I \times A};f^* \rangle;g^*$ & $=$ & \\
+$\langle \pi_{I,A}, 1_{I \times A};f^* \rangle;g^*$ & $=$ & \\
+
+$\langle \pi_{I,A}, f^* \rangle;g^*$ & $=$ & \\
+\end{tabular}\\~\\
+Note that this is essentially the simple slice category $\mathbb B / \! / I$.
+\\~\\~\\
+I've never learned about Eilenberg-Moore categories, so I'm first going to copy down their definition from
+Awodey, to make sure I have things straight. The category $\mathbb C^{I \times (-)}$ has as \emph{objects}
+the ``T-Coalgebras'', which are pairs $(A,\alpha)$ of the form $\alpha : A \to I \times A$ in $\mathbb C$,
+such that
+\begin{mathpar}
+1_A = \alpha;\epsilon_{A} \and \text{and} \and \alpha;\delta_A = \alpha;(I \times \alpha)
+\end{mathpar} 
+A \emph{morphism} of T-Algebras,
+$$ h : (A,\alpha) \to (B,\beta) $$
+is simply an arrow $h : A \to B$ in $\mathbb C$, such that, 
+$$h;\beta = \alpha;(I \times h)$$
+
+Comparing the form of the objects of the EM category to the form of the objects of $\mathbb B / I$,
+it seems clear that they are not the same category. What I suspect is that there is an equivalence of
+categories. TODO: define and prove this equivalence.
+
+\subsection*{1.3.5}
+
+Let $\mathbb B$ have finite limits. (Umm... I proved this without using finite limits. What is going on?)
+~\\~\\
+$(\Rightarrow)$~\\
+Let $(u,f) : \ddisp{X}{p}{I} \to \ddisp{Y}{q}{J}$ be a mono in $\mathbb B^{\to}$. Then for all 
+$(v,g),(w,h) : \ddisp{Z}{r}{K} \to \ddisp{X}{p}{I}$ with $r;v = g;p$ and $r;w = h;p$, 
+we have $(v,g);(u,f) = (w,h);(u,f)$ implies 
+$(v,g) = (w,h)$, i.e. $(v;u, g;f) = (w;u,h;f)$ implies $v = w$ and $g = h$.
+
+In particular, letting $K = I$ and $v,w = 1_I$, we have $g;f = h;f$ implies $g = h$.
+Hence $f$ is a mono in $\mathbb B$. 
+
+On the other hand, letting $Z = X$ and $g,h = 1_X$, we have $v;u = w;u$ implies $v = w$.
+Hence $u$ is a mono in $\mathbb B$.
+~\\~\\
+$(\Leftarrow)$~\\
+Let $(u,f) : \ddisp{X}{p}{I} \to \ddisp{Y}{q}{J}$ be an arrow in $\mathbb B^{\to}$ %(i.e., $p;u = f;q$)
+such that $u$ and $f$ are monos, i.e.,
+\begin{itemize}
+\item For all $v,w : K \to I$, $v;u = w;u$ implies $v = w$.
+\item For all $g,h : Z \to X$, $g;f = h;f$ implies $g = h$.
+\end{itemize}
+Let $(v,g),(w,h) : \ddisp{Z}{r}{K} \to \ddisp{X}{p}{I}$ %(and so $r;v = g;p$ and $r;w = h;p$)
+with $(v,g);(u,f) = (w,h);(u,f)$, i.e. $(v;u,g;f) = (w;u,h;f)$. Then $v = w$ and $g = h$. 
+
+
+
+
+\section*{1.5}
+
+\subsection*{1.5.1}
+
+Yep, $FinFam(\mbf{Sets})$ consists of families of arbitrary sets indexed by finite sets,
+while $Fam(\mbf{FinSets})$ consists of families of finite sets indexed by arbitrary sets.
+
+\subsection*{1.5.2}
+
+\begin{tikzcd}
+PERFam(\mbf{\omega\text{-}Sets}) \ar[d] \ar[r] & \ar[d] UFam(\omega\text{-}Sets) \\
+\mbf{PER} \ar[r, hookrightarrow] & \omega\text{-}\mbf{Sets} 
+\end{tikzcd}
+
+There's nothing particularly interesting about this. It's split because change-of-base on a split
+fibration produces a split fibration. 
+
+\subsection*{1.5.3}
+
+\subsubsection*{(i)}
+
+It's clear that restricting a fibration ($p$ in this case), does not destroy the properties of fibrations.
+
+\subsubsection*{(ii)}
+
+TODO: having trouble with this one.
+
+\subsection*{1.5.4}
+\subsection*{1.5.5}
+
+\subsection*{1.5.6}
+
+\subsubsection*{(i)}
+
+It's important to note that distributivity doesn't posit the existence of an \emph{arbitrary} iso pair 
+$(X \times X) + (Y \times X) \cong (X + Y) \times X$; instead it requires that a specific arrow (the ``canonical'' one)
+$\alpha : (X \times X) + (Y \times X) \to (X + Y) \times X$, where 
+$\alpha \doteq [(\kappa \times id), (\kappa' \times id)]$ has an inverse $\alpha^{-1} : (X  + Y) \times X \to (X \times X) + (Y \times X)$.\\~\\
+Then we have the following diagram:\\~\\
+\begin{tikzcd}
+ & (X \times X) + (Y \times X) \ar[r, "\text{[}id\text{,} \langle \pi\text{,} \pi \rangle\text{]}"] \ar[d,"\text{[}(\kappa \times id)\text{,}(\kappa' \times id)\text{]}"] & X \times X \\
+X \times X \ar[ur, "\kappa", bend left = 20] \ar[r,"\kappa \times id"] & (X + Y) \times X \ar[u,"\alpha^{-1}"] &
+\end{tikzcd}
+
+It's clear from the UMP of coproducts that the path along the top edge is the identity arrow at $X \times X$.
+So if we can just prove that the left triangle commutes ($(\kappa \times id);\alpha^{-1} = \kappa$), 
+we will have that $\alpha^{-1};[id,\langle \pi,\pi\rangle]$ is a retraction of $\kappa \times id$,
+demonstrating that it is a split mono.\\~\\
+All we need is to make another appeal to the UMP of coproducts:\\~\\
+\begin{tikzcd}[sep=90]
+X \times X \ar[dr, "\kappa \times id~~~~~" left] \ar[r,"\kappa"] & (X \times X) + (X \times Y) \ar[d, "\text{[}(\kappa \times id)\text{,} (\kappa' \times id)\text{]}" right, bend left = 20, dashed] & \ar[l,"\kappa'" above] \ar[dl, "\kappa' \times id"] Y \times X \\
+ & (X + Y) \times X \ar[u,"\alpha^{-1}", bend left = 20] & 
+\end{tikzcd}\\~\\
+We thus have $\kappa = \kappa;[(\kappa \times id), (\kappa' \times id)];\alpha^{-1} = (\kappa \times id);\alpha^{-1}$,
+making the left triangle in the previous diagram commute as desired.
+
+\subsection*{(ii)}
+
+We have 
+
+$$ g = f $$
+
+if and only if (apparent if we squint long enough at the UMP of products)
+
+$$\langle g , f \rangle = \langle f, f \rangle$$
+
+if and only if (because $\kappa \times id$ is a mono)
+
+$$\langle g, f \rangle;(\kappa \times id) = \langle f, f \rangle;(\kappa \times id)$$
+
+if and only if (from basic properties of products)
+
+$$\langle g;\kappa, f;id \rangle = \langle f;\kappa, f;id \rangle$$
+
+if and only if (again, squinting at the UMP)
+
+$$ g;\kappa = f;\kappa $$
+
+But we are assuming $g;\kappa = f;\kappa$. Therefore, $g = f$.
+
+\subsubsection*{(iii)}
+
+First, we establish that $0 + 0 \cong 0$.
+
+\begin{tikzcd}[sep=70]
+0 \ar[r, "\kappa_{0,0}"] \ar[dr, "id_0~~" below] & 0 + 0 \ar[d, "\text{[}id_0\text{,}id_0\text{]}", bend left = 20] & \ar[dl, "~~id_0" below] \ar[l, "\kappa'_{0,0}" above] 0 \\
+ & 0 \ar[u, "\kappa_{0,0}", bend left = 20] &
+\end{tikzcd}
+
+Since $0$ is initial, we have $\kappa_{0,0} = \kappa'_{0,0}$. From basic properties of coproducts, we get 
+$$[id_0,id_0];\kappa_{0,0} = [\kappa_{0,0},\kappa_{0,0}] = [\kappa_{0,0}, \kappa'_{0,0}] = id_{0 + 0}$$.
+On the other hand,
+$$\kappa_{0,0};[id_0,id_0] = id_{0}$$
+follows from the UMP of coproducts.
+
+Getting back to the scenario presented by the exercise, where the coproduct under consideration is 
+$(0 \times Z) + (0 \times Z)$, we now have a helpful clue:
+$$0 \times Z \cong (0 + 0) \times Z \cong (0 \times Z) + (0 \times Z)$$ 
+
+
+%First, complete the diagram by adding arrows $\kappa : X \to (X + Y)$ and $\pi : (X + Y) \times X \to (X + Y)$.
+%From basic properties of products, we see that both of the triangles and also the square of this diagram commute.
+%Starting from the ``mono hypthesis''. $\kappa \circ f = \kapp \circ g$, by substitution we get
+%$\kappa \circ \pi \circ \langle f, f \rangle = \kappa \circ \pi \circ \langle f , g \rangle$, and then
+%$\pi \circ (\kappa \times id) \circ \langle f, f \rangle= \pi \circ (\kappa \times id) \circ \langle f , g \rangle$.
+
+
+
+%
+
+\section*{1.6}
+
+\subsection*{1.6.1}
+
+Groups:\\
+identity: $() \to X$\\
+inverse: $X \to X$\\
+actions: $(X,X) \to X$\\
+\\~\\
+Vector Spaces:\\
+$+ : (V,V) \to V$\\
+$* : (K,V) \to V$\\
+$0_V : () \to V$\\
+$+ : (K,K) \to K$\\
+$* : (K,K) \to K$\\
+$1_K : () \to K$\\
+$0_K : () \to K$
+
+\subsection*{1.6.2}
+
+\begin{tikzcd}
+FinSign \ar[r] \ar[d] \ar[dr, phantom, "\lrcorner", very near start]        & FinFam(FinSets) \ar[d] \\
+FinSets \ar[r, "T \mapsto T^* \times T" below] & FinSets 
+\end{tikzcd}
+
+\subsection*{1.6.3}
+
+\subsubsection*{i}
+
+An object of this pullback is a set $T$ of types paired with a display map $d : X \to (T^* \times T)$
+indexed by the function signatures generated by $T$. A ``fibre'' of $d$ is a set of all function symbols
+sharing a specific signature.
+
+\subsubsection*{ii}
+
+Intuitively, it seems like the key is that the $Sets^{\to}$ and $Fam(Sets)$ are equivalent categories.
+We need some lemma saying that if the total categories of two fibrations sharing a base category are equivalent
+(or, perhaps stronger: we have an equivalence in the 2-category $\mbf{Fib}$), then their pullbacks along a common arrow
+are also equivalent.
+
+TODO: prove this lemma. Actually, this lemma has already been proven in lemma 1.7.9, pdf pg 10056
+
+\subsubsection*{iii}
+
+The ``fibres'' of a display map are disjoint. Therefore no function symbol can have two distinct signatures.
+
+\subsection*{1.6.4}
+
+An object is a set (modelling the single type) paired with a signature $\Sigma$ where $|\Sigma|$ is a singleton.
+An arrow $M \to N$ is a function from $M$'s carrier set to $N$'s, paired with a mapping from $M$'s functions to $N$'s,
+commuting algebraically, as morphisms of models do.
+
+I hope that's enough detail.
+
+\subsection*{1.6.5}
+
+The diagram is similar to the formation of the $Sign$ category. The only difference is the bottom edge.
+If we want only predicates, we put $T^*$ at the bottom edge. If we want predicates and functions,
+we put $T^* + (T^* \times T)$.
+
+\subsection*{1.6.6}
+
+
+\section*{Lemma 1.7.9}
+
+Lemma 1.7.9 states the following:\\~\\ 
+Let $K : \mathbb A \to \mathbb B$ be a functor. Change-of-base along $K$ yields a 2-functor 
+$K^* : \mbf{Fib}(\mathbb B) \to \mbf{Fib}(\mathbb A)$.\\~\\
+The proof is elided, because it is easy. Maybe so, but its an important lemma, and though its proof may be easy, it is not
+trivial. There is quite a bit to expand. \\~\\
+First, we consider how $K^*$ transforms $1$-cells, i.e. fibred functors 
+$$F : \ddisp{\mathbb E}{p}{\mathbb B} \to \ddisp{\mathbb D}{q}{\mathbb B}$$\\
+\begin{center}
+\begin{tikzcd}
+  & \mathbb A \times_{\mathbb B} \mathbb D \ar[rrrr] \ar[dd, "K^*q" near start] & & & & \mathbb D \ar[ddl, "q"] &  \\
+\mathbb A \times_{\mathbb B} \mathbb E  \ar[rrr] \ar[dr, "K^*p~~~~~" below] \ar[ur, "K^*F", bend left = 10] & & & \mathbb{E} \ar[urr, "F", bend left = 10] \ar[rd, "p~" left, rightarrow] & &  \\
+ & \mathbb A \ar[rrr, "K"] & & & \mathbb B & 
+\end{tikzcd}
+\end{center}
+ 
+$\mathbb A \times_{\mathbb B} \mathbb E$ has as objects pairs $(A,E)$ where $A \in \mathbb A_0$, $E \in \mathbb E_0$,
+and $KA = pE$. We define $(K^*F)(A,E) \doteq (A,FE)$. $(A,FE)$ is indeed an element of $\mathbb A \times_{\mathbb B} \mathbb D$,
+\begin{center}
+\begin{tabular}{lll}
+$KA$ & $=$ & (by assumption) \\
+$pE$ & $=$ & (commutativity of triangle) \\
+$q(FE)$ & &
+\end{tabular}
+\end{center}
+
+$\mathbb A \times_{\mathbb B} \mathbb E$ has as arrows pairs $(a : A_1 \to A_2, e : E_1 \to E_2)$, where $Ka = pe$.
+We define $(K^* F)(a,e) \doteq (a,Fe)$. $(a, Fe)$ is indeed an arrow of $\mathbb A \times_{\mathbb B} \mathbb D$,
+since
+\begin{center}
+\begin{tabular}{lll}
+$Ka$ & $=$ & (by assumption) \\
+$pe$ & $=$ & (commutativity of triangle) \\
+$q(Fe)$ & &
+\end{tabular}
+\end{center}
+
+Now, we must prove that $K^*F$ is a fibred functor in $\mbf{Fib}(\mathbb B)$. This entails two things:
+\begin{enumerate}
+\item $K^*F$ preserves Cartesian arrows
+\item $(K^*F);(K^*q) = K^*p$
+\end{enumerate}
+~\\~\\
+(1) Let $(u : A_1 \to A_2, e : E_1 \to E_2)$ be a Cartesian arrow in $\mathbb A \times_{\mathbb B} \mathbb E$.
+\\~\\
+For any total category $\mathbb C$ over $\mathbb B$, it's not hard to see that $(v,f)$ is Cartesian
+in $\mathbb A \times_{\mathbb B} \mathbb C$ iff $f$ is Cartesian in $\mathbb C$. (Draw a diagram.)
+Thus $e$ is Cartesian in $\mathbb E$. Since $F$ is a fibred functor, $Fe$ is Cartesian in $\mathbb D$,
+and so $(u,Fe)$ is Cartesian in $A \times_{\mathbb B} \mathbb D$.
+\\~\\
+(2) This is obvious from the way that we have defined $K^*$: it does not change the $\mathbb A$ (left) component.
+
+Now, letting 
+$$F,G : \ddisp{\mathbb E}{p}{\mathbb B} \rightrightarrows \ddisp{\mathbb D}{q}{\mathbb B}$$
+we consider how $K^*$ transforms $2$-cells, i.e.
+$\eta : F \to G$
+
+Recall that such a $2$-cell $\eta$ is defined as a natural transformation from $F$ to $G$ such that each component
+of $\eta$ is vertical, i.e., $\eta_A : FA \to GA$ is over the identity arrow of object $pA$.
+
+We define $(K^*\eta)_{(X,A)} \doteq (1_X, \eta_A)$. Clearly $K^*\eta$ is a vertical natural transformation between fibred 
+functors.
+ 
+
+
+%We define $a' \doteq (I, i \mapsto a) : (I, i \mapsto Z) \to (I, X_i)$ and $b' \doteq (I,i \mapsto b) : 
+%(I, i \mapsto Z) \to (I%, X_i)$. Then $a';f = (I, i \mapsto (a;f_i))$ = a';f = b';f = (I, i \mapsto (b;f_i))$.
+%In particular, for some $i \in I$
+
+\section*{Exercises 1.7}
+
+\subsection*{1.7.1}
+
+I will just show that $\mbf{Fib}$ has finite products.
+
+Given two fibrations $\vrt{\mathbb E}{\mathbb B}p$ and $\vrt{\mathbb D}{\mathbb A}q$, we can form their product.
+$\vrt{\mathbb E \times \mathbb D}{\mathbb B \times \mathbb A}$ as follows. The total category is $\mathbb E \times \mathbb D$.
+The fibration functor $p \times q$ maps an object $(E,D)$ to $(pE,qD)$ and an arrow $(f,g)$ to $(pf,qg)$.
+
+We define $\pi_{p,q} : p \times q \to p \doteq (\pi_{\mathbb B, \mathbb A},\pi_{\mathbb E, \mathbb D})$ 
+We define
+$\pi'_{p,q} : p \times q \to q \doteq (\pi'_{\mathbb B, \mathbb A}, \pi'_{\mathbb E, \mathbb D})$.
+$\pi_{p,q}$ is an arrow in $\mathbb{Fib}$, since:
+
+\begin{itemize}
+\item $\pi_{\mathbb E, \mathbb D}$ preserves Cartesian arrows. 
+Let $(f,g) : (X_E,X_D) \to (Y_E,Y_D)$ be a cartesian arrow in $\mathbb E \times \mathbb D$
+over $(u,v) \doteq (pf,qg)$.
+Then for all $(h,k) : (Z_E,Z_D) \to (Y_E,Y_D)$... TODO: this is tedious and I will finish it later.
+
+\item $\pi_{\mathbb E,\mathbb D};p = (p \times q);\pi_{\mathbb B, \mathbb A}$
+% show that they agree on all arrows from the generating category 2?
+\end{itemize}
+
+Let $\vrt{\mathbb F}{\mathbb C} r$ be a fibration and let $H : $
+
+\section*{Lemma 1.8.9}
+
+On page 10065, we have the statement of lemma 1.8.9.
+It involves fibrations $\vrt{\mathbb E}{\mathbb B}p$ and $\vrt{\mathbb D}{\mathbb B}q$
+and a fibred functor $H : \mathbb E \to \mathbb D$. For each object $I \in \mathbb B$ the functor 
+$H_I : \mathbb E_I \to \mathbb D_I$ is the restriction of $H$ to the fibre over $I$.
+
+Later, an arbitrary map $u : I \to J$ and two reindexing functors $u^* : \mathbb E_J \to \mathbb E_I$ and $u^{\#} : \mathbb D_J \to \mathbb D_I$ are assumed.
+
+At the bottom of the lemma statement, a natural isomorphism $u^{\#} H_J \cong H_I u^*$ is referenced.
+But just what is this natural isomorphism?
+
+Since $H$ preserves Cartesian arrows, for $X \in \mathbb E_J$,  $H \overline{u^*}(X) : H_I u^*(X) \to H_J X$ is Cartesian. Also, $\overline{u^{\#}} H_J(X) : u^{\#} H_J(X) \to H_J(X)$ is Cartesian. The domains of any pair of Cartesian arrows with the same 
+codomain are isomorphic, and so $H_I u^*(X) \cong u^{\#} H_J(X)$: this is the component of our natural isomorphism at $X$.
+
+That is, our component is the vertical arrow $\alpha_X$ in the following diagram:\\~\\
+\begin{tikzcd}
+H_I(u^*(X)) \ar[dd, "\alpha^{-1}_X" left, bend right = 20] \ar[rrd, "H(\overline{u^*}(X))"] & & \\
+ & & H_{J}(X) \\ 
+u^{\#}(H_J(X)) \ar[uu, "\alpha_X" right, bend right = 20] \ar[rru,"~~~~~~~~~~~~\overline{u^{\#}}(H_J(X))" below]  & &
+\end{tikzcd}~\\~\\
+
+%\ar[ur, ""]
+Now that we have the components, we must show naturality. In other words, we must show that the following square commutes.
+
+\begin{tikzcd}
+u^{\#} H_J(X) \ar[dd,"\alpha_X" left] \ar[rr, "u^{\#}(H_J(f))"] & & u^{\#} H_J(Y) \ar[dd,"\alpha_Y"] \\
+ & & \\
+H_I(u^*(X)) \ar[rr,"H_I(u^*(f))" below] & & H_I(u^*(Y))
+\end{tikzcd}
+
+We might use the equalities $$u^*(f);\overline{u^*}(Y) = \overline{u^*}(X);f$$ and 
+$$u^{\#}(H_J(f));\overline{u^{\#}}(H_J(Y)) = \overline{u^{\#}}(H_J(X));H_J(f)$$
+which follow from the definition of reindexing functors.
+
+
+\subsection*{Oh thats it}
+
+In the above attempt, I had two diagrams, but I should have pasted them together. 
+(In fact, I also needed to ``clone'' the first diagram, making the second copy at $Y$ rather than $X$). 
+This would have yielded a commutative 
+diagram shaped like a wedge of cheesecake. The naturality of the square (the lower diagram) would then follow
+from Cartesianness.
+
+The canonical natural transformation $K_I u^{\#} \Rightarrow u^* K_J$ is simply the transpose of:
+
+$$u^{\#} \overset{u^{\#}\eta_J}{\longrightarrow} u^{\#} H_J K_J \overset{\cong}{\longrightarrow} H_I u^* K_J $$
+
+Across the adjunction $K_I \vdash H_I$ (with $\eta_J$ being the unit of this adjunction). 
+The right part of this composite is the horizontal composition of the natural isomorphism $u^{\#}H_J \cong H_I u^*$ with
+the identity natural transformation $K_J$. The existence and
+naturality of the former natural isomorphism can be derived from Cartesianness, as described in the section header.
+
+Now, we just ``take the transpose'' of 
+
+$$u^{\#} \overset{u^{\#}\eta_J}{\longrightarrow} u^{\#} H_J K_J \overset{\cong}{\longrightarrow} H_I u^* K_J $$
+
+to obtain the canonical transformation.
+
+$$K_I u^{\#} \to u^* K_J $$
+
+How does this taking the transpose work? Let's generalize to explain.
+Suppose we have:
+
+\begin{itemize}
+\item An adjunction $F : \mathbb C \leftrightarrows \mathbb D : U$, where the bijection underlying this adjunction
+ is $\phi_{C,D} : Hom(FC,D) \cong Hom(C,UD) : \psi_{C,D}$, natural separately in both arguments.
+\item A functor $G : \mathbb E \to \mathbb C$, and
+\item A functor $H : \mathbb E \to \mathbb D$.
+\end{itemize}
+
+We claim that for any natural transformation $\alpha : FG \to H$, we obtain another natural transformation
+$\phi(\alpha) : G \to UH$ by mapping each component $\alpha_C : FGC \to HC$ through $\phi$ to get 
+$\phi(\alpha)_C : GC \to UHC$. Here's why. We start with the assumption that $\alpha$ is a natural transformation:
+
+\begin{center}
+\begin{tikzcd}[sep=80.0]
+FGC \ar[rr, "\alpha_C"] \ar[dd, "FGf" left] \ar[ddrr, "FGf;\alpha_D = \alpha_C;Hf "] & & HC \ar[dd,"Hf"] \\
+ & & \\ 
+FGD \ar[rr, "\alpha_D" below] & & HD 
+\end{tikzcd}
+\end{center}
+
+We would like to prove that the following square commutes
+
+\begin{center}
+\begin{tikzcd}[sep=80.0]
+GC \ar[rr, "\phi(\alpha_C)"] \ar[dd, "Gf" left] \ar[ddrr, "Gf;\phi(\alpha_D) = \phi(\alpha_C);UHf "] & & UHC \ar[dd,"UHf"] \\
+ & & \\ 
+GD \ar[rr, "\phi(\alpha_D)" below] & & UHD 
+\end{tikzcd}
+\end{center}
+
+We use the naturality of $\phi$:
+
+\begin{tikzcd}
+Hom(FGC, HC) \ar[r,"\phi"] \ar[d,"Hom(FGC\text{,}Hf)" left] & Hom(GC,UHC) \ar[d,"Hom(GC\text{,}UHf)"] \\
+Hom(FGC, HD) \ar[r,"\phi"]                                  & Hom(GC,UHD) \\
+Hom(FGD, HD) \ar[u, "Hom(FGf\text{,}HD)"] \ar[r, "\phi"]           & Hom(GD,UHD) \ar[u, "Hom(Gf\text{,} UHD)" right]  
+\end{tikzcd}
+~\\~\\
+The top square gives us $\phi(\alpha_C;Hf) = \phi(\alpha_C);UHf$. The bottom square gives
+$\phi(FGf;\alpha_D) = Gf;\phi(\alpha_D)$. By naturality of $\alpha$ we have $FGf;\alpha_D = \alpha_C;Hf$, and so
+$\phi(FGf;\alpha_D) = \phi(\alpha_C;Hf)$. Hence $\phi(\alpha_C);Uhf = \phi(\alpha_C;Hf) = \phi(FGf;\alpha_D) = Gf;\phi(\alpha_D)$.
+
+\section*{1.8}
+
+\subsection*{1.8.1}
+
+Explain in detail what a ``fibred LCCC'' is.\\~\\
+
+I'll assume that this means we must have LCCC structure in each fibre of a fibration.
+That is, an $LCCC$ is a fibration $\vrt{\mathbb E}{\mathbb B}p$ such that each fibre
+$\mathbb E_I$ is locally Cartesian Closed. Furthermore, each reindexing functor $u^* : \mathbb E_J \to \mathbb E_I$
+must preserve $LCCC$ structure. In other words, each $d \in \mathbb E_J$, $f : a \to d$, and $g : b \to d$,
+the product $(f \times_{LCCC} g) : c \to d$ must reindex to $u^*(f \times_{LCCC} g) \cong u^*(f) \times_{LCCC} u^*(g)$. 
+Likewise for exponentials in fibred slices. 
+
+\subsection*{1.8.2}
+
+Suppose that the collection of types $T$ contains one of $\mathbb B$'s terminal objects: let's call it $T_1$.
+Let $\vrt{s(T)}{\mathbb B}p$ be the fibration under consideration.
+Let $(I,X)$ be an object in $s(T)_I$. Suppose we have an arrow $(1_I,f) : (I,X) \to (I, T_1)$ in $s(T)_I$.
+The terminality of $T_1$ tells us that there is only one possible choice for $f : I \times X \to T_1$.
+Thus $(I, T_1)$ is the terminal in the fibre $S(T)_I$. 
+
+Now we must show that reindexing preserves terminal objects. Let $u : I \to J$ be an arrow in $\mathbb B$,
+and $u^* : S(T)_J \to S(T)_I$ some reindexing functor associated with $u$. We must show that each
+$(I,X) \in s(T)_I$ has a unique arrow $(1_I,f) : (I,Y) \to u^*(J,T_1)$, i.e., that there exists a unique
+arrow $f : I \times X \to T_1'$ where $u^*(J,T_1) \doteq (I,T_1')$.
+
+Since $T_1$ is terminal in $\mathbb B$, there exists a unique arrow of signature $h : I \times T_1' \to T_1$ in $\mathbb B$.
+Then we also have an arrow $(u,h) : (I, X) \to (J,T_1)$ in $s(T)$. By the Cartesianness of $\overline{u^*}$, there
+is a unique arrow $(1_u,g) : (I,X) \to (I,T_1')$ such that $(1_u,g);\overline{u^*}(I,T_1) = (u,h)$. But the latter
+equation is a vacouous constraint, since it equates two arrows to a terminal object (for the second component).
+Thus, there is a unique arrow $(1_u,g) : (I,X) \to (I,T_1')$ \emph{period}, and reindexing preserves terminal objects.
+\\~\\
+Conversely, assume that $\vrt{s(T)}{\mathbb B}$ has a fibred terminal object. 
+Let $1$ be the terminal object of $\mathbb B$. Let the terminal object of $s(T)_1$ be $(1,X)$, so that 
+for any element $(1,Y)$ of $s(T)_1$, we have a unique arrow $(id_1, f) : (1,Y) \to (1,X)$. Thus
+for any $Y \in T$ there is a unique arrow $1 \times Y \to X$, or alternatively, because $1 \times Y \cong Y$,
+there is a unique arrow $Y \overset{!^{X}_Y}{\longrightarrow} X$. In particular, we can choose $Y \doteq X$, which tells us that there is a
+unique arrow $1_X : X \to X$. We proceed to show that $X \cong 1$, demonstrating that some element of $T$ (namely $X$)
+is a terminal object.
+
+Since $(\mathbb B, T)$ is non-trivial, there is a $Z \in T$ and an $h : 1 \to Z$. Then, we have an arrow $1 \overset{h;!_Z^{X}}{\longrightarrow} X$.
+Furthermore, since $1$ is a terminal object, we have an arrow $X \overset{!_X}{\longrightarrow} 1$.
+Now, $(h;!_Z^X);!_X : 1 \to 1$ is equal to $id_1 : 1 \to 1$ since there is exactly one arrow from any object to $1$.
+Furthermore, $!_x;(h;!_Z^X) : X \to X$ is equal to $id_X : X \to X$, since we've established in the previous paragraph
+that there exists a unique arrow from $X$ to $X$. Thus $!_X$ and $h;!_Z^X$ form an iso pair, and so $1 \cong X$.
+
+\subsection*{1.8.3}
+
+\subsubsection*{(i)}
+
+As a refresher, a category with finite products $(1,\times)$ and coproducts $(0,+)$ has distributive coproducts
+if the canonical arrow $[(\kappa \times id),(\kappa' \times id)] : (X \times Z) + (Y \times Z) \to (X + Y) \times Z$ 
+is an isomorphism.\\~\\
+
+$(\Rightarrow)$
+
+Let $\mathbb C$ be a category with Cartesian products. Suppose that it also has distributive coproducts.
+
+First, $s(\mathbb C)$ has fibred Cartesian products. Letting $I \in \mathbb C$, for any $(I,X),(I,Y) \in s(\mathbb C)_I$
+we have the fibred product $(I, X \times Y) \in s(\mathbb C)_I$ with $\pi_{X,Y} \doteq (id_I, \pi'_{I,(X \times Y)};\pi_{X,Y})$ and $\pi'_{X,Y} \doteq (id_I, \pi'_{I,(X \times Y)};\pi'_{X,Y})$, where the inner $\pi$s and $\pi'$s correspond to projections in $\mathbb C$ rather than $s(\mathbb C)$.
+Furthermore, for $f : (I,Z) \to (I,X) \doteq (id_I, f')$ and $g : (I,Z) \to (I,Y) \doteq (id_I,g')$ we have
+$\langle f, g \rangle : (I,Z) \to (I, X \times Y) \doteq (id_I, \langle f',g'\rangle)$.
+ 
+Likewise, we have the fibred coproduct $(I, X + Y) \in s(\mathbb C)_I$ with 
+$\kappa_{X,Y} \doteq (id_I, \pi'_{I,X};\kappa_{X,Y})$ and $\kappa'_{X,Y} \doteq (id_I, \pi'_{I,Y};\kappa'_{X,Y})$.
+For each $f : (I, X) \to (I,Z) \doteq (id_I, f')$ and $g : (I,Y) \to (I,Z) \doteq (id_I, g')$,
+let $\alpha^{-1} : I \times (X + Y) \to (I \times X) + (I \times Y)$ be the inverse of the canonical map
+$[(id \times \kappa_{X,Y}),(id \times \kappa'_{X,Y})]$ in $\mathbb C$,
+guaranteed by distributivity.
+Letting $[f,g] : (I, X + Y) \to (I , Z)$ be defined as $[f,g] \doteq (id_I, \alpha^{-1};[f', g'])$ gives us our
+coproduct UMP, for \\~\\
+$\kappa_{X,Y};[f,g]$\\ 
+$= (id_I, \langle \pi_{I,X}, \pi'_{I,X};\kappa_{X,Y} \rangle;\alpha^{-1};[f',g'])$\\
+$= (id_I, \langle \pi_{I,X}, \pi'_{I,X} \rangle;(id_I \times \kappa_{X,Y});\alpha^{-1};[f',g'])$\\
+$= (id_I, id_{I \times X};(id_I \times \kappa_{X,Y});\alpha^{-1};[f',g'])$\\
+$= (id_I, id_{I \times X};\kappa_{(I \times X),(I \times Y)};[f',g'])$\\
+$= (id_I, f')$\\
+$= f$
+
+Equating $(id_I, id_{I \times X};(id_I \times \kappa_{X,Y});\alpha^{-1};[f',g'])$ to 
+$(id_I, id_{I \times X};\kappa_{(I \times X),(I \times Y)};[f',g'])$ is a bit subtle, but apparent from the following diagram
+
+\begin{tikzcd}[sep = 90]
+I \times X \ar[dr, "id \times \kappa_{X,Y}~~~~~~~" below] \ar[r, "\kappa_{(I \times X) \text{,} (I \times Y)}"] & (I \times X) + (I \times Y) \ar[d, "\text{[} (id \times \kappa_{X \text{,} Y}) \text{,} (id \times \kappa'_{X \text{,} Y})\text{]}", bend left = 20] \\
+ & I \times (X + Y) \ar[u, "\alpha^{-1}", bend left = 20]
+\end{tikzcd}
+
+TODO: prove uniqueness\\
+TODO: show that coproducts in $s(\mathbb C)$ are distributive.~\\
+
+Interesting that this would not have worked without the guarantee that coproducts in $\mathbb C$ are $\mbf{distributive}$.
+
+%\ar[r, "\kappa_{(I \times X) \text{,} (I \times Y)}"]
+%
+
+$(\Leftarrow)$
+
+Suppose that $\mathbb C$ is a category with Cartesian products and that $s(\mathbb B)$ has fibred products
+and distributive coproducts. Since $s(\mathbb C)_1 \cong \mathbb C$, we automatically know that $\mathbb C$ 
+has distributive coproducts.
+
+\subsubsection*{(ii)}
+
+TODO: Can't figure it out.
+
+Having pullbacks guarantees that a category has binary products. But does it guarantee a terminal object?
+Doesn't seem like it.
+
+\subsection*{1.8.4}
+
+We first need to show how products in $\mbf{Fib}(\mathbb B)$ work. Given fibrations $\vrt{\mathbb E}{\mathbb B}p$ and
+$\vrt{\mathbb D}{\mathbb B}q$, their product is $\vrt{\mathbb E \times_{\mathbb B} \mathbb D}{\mathbb B}(p \times q)$, 
+where $\mathbb E \times_{\mathbb B} \mathbb D$ is the pullback along $p$ and $q$. TODO: prove this is a product.\\~\\
+
+$(\Leftarrow)$~\\
+
+Now, the diagonal $\Delta : p \to p \times p$ is defined as $\Delta(X) \doteq (X,X)$, an element 
+of $\mathbb E \times_{\mathbb B} \mathbb E$ since $pX = pX$, and likewise $\Delta(f) \doteq (f,f)$.
+Consider a hypothetical fibred right adjoint $U$ to $\Delta$:
+
+\begin{mathpar}
+
+\mprset{fraction={===}}
+\inferrule
+  {\Delta X \longrightarrow (Y,Z)}
+  {X \longrightarrow U(Y,Z)}
+\end{mathpar}
+
+Arrows of the top signature have the form $(f : X \to Y,g : X \to Z)$ where there exists a $u : pX \to (pY = pZ) \in \mathbb B_1$ such
+that $pf = pg = u$. Arrows of the bottom signature have the form $f : X \to U(Y,Z)$, where $U(Y,Z)$ is some object of $\mathbb E$ over $pY$.
+
+We claim that $U(Y,Z)$ is the fibred product of $Y$ and $Z$ in $\mathbb E_{pY}$. We must show both that it is a product and 
+that fibred products are preserved by reindexing. First, to see that it is a product, choose some $X$ with $pX = pY$. 
+Examining the counit side of the adjunction makes it clear that $U(Y,Z)$ is a product of $Y$ and $Z$ in $\mathbb E_{pY}$:
+
+\begin{center}
+\begin{tikzcd}
+ X \ar[r, "f", dashed] & U(Y,Z) \\ 
+ & \\
+ \Delta X \ar[r, "(g_1\text{,}g_2)" above] \ar[dr, "\Delta f~~" below] & (Y,Z) \\
+  & \Delta U(Y,Z) \ar[u, "\epsilon_{Y\text{,}Z} = (\pi_{Y\text{,}Z}\text{,} \pi'_{Y\text{,}Z})" right]
+\end{tikzcd}
+\end{center}
+
+For each pair of vertical arrows $g_1 : X \to Y$ and $g_2 : X \to Z$ in $\mathbb E \times_{\mathbb B} \mathbb E$ 
+over $id_{pX}$, we have a unique arrow $f : X \to U(Y,Z)$ 
+(vertical, since transposition of fibred adjunctions preserves base arrows) in 
+$\mathbb E$ such making the lower triangle commute.
+But that's just the UMP of products: 
+$$(f,f);(\pi,\pi') = (g_1,g_2) \Leftrightarrow (f;\pi = g_1 \wedge f;\pi' = g_2)$$
+
+By the functorality of reindexing, the above diagram is preserved by reindexing functors, and therefore
+so are the fibred products. **Actually, no. Functorality of reindexing does not guarantee that the uniqueness part is 
+preserved. 
+
+$(\Rightarrow)$~\\ 
+
+Suppose that a fibration $\vrt{\mathbb E}{\mathbb B}p$ has fibred Cartesian products. 
+This is direction is not as interesting; we can just use fibred cartesian products to define the adjoint.
+ 
+\section*{Lemma 1.9.2}
+
+In the proof of this lemma, on pg 10075, it says ``Beck-Chevalley holds, by an easy calculation''.
+Since I'm not fluent in the Beck-Chevalley condition yet, I'm going to try to carry out this ``easy calculation''.
+
+First, note that while $\Pi_{(I,J)}$ clearly isn't a fibred functor, it does need to preserve Cartesian arrows
+for Beck-Chevalley to make sense. More precisely, we need the ``non-fibred'' version of $\Pi_{(I,J)}$ (let's
+call it $\Pi_{(-,J)}$) to preserve Cartesian arrows. $\Pi_{(-,J)}$ is not a functor and does not transform between categories;
+instead, for all $I,K \in \mbf{Sets}$,  $\Pi_{(-,J)}$ transforms objects of the category $Fam(\mathbb C)_{I \times J}$ 
+objects of $Fam(\mathbb C)_{I}$, and each arrow $f : X \to Y$ where $X \in Fam(\mathbb C)_{I \times J}$ and $Y \in Fam(\mathbb C)_{K \times J}$ to an arrow of type $\Pi_{(-,J)} X \to \Pi_{(-,J)} Y$. 
+
+Let $u : I \to K$ be a function between sets. Then our canonical natural transformation 
+$$u^* (Y \mapsto \Pi_{j \in J} Y_{(k,j)}) \Longrightarrow (Y \mapsto \Pi_{j \in J} Y_{i,j}) (u \times id)^*$$
+arises as the transpose of
+
+$$\pi^*_{I,J} u^* (Y_{K \times J} \mapsto \Pi_{j \in J} Y_{(k,j)}) \overset{\cong}{\longrightarrow} \pi^*_{I,J} (Y_{I \times J} \mapsto \Pi_{j \in J} Y_{(i,j)}) (u \times id)^* \overset{\epsilon (u \times id)^*}{\longrightarrow} (u \times id)^*$$
+
+%$$ u^* \overset{u^* \eta}{\longrightarrow} u^* (Y \mapsto \Pi_{j \in J} Y_{i,j}) \pi^*_{I,J} 
+%   \overset{\cong}{\longrightarrow} (Y \mapsto \Pi_{j \in J} Y_{k,j}) (u \times id)^* \pi^*_{I,J}$$
+
+\section{Lemma 1.9.5}
+
+We give the full proof of Lemma 1.9.5, sketched on pg 10077. Without loss of generality, we only cover products.
+
+First, define the functor $\Pi_u$'s mapping on arrows as $\Pi_u( (f_i : X_i \to Y_i)_{i \in I} ) \doteq (\times   \{ f_i \mid u(i) = j \})_{j \in J}$
+
+Next, we need to show that $\Pi_u$ is the right adjoint to $u^*$. We need a bijection of the following form:
+
+\begin{center}
+\mprset{fraction={===}}
+\inferrule
+  {(X_j)_{j \in J} \longrightarrow \Pi_u (Y_i)_{i \in I} }
+  {u^*( (X_j)_{j \in J} ) \longrightarrow (Y_i)_{i \in I}}
+\end{center}~\\
+which is essentially a bijection of the following form:~\\
+\begin{center}
+\mprset{fraction={===}}
+\inferrule
+  {(X_j)_{j \in J} \longrightarrow (\Pi~\{ Y_i \mid u(i) = j\})_{j \in J}}
+  {(X_{u(i)})_{i \in I} \longrightarrow (Y_i)_{i \in I}}
+\end{center}
+
+This bijection clearly exists. We must show that it underlies an adjunction $u^* \vdash \Pi_u$.
+
+\begin{center}
+\begin{tikzcd}[sep=70]
+(\Pi \{ X_j \mid u(i) = j \})_{j \in J}  
+  \ar[r,"(\times \{ f_i \mid u(i) = j \})_{j \in J}"] & 
+  (\Pi \{ Y_i \mid u(i) = j \} )_{j \in J} \\
+(X_j)_{j \in J} \ar[ur, "~~~~~~(g_j)_{j \in J}" below] \ar[u, "(\Pi_{(i \mid u(i) = j)} id_{X_j})_{j \in J}" left] \\
+(X_{u(i)})_{i \in I} \ar[r, "(f_i)_{i \in I}"] \ar[dr, "(g_{u(i)})_{i \in I}~~~~~" below] & (Y_i)_{i \in I} \\
+ & (\Pi \{ Y_{i'} \mid u(i') = u(i) \} )_{i \in I} \ar[u, "(\pi_i)_{i \in I}" right]  
+\end{tikzcd}
+\end{center}
+
+TODO: we must also show Beck-Chevalley
+
+\section*{Exercises 2.1}
+
+\subsection*{2.1.1}
+
+(i) We proceed by induction on $m$.\\~\\
+\begin{description}
+
+\item[Base case: $m = 0$]~\\
+
+Trivial.
+
+\item[Inductive step: $m > 0$]~\\
+
+\begin{prooftree}
+
+\AxiomC{$\Gamma,v_n : \sigma, \Delta, v_{n + (m-1)} : \iota, v_{n + m} : \rho \vdash M : \tau$}
+\RightLabel{E}
+\UnaryInfC{$\Gamma,v_n : \sigma, \Delta, v_{n + (m-1)} : \rho, v_{n + m} : \iota \vdash M[v_{n+(m-1)} / v_{n + m}, v_{n + m} / v_{n + (m-1)}] : \tau$}
+\UnaryInfC{$\Gamma,v_n : \rho, \Delta, v_{n + (m-1)} : \sigma, v_{n+m} : \iota \vdash M[v_{n} / v_{n + m}, v_{n+m}/v_{n+(m-1)}, v_{n+(m-1)}/v_{n}] : \tau$}
+\RightLabel{E}
+\UnaryInfC{$\Gamma,v_n : \rho, \Delta, v_{n+(m-1)} : \iota, v_{n + m} : \sigma \vdash M[v_{n} / v_{n + m}, v_{n+m} / v_{n}]$}
+\end{prooftree}
+
+The middle inference is an application of the inductive hypothesis.(note: the result of section 2.1.3 (i) is used here) \\~\\
+(ii) We proceed by induction on $m$.\\~\\
+TODO:
+
+\end{description}
+
+\section*{Exercises 2.2}
+
+\subsection*{2.2.1}
+
+(i) Let $\mbf{Sets}_{\bullet}$ be the category of pointed sets as described in Exercises 1.2.3 (ii), 
+at the top of page 10018. 
+It can be seen as the category of sets and partial functions (where undefined arguments map to the point). 
+Show that $\mbf{Sets}_{\bullet}$ has finite products.\\~\\
+\underline{Terminal object}. A singleton set $(\{ \ast \},\ast)$ whose sole element $\ast$ is its point
+is a terminal object in $\mbf{Sets}_{\bullet}$, because for any pointed set $(X,x)$ there is only
+a single point-preserving mapping from $X$ to $\{ \ast \}$.\\~\\
+\underline{Binary products}. Let $(X,x)$ and $(Y,y)$ be pointed sets. We claim that their product
+is $(X \times Y, (x,y))$. Its projections have underlying functions $\pi : X \times Y \to X$ 
+and $\pi' : X \times Y \to Y$, which clearly preserve points. We now demonstrate the UMP of products.
+Let $(Z,z)$ be a pointed set and $f : (Z,z) \to (X,x)$ and $g : (Z,z) \to (Y,y)$ be arrows of $\mbf{Sets}_{\bullet}$.
+(We write $|f|$ and $|g|$ for the functions underlying $f$ and $g$.) There exists an arrow 
+$\langle f, g \rangle : (Z,z) \to (X \times Y, (x,y))$ such that $\langle f, g \rangle;\pi = f$ and 
+$\langle f,g \rangle;\pi' = g$ whose underlying functions is defined as $a \mapsto (|f|(a), |g|(a))$.
+It preserves points, since $z \mapsto (|f|(z), |g|(z)) = (x,y)$. Furthermore, $|\langle f, g \rangle;\pi|(a) = 
+f(a)$ and $|\langle f,g \rangle;\pi'|(a) = g(a)$.\\~\\
+(ii) The partial algebra maps each type of $\Sigma$ to a pointed set. The point is used for partiality, 
+and thus should not be used for ``standard'' values; for example, a natural numbers type $\mathbb N$
+would map to the pointed set $(\{ 0,1,2,\ldots \} \cup \{ \bullet \}, \bullet)$. Importantly, 
+the point $\bullet$ is disjoint from the actual natural numbers. A term (i.e. an arrow in $C \ell(\Sigma)$)
+is mapped to a point-preserving function. The domain of this function is in general
+the product of several pointed sets. It's not clear how such a function is defined where some of the components
+of the argument are points and others aren't.
+
+\subsection*{2.2.2}
+
+NOTE: They have a typo in the definition of $\Gamma^k$: it should say $v_{k-1} : \sigma_{k-1}$ rather than $v_k : \sigma_k$.\\~\\
+Consider the interpretation of $\mathcal M$ associated with a morphism of signatures $\phi : \Sigma \to \mbf{Sign}(\mathbb B)$
+in the proof og Theorem 2.2.5 on page 10109. \\~\\
+(i) Let $\Gamma = (v_1 : \sigma_1, \ldots, v_n : \sigma_n)$ be a context with a term $\Gamma \vdash M : \tau$ such that
+the variable $v_k$ in $\Gamma$ does not occur (free) in $M$. Prove that 
+
+$$ \mathcal M(\Gamma \vdash M : \tau) = \mathcal M(\Gamma^k \vdash M^k : \tau) \circ \langle \pi_1, \ldots, \pi_{k-1},\pi_{k+1}, \ldots, \pi_n \rangle $$
+where
+$$ \Gamma^k \doteq v_1 : \sigma_1, \ldots, v_{k-1} : \sigma_{k-1}, v_k : \sigma_{k+1}, \ldots, v_{n-1} : \sigma_n $$
+and
+$$ M^k \doteq M[v_k/v_{k+1},\ldots,v_{n-1}/v_n]$$~\\
+
+The proof proceeds by induction on the structure of $\Gamma \vdash M : \tau$
+
+\begin{description}
+\item[Case $v_1 : \sigma \vdash v_1 : \sigma$:]~\\
+This case is vacuous, since every variable occurs in the term.
+\item[Case $\Gamma \vdash F(M_1,\ldots,M_m) : \tau_{m+1}$:]~\\
+Here $F : \tau_1, \ldots, \tau_m \to \tau_{m+1}$. 
+
+By the IH we have $\Gamma^k \vdash M_i^k : \tau_i$ for 
+$i \in 1..m$, and furthermore we have $\mathcal M(\Gamma \vdash M_i : \tau_i) = \mathcal M(\Gamma^k \vdash M_i^k : \tau_i)
+\circ \langle \pi_1, \ldots, \pi_{k-1},\pi_{k+1},\ldots,\pi_n \rangle$.\\~\\
+Hence we have\\~\\
+$\mathcal M(\Gamma \vdash F(M_1,\ldots,M_m) : \tau_{m+1})$ \\
+\begin{tabular}{lll}
+$= \phi(F)$ & $\circ$ & $\langle \mathcal M(\Gamma \vdash M_1 : \tau_1), \ldots, \mathcal M(\Gamma \vdash M_m : \tau_m) \rangle$ \\
+$= \phi(F)$ & $\circ$ & $\langle \mathcal 
+  M(\Gamma^k \vdash M_1^k : \tau_1) \circ \langle \pi_1,\ldots,\pi_{k-1},\pi_{k+1},\ldots,\pi_n\rangle$ \\
+ & & $\ldots$ \\
+ & & $\mathcal M(\Gamma^k \vdash M_m^k : \tau_m) \circ \langle \pi_1,\ldots,\pi_{k-1},\pi_{k+1},\ldots,\pi_n \rangle \rangle$ \\
+$= \phi(F)$ & $\circ$ & $\langle \mathcal M(\Gamma^k \vdash M_1^k : \tau_1), \ldots, \mathcal M(\Gamma^k \vdash M_m^k : \tau_m) \rangle$ \\
+ & $\circ$ & $\langle \pi_1, \ldots, \pi_{k-1}, \pi_{k+1}, \ldots, \pi_n \rangle$
+\end{tabular}\\
+$= \mathcal M(\Gamma^k \vdash F(M_1^k,\ldots, M_m^k) : \tau_{m+1}) \circ \langle \pi_1, \ldots, \pi_{k-1}, \pi_{k+1}, \ldots, \pi_n \rangle$ \\
+$= \mathcal M(\Gamma^k \vdash F(M_1,\ldots, M_m)^k : \tau_{m+1}) \circ \langle \pi_1, \ldots, \pi_{k-1}, \pi_{k+1}, \ldots, \pi_n \rangle$
+
+\item[Case $\mbf{weakening}$:]~\\
+
+By the IH, we have $\Gamma^k \vdash M^k : \tau$ and 
+$\mathcal M(\Gamma \vdash M : \tau) = \mathcal M(\Gamma^k \vdash M^k : \tau) \circ \langle \pi_1, \ldots, \pi_{k-1},\pi_{k+1},\ldots,\pi_n \rangle$ for $1 \leq k \leq n$
+
+\begin{description}
+
+\item[$k = n+1$:]~\\
+Here we have $(\Gamma,v_{n+1}:\sigma_{n+1})^k = \Gamma$ and $M^k = M$.
+Then $\mathcal M(\Gamma,v_{n+1} : \sigma_{n+1} \vdash M : \tau) = \mathcal M(\Gamma \vdash M : \tau) \circ \pi
+= \mathcal M((\Gamma,v_{n+1}:\sigma_{n+1})^k \vdash M^k : \tau) \circ \pi 
+= \mathcal M((\Gamma,v_{n+1}:\sigma_{n+1})^k \vdash M^k : \tau) \circ \langle \pi_1, \ldots, \pi_{k-1} (= \pi_{n}) \rangle$.
+
+\item[$k < n+1$:]~\\
+Here we have $\mathcal M(\Gamma,v_{n+1} : \sigma_{n+1} \vdash M : \tau) = \mathcal{M}(\Gamma \vdash M : \tau) \circ \pi
+= \mathcal{M}(\Gamma^{k} \vdash M^{k} : \tau) \circ \langle \pi_1, \ldots, \pi_{k-1},\pi_{k+1},\ldots,\pi_n \rangle \circ \pi
+= \mathcal{M}(\Gamma^{k} \vdash M^{k} : \tau) \circ \pi \circ \langle \pi_1, \ldots, \pi_{k-1},\pi_{k+1},\ldots,\pi_n,\pi_{n+1} \rangle = \mathcal M( (\Gamma, v_{n+1})^k \vdash M^k : \tau) \circ \langle \pi_1, \ldots, \pi_{k-1},\pi_{k+1},\ldots,\pi_n,\pi_{n+1} \rangle$ 
+
+\end{description}
+
+\item[Case $\mbf{contraction}$:]~\\
+
+By the IH we have for all $0 \leq k \leq n + 1$, $(\Gamma,v_{n} : \sigma, v_{n+1} : \sigma)^k \vdash M^k : \tau$
+and 
+$\mathcal M(\Gamma,v_n:\sigma,v_{n+1}:\sigma \vdash M : \tau) 
+= \mathcal M((\Gamma,v_n:\sigma,v_{n+1}:\sigma)^k \vdash M^k : \sigma) \circ \langle \pi_1, \ldots, \pi_{k-1},\pi_{k+1},\ldots,\pi_n \rangle$.
+
+
+
+\begin{description}
+
+\item[Case $k = n$:]~\\
+ 
+
+This case suggests that our IH must be generalized: rather than removing a single variable from context, we should
+allow the removal of a set of variables (all of which do not occur in the term).\\~\\
+
+Here $M[v_n/v_{n+1}]^k = M$, and neither $v_n$ nor $v_{n+1}$ occurs in $M$.
+Additionally, $(\Gamma,v_n:\sigma,v_{n+1}:\sigma)^k = \Gamma,v_n:\sigma$\\~\\
+$\mathcal M(\Gamma,v_n : \sigma \vdash M[v_n/v_{n+1}] : \tau) = \mathcal M(\Gamma,v_n : \sigma,v_{n+1} : \sigma \vdash M : \tau)
+ \circ \langle id, \pi' \rangle = \mathcal M((\Gamma,v_n:\sigma,v_{n+1}:\sigma)^{n+1} \vdash M^k : \tau) \circ \langle \pi_1, \ldots, \pi_{n-1},\pi_{n+1} \rangle \circ \langle id, \pi' \rangle = \mathcal M(\Gamma,v_n : \sigma \vdash M : \tau) \circ 
+\langle \pi_1, \ldots, \pi_{n-1},\pi_{n+1} \rangle \circ \langle id, \pi' \rangle = \mathcal M(\Gamma,v_n : \sigma \vdash M : \tau)
+\circ a$.
+
+
+
+\item[Case $k < n$:]~\\
+
+
+\end{description}
+
+\end{description}
+
+
+
+
+\subsection*{2.2.4}
+
+Let $\phi : \Sigma \to \Sigma'$ be a morphism of signatures and let $(\Sigma', \mathbb A', \mathcal M')$
+be a $\mbf{C-Model}$ of signature $\Sigma'$.\\~\\
+
+Then we define 
+$\phi^*(\Sigma', \mathbb A', \mathcal M') \doteq (\Sigma, \mathbb A', \mathcal M)$, 
+where $\mathcal M(\sigma_1, \ldots, \sigma_n) \doteq \mathcal M'(\phi \sigma_1) \times \ldots \times \mathcal M'(\phi \sigma_n) 
+$ and $\mathcal M(\Gamma \vdash M_1 : \tau_1, \ldots, \Gamma \vdash M_n : \tau_n) \doteq 
+\mathcal M(\phi M_1, \ldots, \phi M_n)$.\\~\\
+Further, we define $\overline{\phi^*}(\Sigma', \mathbb A', \mathcal M') : (\Sigma,\mathbb A', \mathcal M) \to (\Sigma, \mathbb A', \mathcal M')$ as... 
+
+
+
+\subsection*{2.2.5}
+
+
+\section*{Exercses 3.4}
+
+\subsection*{3.4.1}
+
+We write $I,J,K,X,Y$ for objects of $\mathbb B$ and $u,v,f,g$ for arrows.\\~\\
+(i) Extend the assignment $(I,X) \mapsto \delta(I,X) = \langle id, \pi' \rangle : I \times X \to (I \times X) \times X$
+to a functor $\delta : s(\mathbb B) \to \mathbb B^{\to}$.\\~\\
+We map an arrow $(u,f) : (I,X) \to (J,Y)$ to the following commutative square:
+\begin{center}
+\begin{tikzcd}[sep=70.0]
+I \times X \ar[r, "\langle \pi;u\text{,} f \rangle"] \ar[d,"\langle id\text{,} \pi' \rangle" left] & 
+  \ar[d,"\langle id \text{,} \pi' \rangle"] J \times Y \\
+(I \times X) \times X \ar[r, "\langle \pi;\langle \pi;u \text{,} f \rangle \text{,} \langle \pi;\pi \text{,} \pi' \rangle; f \rangle" below] & (J \times Y) \times Y 
+\end{tikzcd}
+\end{center}
+It clearly commutes. To show that this mapping is functorial, we must show that it preserves identities and composition.
+An identity in $s(\mathbb B)$ has the form $(id, \pi')$. This maps to the following square:
+\begin{center}
+\begin{tikzcd}[sep=80.0]
+I \times X \ar[r, "\langle \pi \text{,} \pi' \rangle"] \ar[d,"\langle id \text{,} \pi' \rangle" left] & 
+  \ar[d,"\langle id \text{,} \pi' \rangle"] I \times X \\
+(I \times X) \times X \ar[r, "\langle \pi;\langle \pi \text{,} \pi' \rangle \text{,} \langle \pi;\pi \text{,} \pi' \rangle; \pi' \rangle" below] & (I \times X) \times X 
+\end{tikzcd}
+\end{center}
+The bottom edge simplifies to $id_{(I \times X) \times X}$, and so identities are preserved.
+Now consider a the composition $(u;v, \langle \pi;u , f \rangle; g)$ of $(u,f) : (I,X) \to (J, Y)$ 
+and $(v,g) : (J, Y) \to (K,Z)$. The functor $\delta$ maps this composite to the commutative square whose 
+top and bottom edges are:\\~\\
+Top: $~~~~~\langle \pi;u;v~~,~~\langle \pi;u , f \rangle; g \rangle$\\
+Bottom:\\$\langle \pi; \langle \pi;u;v, \langle \pi;u , f \rangle; g \rangle, \langle \pi;\pi, \pi' \rangle; \langle \pi;u, f \rangle; g \rangle$\\
+$= \langle \pi; \langle \pi;u;v, \langle \pi;u , f \rangle; g \rangle, \langle \pi;\pi;u, \langle \pi;\pi, \pi' \rangle; f \rangle; g \rangle$\\~\\
+On the other hand, mapping first and then composing in $\mathbb B^{\to}$ gives:\\~\\
+Top: $\langle \langle \pi;u, f \rangle; \pi; v, \langle \pi;u, f \rangle;g \rangle$\\
+Bottom: $\langle \pi;\langle \pi;u , f \rangle, \langle \pi;\pi, \pi' \rangle; f \rangle$;
+$\langle \pi;\langle \pi;v , g \rangle, \langle \pi;\pi, \pi' \rangle; g \rangle$\\~\\
+which simplifies to: \\~\\
+Top: $\langle \pi;u;v , \langle \pi;u, f \rangle;g \rangle$\\
+Bottom:\\$\langle \pi; \langle \pi;u, f \rangle; \langle \pi;v, g \rangle, \langle \pi;\langle\pi;u, f \rangle;\pi, 
+\langle \pi;\pi, \pi' \rangle;f \rangle;g \rangle$\\
+$= \langle \pi; \langle \pi;u;v, \langle \pi;u, f \rangle;g \rangle, \langle \pi;\pi;u, 
+\langle \pi;\pi, \pi' \rangle;f \rangle;g \rangle$
+\\~\\
+Hence composition is preserved.\\~\\
+(ii) Show that $\delta$ sends Cartesian morphisms (for the simple fibration on $\mathbb B$) to pullback squares in 
+$\mathbb B$ (i.e. Cartesian morphisms for the codomain functor on $\mathbb B$).\\~\\
+A quick sketch on paper shows that Cartesian arrows in $s(\mathbb B)$ over $U : I \to J \in \mathbb B$ 
+have the form $(u,\pi')$. Instantiating the first square in part (i) gives:
+\begin{center}
+\begin{tikzcd}[sep=70.0]
+I \times X \ar[r, "\langle \pi;u\text{,} \pi' \rangle"] \ar[d,"\langle id\text{,} \pi' \rangle" left] & 
+  \ar[d,"\langle id \text{,} \pi' \rangle"] J \times Y \\
+(I \times X) \times X \ar[r, "\langle \pi;\langle \pi;u \text{,} \pi' \rangle \text{,} \langle \pi;\pi \text{,} \pi' \rangle; \pi' \rangle" below] & (J \times Y) \times Y 
+\end{tikzcd}
+\end{center}
+which simplifies to
+\begin{center}
+\begin{tikzcd}[sep=70.0]
+I \times X \ar[r, "\langle \pi;u\text{,} \pi' \rangle"] \ar[d,"\langle id\text{,} \pi' \rangle" left] & 
+  \ar[d,"\langle id \text{,} \pi' \rangle"] J \times X \\
+(I \times X) \times X \ar[r, "\langle \pi;\langle \pi;u \text{,} \pi' \rangle \text{,} \pi' \rangle" below] & (J \times X) \times X 
+\end{tikzcd}
+\end{center}
+We then have the following pullback diagram
+
+\begin{center}
+\begin{tikzcd}[sep=70.0]
+Z  \ar[rrd, "f"] \ar[ddr, "g~~" below] \ar[dr, "~\langle g;\pi \text{,} f;\pi' \rangle" right, dashed] & & \\
+& I \times X \ar[r, "\langle \pi;u\text{,} \pi' \rangle"] \ar[d,"\langle id\text{,} \pi' \rangle" left] & 
+  \ar[d,"\langle id \text{,} \pi' \rangle"] J \times X \\
+ & (I \times X) \times X \ar[r, "\langle \pi;\langle \pi;u \text{,} \pi' \rangle \text{,} \pi' \rangle" below] & (J \times X) \times X 
+\end{tikzcd}
+\end{center}
+Note this makes use of the assumption that 
+$$f;\langle id, \pi' \rangle = \langle f, f;\pi' \rangle = \langle g;\pi;\langle \pi;u, \pi' \rangle, g;\pi' \rangle
+= g;\langle \pi; \langle \pi;u \text{,} \pi' \rangle \text{,} \pi' \rangle$$
+(I.e. the pullback assumption that the outer quadrilateral commutes.) 
+
+\subsection*{3.4.2}~\\
+Reminder:\\~\\
+As described on pg 4147, a finite product preserving functor is said to be \emph{Cartesian closed} when
+the transpose of
+$$ F(A \Rightarrow B) \times F(A) \overset{\cong}{\longrightarrow} F((A \Rightarrow B) \times A) \overset{F(ev)}{\longrightarrow} FB$$
+is an isomorphism $\lambda(F(ev) \circ \cong) : F(A \Rightarrow B) \to (FA \Rightarrow FB)$.\\~\\
+Assume $\vrt{\mathbb E}{\mathbb B}p$ is a fibred $CCC$ with equality, i.e., in addition to having fibred 
+equality $Eq \dashv \delta^*$, substitution functors are Cartesian closed.\\~\\
+(i) Show that the Frobenius property for equality (canonical $Eq(\delta^*(X) \times Y) \longrightarrow X \times Eq(Y)$ has an inverse) holds automatically.\\~\\
+The aforementioned canonical map arises as the transpose of 
+$$\delta^*(X) \times Y \overset{\delta^*(X) \times \eta_Y}{\longrightarrow} \delta^*(X) \times \delta^*Eq(Y) 
+  \overset{rapl}{\longrightarrow} \delta^*(X \times Eq(Y)) $$
+
+%% right adjoints preserve limits: is \delta^*'s preservation of products stronger than vanilla rapl?
+Ugh... can't figure it out. Didn't try to use the Beck-Chavalley condition for equality: maybe that would help?
+
+\subsection*{3.4.4}
+
+The canonical transformation of def 3.4.1 is easy: it just uses the $u^*v^*(X) \cong (u;v)^*(X)$ property for 
+substitution functors. The canonical transformation of 3.4.7 is tricky.
+
+We have $\gamma_1 : KI \times KJ \to K(I \times J)$ and $\gamma_2 : K(I \times J) \times KJ \to K((I \times J) \times J)$, and the following Beck-Chevalley diagram.
+\begin{center}
+\begin{tikzcd}
+\mathbb E_{I \times J} \ar[r, "Eq_{I,J}" above, bend left = 20] \ar[d, "L" left]
+& \mathbb E_{(I \times J) \times J} \ar[d, "L" right] \ar[l, "\delta^*_{I,J}" below, bend left = 20] \\
+\mathbb D_{K(I \times J)} \ar[d, "\gamma_1^*" left] & \mathbb D_{K((I \times J) \times J)} \ar[d, "((\gamma_1 \times id);\gamma_2)^*"] \\
+\mathbb D_{KI \times KJ} \ar[r, "Eq_{KI,KJ}" above, bend left = 20] & \ar[l, "\delta^*_{KI,KJ}" below, bend left = 20] \mathbb D_{(KI \times KJ) \times KJ}
+\end{tikzcd}
+\end{center}
+We must demonstrate a natural isomorphism $\gamma_1^*L\delta_{I,J}^* \Rightarrow \delta_{KI,KJ}^*((\gamma_1 \times id);\gamma_2)^*L$. This isomorphism comes from the unique 
+commuting arrows between the following two Cartesian arrows.
+\begin{center}
+\begin{tikzcd}
+\gamma_1^*L\delta_{I,J}^*(A) \ar[r, "\overline{\gamma_1^*}\cdots"] \ar[dd,"? (natural)", dotted] & L\delta_{I,J}^*(A) \ar[rd, " ~~~~ L\overline{\delta^*}(A)" above] & \\
+                                            &                          & LA \\
+\delta_{KI,KJ}^*((\gamma_1 \times id);\gamma_2)^*L(A) \ar[r, "\overline{\delta^*}_{KI,KJ}\cdots" below] & ((\gamma_1 \times id);\gamma_2)^*L(A) \ar[ur, "~~~~~~~~~~~~\overline{((\gamma_1 \times id);\gamma_2)^*}\cdots" below] &
+\end{tikzcd}
+\end{center}
+Now, these unique commuting arrows only exist if the base arrows along the top edge ($\gamma_1;K\delta$) factor through the base arrows along the bottom edge ($\delta;((\gamma_1 \times id);\gamma_2)$). We're in luck, because not only does the former 
+factor through the latter, but the two arrows are exactly equal.\\~\\
+To show this, we're going to need a lemma
+\begin{lemma}
+Let $K : \mathbb A \to \mathbb B$ be a product-preserving functor. Let $\gamma_{A,B} : KA \times KB \to K(A \times B)$ be 
+the inverse of the canonical transformation $\langle K\pi_{A,B}, K\pi'_{A,B} \rangle : K(A \times B) \to KA \times KB$.
+Then for any $f : Z \to A$ and $g : Z \to B$ we have $\langle Kf, Kg \rangle;\gamma_{A,B} = K\langle f, g \rangle$.
+\end{lemma}
+
+\begin{proof}
+We abbreviate $\pi_{A,B}$ with $\pi$, $\pi'_{A,B}$ with $\pi'$, and $\gamma_{A,B}$ with $\gamma$ for convenience.\\~\\
+First, we have $K\langle f,g \rangle;\langle K\pi, K\pi' \rangle = \langle Kf, Kg \rangle$ because:
+\begin{center}
+\begin{tabular}{lll}
+$(K\langle f,g \rangle;\langle K\pi, K\pi' \rangle)$ & $=$ & (by ``sliding in'') \\
+$\langle K \langle f,g \rangle;K\pi, K\langle f,g \rangle;K\pi' \rangle$ & $=$ & (by functoriality of $K$) \\
+$\langle K(\langle f,g \rangle;\pi), K(\langle f,g \rangle;\pi') \rangle$ & $=$ & \\
+$\langle K(\langle f,g \rangle;\pi), K(\langle f,g \rangle;\pi') \rangle$ & $=$ & \\
+$\langle Kf, Kg \rangle$ & &
+\end{tabular}
+\end{center}
+Next, we compose both sides of this equation by $\gamma$ on the right to get:
+$$K\langle f,g \rangle = \langle Kf, Kg \rangle;\gamma$$
+\begin{tabular}{ll}
+\end{tabular}
+\end{proof}~\\~\\
+$\delta;((\gamma_1 \times id);\gamma_2)$\\
+$= \langle id, \pi'_{KI,KJ} \rangle;((\gamma_1 \times id);\gamma_2)$\\
+$= \langle \gamma_1, \pi' \rangle;\gamma_2$\\
+$= \langle \gamma_1, \gamma_1;\langle K \pi, K \pi' \rangle;\pi' \rangle;\gamma_2$\\
+$= \gamma_1;\langle id, K \pi' \rangle;\gamma_2$\\
+$= \gamma_1;\langle K(id), K\pi' \rangle;\gamma_2$\\
+$= \gamma_1;K\langle id, \pi' \rangle$\\
+$= \gamma_1;K\delta$\\~\\
+Note that the lemma was applied to obtain the second-to-last line from the third-to-last line.
+
+ 
+\subsection*{3.4.6}
+
+Let $\vrt{\mathbb E}{\mathbb B}p \overset{(K,L)}{\longrightarrow} \vrt{\mathbb E'}{\mathbb B'}p'$ be a morphism between
+fibrations $p$ and $p'$ with fibred terminal object and equality.\\~\\
+(i) Assume $(K,L)$ preserves the terminal object and equality. Verify that for parallel arrows $u,v$ in $\mathbb B$
+the canonical vertical map 
+$$Eq'(Ku,Kv) \longrightarrow L(Eq(u,v))$$
+is an isomorphism.
+
+ 
+
+
+\end{document}

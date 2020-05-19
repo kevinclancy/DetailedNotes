@@ -1,0 +1,332 @@
+
+
+\documentclass{article}
+
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{stmaryrd}
+\usepackage{mathpartir}
+\usepackage{multicol}
+\usepackage{enumitem}
+\usepackage[section]{placeins} % float barriers
+\usepackage{natbib}
+\usepackage{xcolor} 
+\usepackage{bussproofs} 
+\usepackage{diagrams}
+
+%example: \limit{j \in J}{F_j}
+\newcommand{\limit}[2]{\underset{\overset{\longleftarrow}{#1}}{\text{lim}}~#2}
+\newcommand{\lims}[1]{\underset{\longleftarrow}{\text{lim}}~#1}
+\newcommand{\mbf}{\mathbf}
+
+\begin{document}
+
+\section{Chapter 1}
+
+\subsection{Problem 1}
+
+\subsubsection{a}
+
+We must show two things
+\begin{enumerate}
+\item $1_A = \{ \langle a, a \rangle \in A \times A \mid a \in A \}$ is indeed an identity
+\item Composition is associative.
+\end{enumerate}
+For 1, let $R : A \to B$ be a relation on $A$ and $B$, then 
+$$1_A \circ R = \{ \langle a, b \rangle \in A \times B \mid \exists a' (\langle a, a' \rangle \in 1_A) \wedge \langle a', b \rangle \in R \}$$  
+From the definition of $1_A$, the only candidate $a'$ is $a$ itself, so this simplifies to
+$$1_A \circ R = \{ \langle a, b \rangle \in A \times B \mid \langle a, b \rangle \in R \} = R$$
+Letting $S : B \to A$, $S \circ 1_A = S$ is proven symmetrically.\\~\\
+
+For 2, let $A,B,C$, and $D$ be sets, and let $R \subseteq A \times B$, $S \subseteq B \times C$, and $T \subseteq C \times D$.
+Then 
+$$(R \circ S) \circ T = \{ \langle a,d \rangle \in A \times D \mid \exists c (\langle a,c \rangle \in R \circ S \wedge \langle c,d \rangle \in T) \}$$
+Expanding the definition of membership in $R \circ S$ we have\\~\\
+$(R \circ S) \circ T\\~\\ 
+= \{ \langle a,d \rangle \in A \times D \mid \exists c~(\exists b~\langle a,b \rangle \in R \wedge \langle b, c \rangle \in S) \wedge \langle c,d \rangle \in T) \} \\~\\
+= \{ \langle a,d \rangle \in A \times D \mid \exists b~\langle a, b \rangle \in R \wedge \exists c~(\langle b,c \rangle \in S \wedge \langle c, d \in T) \}\\~\\
+= R \circ (S \circ T)$
+\subsubsection b
+
+First, we show that $G$ preserves identity.
+$$G(1_A) = \{ \langle a, 1_A(a) \rangle \in A \times A \mid a \in A \} = 
+ \{ \langle a, a \rangle \in A \times A \mid a \in A\} = 1_{G(A)} $$
+
+Now, we show that it preserves composition. Let $f : A \to B \in \mbf{Sets_1}$, $g : B \to C \in \mbf{Sets_1}$.
+Note that $G(f) = \{ \langle a, f(a) \rangle \mid a \in A \}$ and $G(g) = \{ (b, g(b)) \mid b \in B \}$.
+Then 
+$$G(g) \circ G(f) = \{ \langle a, c \rangle \in A \times C \mid 
+ \exists b~(\langle a,b \rangle \in G(f) \wedge \langle b,c \rangle \in G(g)) \}$$
+The only $b \in B$ such that $\langle a, b \rangle \in G(f)$ is $f(a)$, so we simplify to 
+$$G(g) \circ G(f) = \{ \langle a, c \rangle \in A \times C \mid \langle f(a),c \rangle \in G(g) \}$$
+$\langle f(a), c \rangle \in G(g) \leftrightarrow c = g(f(a))$, and so we get
+$$G(g) \circ G(f) = \{ \langle a, g(f(a)) \rangle \in A \times C \mid a \in A \} = G(g \circ f)$$
+
+\subsubsection c
+
+We first must show this functor preserves identity. Let $A \in \mbf{C_0}$.
+$$ (1_A)^{C} = \{ \langle a', a \rangle \mid \langle a, a' \rangle \in 1_A \} = \{ \langle a, a \rangle \mid a \in A \} = 1_{(A)^C}$$
+Now suppose $R : Y \to X \in \mbf{C_1^{op}}$ and $S : Z \to Y \in \mbf{C_1^{op}}$.
+Then 
+$$(R \circ S)^C = \{ \langle z, x \rangle \mid \exists y~(\langle y, z \rangle \in S^* \wedge \langle x, y \rangle \in R^*) \}$$
+
+$$= \{ \langle z, x \rangle \mid \exists y~(\langle z,y \rangle \in S^C \wedge \langle y, x \rangle \in R^C \}  = R^C \circ S^C $$
+
+\subsection{Problem 2}
+
+\subsubsection{a} It is true that $\mbf{Rel} \cong \mbf{Rel^{op}}$. Define the functor $C' : \mbf{Rel} \to \mbf{Rel^{op}}$ 
+such that $C'(R : A \to B) = \{ \langle b, a \rangle \mid \langle a, b \rangle \in R \}$. Then for all $R \in \mbf{Rel}$,
+we have $C(C'(R)) = R$ and for all $S \in \mbf{Rel^{Op}}$ we have $C'(C(S)) = S$, and so $C \circ C' = 1_{\mbf{Rel}}$ and
+$C' \circ C = 1_{\mbf{Rel^{op}}}$.
+
+\subsubsection{b} It is \emph{not} true that $\mbf{Sets} \cong \mbf{Sets^{op}}$.
+There is no functor $F : \mbf{Sets} \to \mbf{Sets^{op}}$. If there were such a functor,
+letting $A$ be some non-empty set, it would have to map the unique function 
+$\bot_A : \emptyset \to A$ into an arrow $F(\bot_A) : \emptyset \to A$, which, being an arrow in $\mbf{Sets^{op}}$,
+is a function from $A$ to $\emptyset$. There are no functions from non-empty sets to $\emptyset$, so this is contradictory.
+
+\subsubsection{c} It is true that $P(X) \cong P(X)^{op}$. We define a functor $F : P(X) \to P(X)^{op}$ as follows, for
+$A,B \in P(X)$\\~\\
+$F(A) = X-A$\\~\\
+Suppose that $A \subseteq B$. Then $F(A) = X-A \supseteq X-B = F(B)$, and so $F$ is a functor.
+Its inverse $G : P(X)^{op} \to P(X)$ is defined as $G(A) = X - A$.
+We have $(G \circ F)(A) = X - (X - A) = A$.
+Furthermore, if $A \subseteq B$ then $(G \circ F)(A) = A \subseteq B = (G \circ F)(B)$,
+and so $G \circ F = 1_{P(X)}$. A symmetric argument shows $F \circ G = 1_{P(X)^{op}}$.
+
+\subsection{Problem 3}
+
+\subsubsection{a}
+
+Let $f : A \to B$ be a bijection in $\mbf{Sets}$. Then for each $b \in B$, there exists a unique
+$a_b \in A$ such that $f(a_b) = b$. Then we can define the function $g : B \to A$ as $g(b) = a_b$.
+For all $b \in B$ we have $f(g(b)) = f(a_b) = b$ and for all $a \in A$ we have $g(f(a)) = a_{f(a)} = a$. 
+Hence $g \circ f = id_A$ and $f \circ g = id_B$. $f$ is therefore an iso. Since $f$ was defined
+as an arbitrary bijection, every bijection is an iso in $\mbf{Sets}$.
+
+On the other hand, suppose that $f : A \to B$ is an iso in $\mbf{Sets}$, i.e., there exists a function 
+$g : B \to A$ such that $f \circ g = id_A$ and $g \circ f = id_B$. Let $b \in B$ then $f(g(b)) = b$,
+so there exists some element $a \in A$ ($a = g(b)$) such that $f(a) = b$. Hence, $f$ is onto.
+Suppose that $b \in B$ and that there exists $a,a' \in A$ with $f(a) = b = f(a')$.
+Then $a = g(f(a)) = g(b) = g(f(a')) = a'$. $f$ is therefore 1-1. Since $f$ is bothe
+onto and 1-1, it is a bijection. $f$ was defined as an arbitrary iso in $\mbf{Sets}$, and so
+all isos in sets are bijections.
+
+\subsubsection{b}
+
+Let $f : A \to B$ be a bijective homomorphism in $\mbf{Monoids}$. Then for each $b \in B$,
+there is a unique $a_b \in A$ such that $f(a_b) = b$. Define $g : B \to A$ such that $g(b) = a_b$.
+Then $g$ is a homomorphism, for we have $g(b_1 b_2) = a_{b_1 b_2}$, but since 
+$f(a_{b_1} a_{b_2}) = f(a_{b_1}) f(a_{b_2}) = b_1 b_2$, we have $a_{b_1 b_2} = a_{b_1} a_{b_2}$.
+Putting this together, we have $g(b_1 b_2) = a_{b_1 b_2} = a_{b_1} a_{b_2} = g(b_1) g(b_2)$.
+Now, let $a \in A$ and $b \in B$. Then $f(g(b)) = f(a_b) = b$. Also, $g(f(a)) = a_{f(a)} = a$.
+Hence, $g \circ f = id_A$ and $f \circ g = id_B$, and so $f$ is an iso in $\mbf{Monoids}$.
+
+On the other hand, let $f : A \to B$ be an iso in $\mbf{Monoids}$. Then there exists
+an iso $g : B \to A$ in $\mbf{Monoids}$ such that $g \circ f = id_A$ and $f \circ g = id_B$.
+We know that $f$ is a homomorphism since all arrows in $\mbf{Monoids}$ are.
+Furthermore, $f$ is onto: Letting $b \in B$, we know that f maps $g(b) \in A$ to $b$.
+Finally, $f$ is 1-1: supposing $a,a' \in A$ such that $f(a) = f(a')$, we have
+$a = g(f(a)) = g(f(a')) = a'$.
+
+\subsubsection{c}
+
+There is a bijective homomorphism from the the discrete 2-element poset
+onto $\mbf{2}$, the 2-element chain. However, it is not an iso, because order
+cannot be preserved going in the opposite direction. Any iso in a concrete
+category is \emph{necessarily} a bijective homomorphism; however, this condition
+is not \emph{sufficient} to guarantee that an arrow is an iso.
+
+\subsection{Problem 4}
+
+Tautologically, every open set that contains
+$x$ also contains $x$, and so $\leq$ is reflexive. If every open set that
+contains $x$ contains $y$ and every open set that contains $y$ contains $z$,
+then every open set that contains $x$ contains $z$, and so $\leq$ is transitive.
+
+Now, suppose $X$ is $T_0$. Further suppose that $x \leq y$ and $y \leq x$.
+For contradiction, suppose that $x$ and $y$ are distinct. 
+Since $X$ is $T_0$, there is some open set that contains one of $x$ and $y$ but not the other.
+Assume this open set contains $x$ but not $y$: this contradicts $x \leq y$.
+On the other hand, if the set were to contain $y$ but not $x$, that would contradict $y \leq x$.
+
+Suppose that $X$ is $T_1$. Then if $x \leq y$, we must have $x = y$, for 
+otherwise $T_0$ guarantees the existence of an open set which contains $x$ but not $y$.
+
+\subsection{Problem 5}
+
+We write arrows in $\mbf{C}$ as $f,g,\ldots$ and ``arrows between arrows'' as $p,q,r,\ldots$.
+Define $F$ such that $F(f) = f$ and $F(p : f \to g) = (p, id_C)$.
+For $f : A \to C \in (\mbf{C}/C)_0$, we have $F(id_f) = F(id_A) = (id_A, id_C)$.
+For $p : f \to g, q : g \to h \in (\mbf{C}/C)_1$, we have $F(q \circ p) = 
+(q \circ p, id_C) = (q, id_C) \circ (p, id_C) = F(q) \circ F(p)$.\\~\\
+Then $$(\mbf{dom} \circ F)(f : A \to C) = A = U(f)$$ and
+$$(\mbf{dom} \circ F)(p) = \mbf{dom}( (p,id_C) ) = p = U(p)$$.
+
+\subsection{Problem 6}
+
+This problem was poorly worded. I ended up having to check the back of the book.
+Their proposed solution did not use the category $\mbf{C}/C$ at all,
+but instead $(\mbf{C}^{op}/C)$. 
+
+\subsection{Problem 7}
+
+First, we define the functor $F$. 
+How should it behave on arrows $q : f \to g$?
+We define $F(q) = (q \mid_{f^{-1}(a)}, q \mid_{f^{-1}(b)})$.
+Then if $r : g \to h$ we have\\~\\
+$F(r \circ q) = ((r \circ q)\mid_{f^{-1}(a)}, (r \circ q) \mid_{f^{-1}(b)})\\
+= (r \mid_{g^{-1}(a)} \circ q \mid_{f^{-1}(a)}, r \mid_{g^{-1}(b)} \circ q \mid_{f^{-1}(b)})\\
+= (r \mid_{g^{-1}(a)},r \mid_{g^{-1}(b)}) \circ (q \mid_{f^{-1}(a)}, q \mid_{f^{-1}(b)})\\
+= F(r) \circ F(q)$\\~\\
+$F(id_f) = (id_X \mid_{f^{-1}(a)}, id_X \mid_{f^{-1}(b)}) = id_{F(f)}$. 
+
+This cannot be an isomorphism of categories. Its inverse $G$would necessarily map objects
+as $G(X,Y) : (X \cup Y) \to 2$. With such an inverse, we could have $G \circ F = 1_{\mbf{Sets}/2}$,
+but we could not have $F \circ G = 1_{\mbf{Sets} \times \mbf{Sets}}$. The problem in that for any arbitrary
+element $(X,Y)$ of $\mbf{Sets} \times \mbf{Sets}$, we could have $X \cap Y \neq \emptyset$,
+and so we can't map $(X,Y)$ into an arrow $X \cup Y \to 2$ in which all elements of $X$ map
+to $a$ and all elements of $Y$ map to $b$. This is because some elements of $X$ might also be elements
+of $Y$, and such elements cannot map to both $a$ and $b$.
+
+If instead we let $G(X,Y) : (X + Y) \to 2$, then we could have $GF \cong 1_{\mbf{Sets}/2}$, which
+would be an equivalence of categories rather than an isomorphism of categories.
+
+The equivalent scenario when dealing with the slice category into the terminal object $1$ of $\mbf{Sets}$
+avoids this problem, since we don't have to worry about one set overlapping itself.
+Our functors are $F : \mbf{Sets}/1 \pile{\lTo \\ \rTo} \mbf{Sets} : G$.
+Letting $\bigcirc_A$ denote the unqiue arrow from set $A$ into the terminal set $1$, we have
+$F(f : A \to 1) = A$, $F(r : A \to B) = r$, $G(A) = \bigcirc_A$, and $G(f : A \to B) = f$.
+It's easy to see that $F$ and $G$ are an iso pair.
+
+\subsection{Problem 8}
+
+We have $P : \mbf{Cats} \to \mbf{Prosets}$ and $U : \mbf{Prosets} \to \mbf{Cats}$.
+
+We first show that $P$ is a functor. Let $A,B \in \mbf{Cats}_0$, $F : A \to B \in \mbf{Cats}_1$,
+and $G : B \to C \in \mbf{Cats}_1$. Then the identity arrow $1_A$ is the functor which maps each
+object of $A$ to itself and each arrow of $A$ to itself. The identity object of a proset maps
+each element to itself, which is clearly order-preserving. We define
+$$P(F : A \to B) = P(F) : PA \to PB$$
+where for $a \in A_0$
+$$PF(a) = F(a)$$
+and for $f \in A_1$
+$$PF(f : a \to b) = a \leq_{P(B)} b$$
+Then we have $P(1_A)(a) = 1_A(a) = a$.
+Furthermore, for $F : A \to B$, $G : B \to C$ in $\mbf{Cats}_1$, $a \in A_0$ and $f \in A_1$, and noting
+that $P$ is the identity map on  we have
+$$(P(G \circ F))(a) = (G \circ F)(a) = G(F(a)) = (PG \circ PF)(a) $$
+Hence $P$ is functorial.
+
+Now, for all $Q \in \mbf{Prosets}_0$, we know that $UQ$ is a category such that
+\begin{itemize}
+\item The elements of $UQ$ are exactly the objects of $Q$
+\item We have one arrow $f : a \to b$ for each $a,b \in Q$ with $a \leq_Q b$
+\end{itemize}
+Then $PUQ$ is the proset such that
+\begin{itemize}
+\item The elements of $PUQ$ are exactly the objects of $UQ$, which are in turn exactly the objects of $Q$
+\item We have $a \leq_{PUQ} b$ iff there exists an $f : a \to b$ in $UQ$, which in turn exists iff $a \leq_Q b$
+\end{itemize}
+From this, it's clear that $PUQ = Q$.
+Now consider a monotone function $m : Q \to R \in \mbf{Prosets}_1$.
+Then $Um : UQ \to UR$ is the functor which
+\begin{itemize}
+\item Maps an object $a \in UQ = Q$ to the object $m(a) \in R = UR$.
+\item For $a,b \in Q$, if $a \leq_Q b$ then $Um$ maps the unique arrow $U(a \leq_Q b) : a \to b \in UQ$
+      to the unique arrow $U(m(a) \leq_R m(b)) : m(a) \to m(b) \in UR$.
+\end{itemize}
+furthermore, $PUm : PUQ \to PUR$ is the monotone function which
+\begin{itemize}
+\item Maps an element $a \in PUQ = Q$ to the object $m(a) \in R = PUR$.
+\end{itemize}
+It's clear, then, that $PUm = m$. 
+
+\subsection{Problem 9}
+
+a.) The objects are $a$ and $b$. There are three arrows:
+identities for $a$ and $b$, and also an arrow representing the path
+``$e$'' from $a$ to $b$. We can only compose with identities, so 
+composition is trivial.\\~\\
+
+b.) The objects are $a$ and $b$. For each natural number $n$,
+we have arrows $a_n : a \to a$, $b_n : b \to b$, $e_n : a \to b$,
+and $f_n : b \to a$. \\~\\
+$a_0$ and $b_0$ are the identities. $a_{n};a_{m} = a_{n + m}$, $b_{n};b_{m} = b_{n + m}$, $e_{n} = e_{n-1};f_1;e_1$, $\ldots$.
+
+c.) Just add identities to this graph to get the free category.\\~\\
+
+d.) TODO.
+
+\subsection{10} TODO.
+
+\subsection{11}
+a.) Um.. okay. Do I actually have to *do* anything for this part? I guess not.
+\\~\\
+b.) I don't know how to determine $M$ on functions without looking at the other side of the adjunction.
+
+\section{Chapter 2}
+
+\subsection{1}
+
+\emph{Show that a function between sets is an epimorphism if and only if it is surjective. Conclude that the isos in 
+ $\mbf{Sets}$ are exactly the epi-monos.}\\~\\
+Let $f : A \to B$ be an epi, i.e., for all $h,g : B \to C$, $f;h = f;g$ implies $h=g$.
+Let $b \in B$. Then there exists an $a \in A$ such that $f(a) = b$. For contradiction, suppose this is not the case.
+We define two functions $h,g : B \to C$, where $C$ has at least two elements $0$ and $1$, such that $h$ and $g$
+are the identity everywhere but $b$, and $h(b) = 0$ while $g(b) = 1$. We have $f;g = f;h$ but not $g=h$.
+\\~\\
+On the other hand, let $f : A \to B$ be surjective, and let $g,h : B \to C$.
+Suppose $f;g = f;h$. Then $g = h$, for if this were not the case, there would be some $b \in B$ such that
+$g(b) \neq h(b)$, and hence some $a \in A$ such that $g(f(a)) \neq h(f(a))$.
+
+\subsection{2}
+
+\emph{Show that in a poset category, all arrows are both monic and epic.}\\~\\
+Let $f : A \to B$ be an arrow in a poset category. Suppose that $f;g = f;h$; then
+we have $g,h : B \to C$ for some $C$. But because a poset category has at most 
+one arrow from $B$ to $C$, we have $g = h$. Hence $f$ is epic. A similar argument
+shows $f$ is monic.
+
+\subsection{3}
+
+\emph{(Inverses are unique) If an arrow $f : A \to B$ has inverses $g,g' : B \to A$ (i.e., $f;g = 1_A$ and $g;f = 1_B$, 
+ and similarly for $g'$), then $g = g'$}
+ 
+
+
+\section{Chapter 8}
+
+\subsection{1}
+
+\emph{Prove that if $F : \mbf{C} \to \mbf{D}$ is full and faithful, then $C \cong C'$ iff $FC \cong FC'$} \\~\\
+
+Suppose $C \cong C'$. Then there exist $f : C \to C'$ and $f^{-1} : C' \to C$ such that $f;f' = 1_c$ and $f';f = 1_{C'}$.
+Then $1_{FC} = F(1_C) = F(f;f^{-1}) = F(f);F(f^{-1})$ and $1_{FC'} = F(1_{C'}) = F(f^{-1};f) = F(f^{-1});F(f)$. Hence $FC \cong FC'$ via
+the iso pair $F(f)$ and $F(f^{-1})$.
+
+On the other hand, suppose $FC \cong FC'$. Then there exist $h : FC \to FC'$ and $h' : FC' \to FC$ such that 
+$h;h' = 1_{FC}$ and $h';h = 1_{FC'}$. Since $F$ is full, there exists $f : C \to C'$ and $f' : C' \to C$ 
+such that $Ff = h$ and $Ff' = h'$. Then $1_{FC} = h;h' = Ff;Ff' = F(f;f')$. But since $1_{FC} = F(1_{C})$, and $F$ 
+is faithful, we have $f;f' = 1_C$. A similar argument shows $f';f = 1_{C'}$. Hence, $C \cong C'$.
+
+\subsection{2}
+
+\emph{Let $\mbf{C}$ be a small category. Prove that the representable functors generate the diagram category 
+ $\mbf{Sets^{C^{Op}}}$ in the following sense: given any objects $P, Q \in \mbf{Sets^{C^{Op}}}$ and natural transformations
+$\varphi, \psi : P \to Q$, if for every representable functor $yC$ and natural transformation $\nu : yC \to P$, 
+one has $\varphi \circ \nu = \psi \circ \nu$, then $\varphi = \psi$. Thus, the arrows in $\mbf{Sets^{C^{Op}}}$ are determined by
+their effect on generalizaed elements based at representables}
+
+Let $P, Q \in \mbf{Sets^{C^{Op}}}$, and let $\varphi, \psi : P \to Q$. Suppose that for all representable functors
+$yC$ and natural transformations $\nu : yC \to P$ we have $\nu;\varphi = \nu;\psi$. We prove $\varphi = \psi$.
+
+Two natural transformations are equal iff they are equal at each component, so to this end we let $D \in \mbf{C}_0$
+and prove $\varphi_D = \psi_D$. We know that $(\nu;\varphi)_D = (\nu;\psi)_D$
+
+
+\end{document}
+
+

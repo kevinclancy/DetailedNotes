@@ -1,0 +1,342 @@
+\documentclass{article}
+
+\usepackage{amscd}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{stmaryrd}
+\usepackage{mathpartir}
+\usepackage{multicol}
+\usepackage{enumitem}
+\usepackage[section]{placeins} % float barriers
+\usepackage{natbib}
+\usepackage{xcolor} 
+\usepackage{bussproofs} 
+\usepackage{diagrams}
+\usepackage{tikz}
+
+\usetikzlibrary{cd}
+ 
+\newtheorem{lemma}{Lemma}
+
+%example: \limit{j \in J}{F_j}
+\newcommand{\limit}[2]{\underset{\overset{\longleftarrow}{#1}}{\text{lim}}~#2}
+\newcommand{\lims}[1]{\underset{\longleftarrow}{\text{lim}}~#1}
+\newcommand{\mbf}{\mathbf}
+\newcommand{\sem}[1]{\llbracket #1 \rrbracket}
+\newcommand{\csem}[1]{( \! | #1 | \! )}
+\newcommand{\self}{a}
+\newcommand{\vrt}[2]{
+\pile{
+#1 \\
+\downarrow \\
+#2
+}
+}
+
+\newcommand{\ddisp}[3]{
+\left(
+\scriptsize
+\begin{tikzcd}
+#1 \ar[d, "\footnotesize{#2}"] \\
+#3
+\end{tikzcd}
+\normalsize
+\right)
+}
+
+\newcommand{\disp}[3]{
+\left(
+\tiny
+\begin{array}{c}
+#1 \\
+\downarrow\\
+#3
+\end{array}
+\begin{array}{l}
+~ \\
+#2 \\
+~
+\end{array}
+\normalsize
+\right)
+}
+
+\newcommand{\dispp}[3]{
+\tiny
+\begin{tikzcd}
+#1 \ar[d, "#2"] \\
+#3
+\end{tikzcd}
+\normalsize
+}
+
+\title{My Denotational Semantics for OOP}
+
+\begin{document}
+
+\maketitle
+
+\section{Syntax}
+
+Let $\mathit{FieldNames}$, $\mathit{MethodNames}$, and $\mathit{ClassNames}$ be countable sets of field names,
+method names, and class names, respectively. Our language's syntax is defined as follows:\\~\\
+\begin{tabular}{llll}
+\multicolumn{4}{l}{$x,y,z \in \mathit{Vars}$} \\
+\multicolumn{4}{l}{$\self (\text{self variable})$} \\
+\multicolumn{4}{l}{$c \in \mathit{ClassNames}$} \\ 
+\multicolumn{4}{l}{$f \in \mathit{FieldNames}$} \\
+& & & \\
+$\tau,\sigma$ (atomic types) & $::=$ & $c \mid \mathit{Int} \mid \mathit{Bool} \mid 1 \mid \tau \times \sigma$ & \\
+$\iota$ (types) & $::=$ & $\tau \mid (\tau_1,\ldots,\tau_k) \to \tau$ \\
+& & & \\
+$d$ (class defn.) & $::=$ & \multicolumn{2}{l}{$\lbrack f_i : \tau_i^{~i \in 1..n},~m_i : \sigma_i \to \sigma_i' = \lambda x~\varsigma z.t_i^{~i \in 1..k},~\mathit{constr} : \tau \to \tau_1 \times \cdots \times \tau_n = \lambda x. t \rbrack$} \\
+              & & \multicolumn{2}{l}{\emph{where the $f_i$'s are distinct, and the $m_i$'s are also distinct}} \\
+ & & & \\
+$t,s$ (terms) & $::=$  & $self.f_{ij} := t$ & (field update) \\
+              & $\mid$ & $!self.f_{ij}$ & (field access)    \\
+              & $\mid$ & $t.m(t)$ & (method call)  \\
+              & $\mid$ & $\mbf{let}~x = t~\mbf{in}~t'$ & (monadic bind) \\
+              & $\mid$ & $\mathbf{if}~t~\mathbf{then}~t~\mathbf{else}~t$ & (if -- could this be a constant?) \\
+              & $\mid$ & $x$ & (variable occurrence) \\ 
+              & $\mid$ & $\mathit{constr}_i$ & (constructor occurrence) \\
+              & $\mid$ & $\mathit{k}$ & (constant occurrence) \\
+ & & & \\
+$p$ (program) & $:=$ & $c_i = d_i^{~i \in 1..n}$~~(where the $c_i$'s are distinct) & \\
+\if 0
+ & & & \\
+$\Delta$ (Field environment) & $:=$ & $\Delta,c_i.f_j : \tau \mid \emptyset$ & \\
+$\Theta$ (Method environment) & $:=$ & $\Theta,c_i.m_j : \tau \to \sigma \mid \emptyset$ & \\
+$\Omega$ (Constructor environment) & $:=$ & $\Omega,c_i.\mathit{constr} : \tau \to \tau_1 \times \cdots \times \tau_n \mid \emptyset$ & \\
+\fi
+$\Gamma$ (Primary environment) & $:=$ & $\Gamma,x:\tau \mid \emptyset$ & 
+\end{tabular}
+
+\section{Type system}
+
+We define our typing judgments with respect to a background program $p = [f_{ij} : \tau_{ij}^{~j \in 1..n_i},~m_{ij} : \sigma_{ij} \to \sigma_{ij}'^{~j \in 1..l_i} = \lambda x. \varsigma z. t, \mathit{constr}_i : \tau \to \tau_{i1} \times \cdots \times \tau_{in_i} = \lambda x.t]^{i \in 1..n}$.
+
+\begin{figure}
+\begin{mathpar}
+\inferrule[Var]
+  {x : \tau \in \Gamma}
+  {\self : c_i \mid \Gamma \vdash_p x : \tau}
+\and
+\inferrule[Self-Var]
+  {~}
+  {\self : \tau \mid \Gamma \vdash_p \self : \tau}
+\and
+\inferrule[Constr]
+  {\mathit{constr}_i : \tau \to \tau_{i1} \times \cdots \times \tau_{in_i} = \lambda x.t' ~\in~ p}
+  {\self : c_k \mid \Gamma \vdash_p \mathit{constr}_i : \tau \to c_i}
+\and
+\inferrule[Inv]
+  {\self : c_k \mid \Gamma \vdash_p t : c_i \\ m_{ij} : \sigma_{ij} \to \sigma_{ij}' \in p \\ \self : c_k \mid \Gamma \vdash_p t' : \sigma_{ij}'}
+  {\self : c_k \mid \Gamma \vdash_p t.m_{ij}(t') : \sigma_{ij}'}
+\and
+\inferrule[Get]
+  {f_{ij} : \tau_{ij} \in p}
+  {\self : c_i \mid \Gamma \vdash_p~!a.f_{ij} : \tau_{ij}}
+\and
+\inferrule[Set]
+  {f_{ij} : \tau_{ij} \in p \\ \self : c_i \mid \Gamma \vdash_{p} t : \tau_{ij}}
+  {\self : c_i \mid \Gamma \vdash_p a.f_{ij} := t : 1}
+\and
+\inferrule[Bind]
+  {a : c_i \mid \Gamma \vdash_p t : \tau \\ a : c_i \mid \Gamma,x:\tau \vdash_p t' : \tau'}
+  {a : c_i \mid \Gamma \vdash_p \mbf{let}~x = t~\mbf{in}~t' : \tau'}
+\and
+\inferrule[App]
+  {a : c_i \mid \Gamma \vdash_p t : \tau' \to \tau \\ a : c_i \mid \Gamma \vdash t' : \tau'}
+  {a : c_i \mid \Gamma \vdash_p t~t' : \tau}
+\and
+\inferrule[Const]
+  {\mathit{ty}(k) = \iota}
+  {a : c_i \mid \Gamma \vdash k : \iota}
+
+
+\end{mathpar}
+\caption{Typing judgments $\self \mid \Gamma \vdash_p t : \tau$}
+\end{figure}
+
+\begin{figure}
+\begin{mathpar}
+\inferrule
+  {p \doteq [f_{ij} : \tau_{ij}^{~j \in 1..n_i},~m_{ij} : \sigma_{ij} \to \sigma_{ij}'^{~j \in 1..l_i} = \varsigma z.\lambda x. t_{ij}, \mathit{constr}_i : \tau_i \to \tau_{i1} \times \cdots \times \tau_{in_i} = \lambda x.t]^{i \in 1..n} \\
+   a:c_i \mid x:\sigma_{ij} \vdash_p t_j : \sigma_{ij}'^{~i \in 1..n, j \in 1..n_i} \\ 
+   a:1 \mid x:\tau_i \vdash_p t : \tau_1 \times \cdots \times \tau_n^{~i \in 1 ..n}}
+  { p :: \ast}
+\end{mathpar}
+\caption{Well typed program judgment $p :: \ast$}
+\end{figure}
+
+\if 0
+
+\subsection{Field/Method Environment Generation}
+
+\begin{figure}
+\begin{mathpar}
+\inferrule
+  {p' \Uparrow \Delta' \mid \Theta'}
+  {c_i = [f_j:\tau_j^{~j \in 1..n}, m_j : \sigma_j \to \sigma_j'^{~j \in 1..l},\cdots],p' \Uparrow \Delta \mid \Theta
+ \\~\\
+ \text{where } \Delta = \Delta',c_i.f_j:\tau_j,\ldots,c_i.f_n:\tau_n \\~\\~\\
+ \text{and } \Theta = \Theta',c_i.m_1 : \sigma_1 \to \sigma_1', \ldots, c_i.m_l : \sigma_n \to \sigma_{n}'}
+\and
+ \inferrule{~}{\emptyset \Uparrow \emptyset \mid \emptyset}
+\end{mathpar}
+
+\label{fig:jgen}
+\caption{Type ascription collection}
+\end{figure}
+
+Is this judgment really necessary? Can't I just write $c_i.f_j : \tau \Leftrightarrow$ $(f_j : \tau)$ is a field of class $c_i$.
+$c_i.constr : \tau \to \tau_1 \times \cdots \times \tau_n$ $\Leftrightarrow$ 
+$c_i = [\cdots constr : \tau \to \tau_1 \times \cdots \times \tau_n = \lambda x.t]$
+
+\fi
+
+\section{Preview}
+
+Our semantics will interpret types as sets. 
+We will then define a set $S$ that represents our program state. As a first approximation, we might interpret a 
+command with domain $A$ and codomain $B$ monadically; defining $T$ as the state monad $T(X) \doteq (S \times -)^S$, 
+such a command would be interpreted as a morphism $A \to B$ in the Kleisli category $\mathcal K \ell(T)$. 
+
+However, since this is an 
+object-oriented language with open recursion, we must accomodate divergence. 
+Furthermore, our language features dynamic allocation. A command such as a method invocation must be allowed to 
+proceed from any 
+initial state; in particular, if we proceed from a state in which the target of the invocation is a dangling pointer, we must raise an 
+exception. We therefore define our computation monad 
+$T : \mbf{Sets} \to \mbf{Sets}$ as $T(X) \doteq ((S \times X) + 1 + 1)^S$, where 
+$\kappa_2 \ast$ represents a diverging computation and $\kappa_3 \ast$ represents a 
+dangling pointer exception. 
+
+
+
+\section{State Interpretations $\sem{\cdot}$}
+
+\begin{mathpar}
+\begin{tabular}{l}
+$\sem{\cdot} : \tau \to \mbf{Sets}$ \\
+$\sem{Int} \doteq \mathbb{Z}$ \\
+$\sem{Bool} \doteq \mathbb{B}$ \\
+$\sem{c} \doteq \mathbb{N}$
+\end{tabular}
+\and
+
+\begin{tabular}{l}
+$\sem{\cdot} : d \to \mbf{Sets}$ \\
+$\sem{~\lbrack f_i : \tau_i^{~i \in 1..n} \cdots \rbrack~} \doteq \sem{\tau_1} \times \cdots \times \sem{\tau_n}$
+\end{tabular}
+\and
+\begin{tabular}{l}
+$\sem{\cdot} : p \to \mbf{Sets}$\\
+$\sem{c_i = d_i^{~i \in 1..n}} \doteq 
+  (\mathbb N \overset{\mathit{fin}}{\rightharpoonup} \sem{d_1}) \times \cdots \times (\mathbb N \overset{\mathit{fin}}{\rightharpoonup} \sem{d_n}) $\\~\\
+\end{tabular}
+\end{mathpar}
+% how do I left align the two-dollasign mode?
+
+
+
+We refer to the set $\sem{c_i = d_i^{~i \in 1..n}}$ as $S$, because it is used to model our program's state 
+\underline{S}tate.
+
+
+\section{Interface Interpretations $\csem{\cdot}$}
+
+Now that we have defined a set $S$ representing the program state, our computation monad
+$T(X) \doteq ((S \times X) + 1 + 1)^S$ is fully defined.
+We can now interpret methods, fields, OOP objects, and classes.
+
+
+As a first approximation, a getter for a field field $f : \tau$ can be interpreted as an arrow of the form 
+$\mathbb N \to \sem{\tau}$ in $\mathcal K \ell(T)$, and a setter for $f : \tau$ can be interpreted as an arrow
+of the form $\mathbb N \times \sem{\tau} \to 1$ in $\mathcal K \ell(T)$. Likewise, a premethod 
+$m : \sigma \to \sigma'$ can be interpreted as a $\mathcal K \ell(T)$-arrow of the form $\mathbb N \times \sem{\sigma} \to \sem{\sigma'}$.
+
+
+
+
+\if 0
+However, a field in a class definition doesn't denote just a single 
+getter/setter coalgebra, but instead an entire family of them, one for each allocated instance of the class.
+Since it may be possible to attempt accessing a field that has not been allocated, a field is interpreted as 
+$\mathcal K \ell(T)$-morphism of type 
+\begin{center}
+\begin{tikzcd}
+\mathbb N \ar[r] & T(\sem{\tau} \times S^{\sem{\tau}})
+\end{tikzcd} 
+\end{center} 
+
+Actually, I don't think we want to dereference fields individually. First we want to dereference the object containing
+the field and then we want to project the appropriate coalgebra.
+
+Thus, for a class $c$, 
+we interpret a field $f : \tau$ as a function which maps a natural number $i$ to the getter/setter coalgebra 
+for field $f$ of the 
+$i$th allocated instance of class $c$, i.e. an element of the dcppo $((\sem{\tau} \times S^{\sem{\tau}})^S)^{\mathbb N_{\bot}}$ 
+%note that above we're not mentioning that this function also has bottom in its domain; I think we can do this by 
+%convention to make things easier to read
+
+Likewise, a method $m : \sigma \to \sigma'$ is also interpreted coalgebraically, as an element of the dcppo
+$((\sem{\sigma'} \times S)^{\sem{\sigma}})^S$.
+
+Then, given a class definition 
+$\lbrack f_i:\tau_i^{~i \in 1..n}, m_i = \lambda x \zeta z. t_i :\sigma_i \to \sigma_i'^{~i \in 1..l}, \cdots \rbrack$, we interpret its list of fields 
+as the product of their coalgebraic interpretations:
+$$\csem{f_i : \tau_i^{~i \in 1..n}} \doteq (\sem{\tau_1} \times S^{\sem{\tau_1}})^S \times \cdots \times (\sem{\tau_n} \times S^{\sem{\tau_n}})^S$$
+and we interpret its list of methods as the product of their coalgberaic interpretations
+$$\csem{m_i = \lambda x \zeta z. t_i : \sigma_i \to \sigma_i'^{~i \in 1..l}} \doteq ((\sem{\sigma_1'} \times S)^{\sem{\sigma_1}})^S \times \cdots \times ((\sem{\sigma_l'} \times S)^{\sem{\sigma_l}})^S$$
+Then, a class definition is interpreted as the product of these two components:
+$$ \csem{~\lbrack f_i:\tau_i^{~i \in 1..n}, m_i:\sigma_i \to \sigma_i'^{~i \in 1..l}, \cdots \rbrack~} \doteq 
+  \csem{f_i : \tau_i^{~i \in 1..n}} \times \csem{m_i : \sigma_i \to \sigma_i'^{~i \in 1..l}} $$
+
+\fi
+
+
+
+
+
+\if 0
+Then, given an object 
+$\lbrack f_i:\tau_i^{~i \in 1..n}, m_i:\sigma_i \to \sigma_i'^{~i \in 1..l}, \cdots \rbrack$, we interpret its set of fields
+as a function which maps each $f_i$ to an element of $(\sem{\tau_i} \times S^{\sem{\tau_i}})^S$; i.e., collectively its fields are interpreted as an element of the dcppo
+$$\prod_{f_i \in \{ f_1 \ldots, f_n \}} (\sem{\tau_i} \times S^{\sem{\tau_i}})^S$$
+and we interpret its set of methods $m_i:\sigma_i\to\sigma_i'^{~i \in 1..l}$ as an element of the dcppo
+$$\prod_{m_i \in \{ m_1 \ldots, m_l \}} ((\sem{\sigma_i'} \times S)^{\sem{\sigma_i}})^S$$
+We are now ready to define the interface interpretation for class definitions:\\~\\
+\begin{tabular}{ll}
+\multicolumn{2}{l}{$\csem{\cdot} : d \to \mbf{dcppo}$} \\
+$\csem{~\lbrack f_i:\tau_i^{~i \in 1..n}, m_i:\sigma_i \to \sigma_i'^{~i \in 1..l}, \cdots \rbrack~} \doteq$ & 
+  $\{ F \uplus M \mid$ \\ 
+  & $~~F \in \prod_{f_i \in \{ f_1, \ldots, f_n \}} (\sem{\tau_i} \times S^{\sem{\tau_i}})^S~~\wedge$ \\
+  & $~~M \in \prod_{m_i \in \{ m_1, \ldots, m_l \}} ((\sem{\sigma_i'} \times S)^{\sem{\sigma_i}})^S \}$
+\end{tabular}\\~\\
+Here $F \uplus M$ means $F \cup M$, but with the plus symbol emphasizing that the two components $F$ and $M$ are disjoint.
+
+We also need to take a closure as an argument though, so the above interpreation is wrong. Also I can't use common 
+isomorphisms to pull the S exponents out.
+
+\fi
+
+
+
+%$\csem{f : \tau} \doteq ((\sem{\tau} \times S^{\sem{\tau}})^S)^{\mathbb N_{\bot}}$\\
+%$\csem{m : \sigma \to \sigma'} \doteq (((\sem{\sigma'} \times S)^{\sem{\sigma}})^S)^{\mathbb N_{\bot}}$\\~\\
+%$\csem{c_i = [f_{ij} : \tau_{ij}^{~j \in 1..n}, m_{ij} : \sigma_{ij} \to \sigma_{ij}'^{~j \in 1..l}, \cdots]^{i \in 1..k}} \doteq$\\
+%$~~~~~((\sem{\tau_1} \times S^{\sem{\tau_1}} \times \cdots \times \sem{\tau_n} \times S^{\sem{\tau_n}}
+%\times (\sem{\sigma_1} \times S)^{\sem{\sigma_1'}} \times \cdots \times (\sem{\sigma_l} \times S)^{\sem{\sigma_l'}})^S)^{\mathbb N_{\bot}}$
+
+
+% $~~~~~((\sem{\tau_1} \times S^{\sem{\tau_1}} \times \cdots \times \sem{\tau_l} \times S^{\sem{\tau_l}}
+% \times (\sem{\sigma_1} \times S)^{\sem{\sigma_1'}} \times \cdots \times (\sem{\sigma_l} \times S)^{\sem{\sigma_l'}})^S)^{\mathbb N_{\bot}}$
+
+
+
+
+
+\end{document}

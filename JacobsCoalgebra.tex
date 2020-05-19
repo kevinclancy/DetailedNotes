@@ -1,0 +1,1560 @@
+\documentclass{article}
+
+\usepackage{amscd}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{stmaryrd}
+\usepackage{mathpartir}
+\usepackage{multicol}
+\usepackage{enumitem}
+\usepackage[section]{placeins} % float barriers
+\usepackage{natbib}
+\usepackage{xcolor} 
+\usepackage{bussproofs} 
+\usepackage{diagrams}
+\usepackage{tikz}
+
+\usetikzlibrary{cd}
+ 
+\newtheorem{lemma}{Lemma}
+
+%example: \limit{j \in J}{F_j}
+\newcommand{\limit}[2]{\underset{\overset{\longleftarrow}{#1}}{\text{lim}}~#2}
+\newcommand{\lims}[1]{\underset{\longleftarrow}{\text{lim}}~#1}
+\newcommand{\mbf}{\mathbf}
+
+
+\newcommand{\vrt}[2]{
+\pile{
+#1 \\
+\downarrow \\
+#2
+}
+}
+
+\newcommand{\ddisp}[3]{
+\left(
+\scriptsize
+\begin{tikzcd}
+#1 \ar[d, "\footnotesize{#2}"] \\
+#3
+\end{tikzcd}
+\normalsize
+\right)
+}
+
+\newcommand{\disp}[3]{
+\left(
+\tiny
+\begin{array}{c}
+#1 \\
+\downarrow\\
+#3
+\end{array}
+\begin{array}{l}
+~ \\
+#2 \\
+~
+\end{array}
+\normalsize
+\right)
+}
+
+\newcommand{\dispp}[3]{
+\tiny
+\begin{tikzcd}
+#1 \ar[d, "#2"] \\
+#3
+\end{tikzcd}
+\normalsize
+}
+
+\title{Solutions: \emph{Introduction to Coalgebra} by Bart Jacobs }
+
+\begin{document}
+
+\maketitle
+
+\section*{2.1 - Constructions on Sets}
+
+\subsection*{2.1.1 - 2.1.8}
+
+Skipping these because they don't look interesting enough.
+
+\subsection*{2.1.9}
+
+A full definition of $\mathcal P_{fin}$ was not provided, so I'll assume that it is like $\mathcal P$,
+but with the restriction to finite subsets only, i.e., for $f : X \to Y \in \mbf{Sets}_1$ and 
+$U \in \mathcal P_{fin}(X)$ we have \\~\\
+$\mathcal P_{fin}(f)(U) \doteq \{ f(x) \mid x \in U \}$\\~\\
+It's clear that $\mathcal P_{fin}(f) : \mathcal P_{fin}(X) \to \mathcal P_{fin}(Y)$. We must now show that it is
+functorial. For $X \in \mbf{Sets}$ and $U \subseteq X$ we have $\mathcal P_{fin}(id_X)(U) = U$ hence 
+$\mathcal P_{fin}(id_X) = id_{\mathcal P_{fin}(X)}$. For $f : X \to Y$, $g : Y \to Z$, and
+$U \in \mathcal P_{fin}(X)$ we have 
+\begin{center}
+\begin{tabular}{lll}
+$\mathcal P_{fin}(f;g)(U)$ & $=$ & \\
+$\{ (f;g)(x) \mid x \in U \}$ & $=$ & \\
+$\{ g(f(x)) \mid x \in U \}$ & $=$ & \\
+$\{ g(y) \mid y \in \mathcal P_{fin}(f)(U) \}$ & $=$ & \\
+$(\mathcal P_{fin}(g);\mathcal P_{fin}(f))(U))$ & $=$ & \\
+$(\mathcal P_{fin}(g);\mathcal P_{fin}(f))(U)$ &  &
+\end{tabular}
+\end{center}
+
+\subsection*{2.1.10}
+
+We first show that $\mathcal P(0) \cong 1$. We have $\mathcal P(0) = \mathcal P(\emptyset) = \{ \emptyset \}$. 
+Let $1 \doteq \{ \ast \}$ be some singleton set. Then we have $f : \mathcal P(0) \to 1$ defiend as $f(\emptyset) = \ast$
+and $g : 1 \to \mathcal P(0)$ defined as $g(\ast) = \emptyset$. Clearly, $f;g = id_{\mathcal P(0)}$ and $g;f = id_{1}$;
+hence, $\mathcal P(0) \cong 1$.\\~\\
+We now show that for $X,Y \in \mbf{Sets}$ we have $\mathcal P(X + Y) \cong \mathcal P(X) \times \mathcal P(Y)$.
+Let $Z \in \mathcal P(X + Y)$. Then there exist sets $Z_1$ and $Z_2$ such that 
+$Z = Z_1 \times \{ 1 \}~\dot{\cup}~Z_2 \times \{ 2 \}$. We define $f : \mathcal P(X + Y) \to \mathcal P(X) \times \mathcal P(Y)$
+such that $f(Z) \doteq (Z_1,Z_2)$. For $A \subseteq X$ and $B \subseteq Y$, we define 
+$g : \mathcal P(X) \times \mathcal P(Y) \to \mathcal P(X + Y)$ such that $g(A,B) \doteq A \times \{ 1 \}~\dot{\cup}~A \times \{ 2 \}$. $f$ and $g$ clearly form an iso pair.
+
+\subsection*{2.1.11}
+
+The functoriality $2^{(-)} : Hom(X,Y) \to Hom(2^Y, 2^X)$ comes from precomposition: for $f : X \to Y$ and $U \in 2^Y$ 
+we define $2^f(U) \doteq \Lambda(f;\Lambda^{-1}(U)) \in 2^X$. It's not hard to see that this matches the inverse image
+functor defined in the text.
+
+\subsection*{2.1.12}
+
+\subsubsection*{1.}
+
+Let $U,V \subseteq X$ and $f : X \to Y$. Then $\mathcal P(f)(U \cup V) = \{ f(x) \mid x \in U~\text{or}~x \in V \}
+= \{ f(x) \mid x \in U \} \cup \{ f(x) \mid x \in V \} = \mathcal P(f)(U) \cup \mathcal P(f)(V)$.\\~\\
+Let $U,V \subseteq Y$ and $f : X \to Y$. Then $f^{-1}(U \cup V) = \{ x \mid f(x) \in U \text{ or } f(x) \in V \} =
+\{ x \mid f(x) \in U \} \cup \{ x \mid f(x) \in V \} = f^{-1}(U) \cup f^{-1}(V)$.\\~\\
+Furthermore, $f^{-1}(U \cap V) = \{ x \mid f(x) \in U \text{ and } f(x) \in V \} = \{ x \mid f(x) \in U \}~\cap~ 
+\{ x \mid f(x) \in V \} = f^{-1}(U) \cap f^{-1}(V)$.\\~\\
+Furthermore, $f^{-1}(\overline{U}) = \{ x \mid f(x) \not \in U \} = \overline{\{ x \mid f(x) \in U\}} = \overline{f^{-1}(U)}$.\\~\\
+Rad.
+
+\subsubsection*{2.}
+
+Seems obvious: I'll skip.
+
+\subsubsection*{3.}
+
+First, note that for $X \in \mbf{Sets}$ and $U \in \mathcal P(X)$ we have $\prod_{id_X} (U) = 
+  \{ y \mid \forall x \in X.~id_X(x) = y \Rightarrow x \in U \} = U$. Hence $\prod_{id_X} = id_{\mathcal P(X)}$. 
+For the other part of functoriality, let $f : X \to Y$ and $g : Y \to Z$. Then 
+
+\begin{center}
+\begin{tabular}{lll}
+$\prod_{f;g}(U)$ & $=$ & \\
+$\{ z \mid \forall x \in X. (f;g)(x) = z \Rightarrow x \in U \}$ & $=$ &  \\
+$\{ z \mid \forall y \in Y. g(y) = z \Rightarrow (\forall x \in X. f(x) = y \Rightarrow x \in U) \} $ & $=$ &\\
+$\{ z \mid \forall y \in Y. g(y) = z \Rightarrow y \in \{ y \mid \forall x \in X. f(x) = y \Rightarrow x \in U \} \} $ & $=$ &\\
+$\{ z \mid \forall y \in Y. g(y) = z \Rightarrow y \in \{ y \mid \forall x \in X. f(x) = y \Rightarrow x \in U \} \} $ & $=$ & \\
+$\{ z \mid \forall y \in Y. g(y) = z \Rightarrow y \in \prod_f(U) \} $ & $=$ & \\
+$(\prod_g)((\prod_f)(U))$ & $=$ & \\
+$(\prod_f;\prod_g)(U)$ &  & 
+\end{tabular}
+\end{center}
+
+The Galois connection is straightforward.
+
+\subsection*{2.1.13}
+
+\subsection*{2.2.1}
+
+TODO: could be proven inductively. not that interesting.
+
+\subsection*{2.2.2}
+
+1. This is a colist; i.e., it is either a finite list or an infinite stream. \\
+2. A tree with both binary (two-child) and unary (one-child) nodes, in which paths may be finite or infinite.
+
+\subsection*{2.2.3}
+
+\begin{tabular}{lll}
+$\mathcal P(1 + (A \times X))$ & $\cong$ & \\
+$\mathcal P(1) \times \mathcal P(A \times X)$ & $\cong$ & \\ 
+$2 \times \mathcal P(A \times X)$ & $\cong$ & \\
+$2 \times \mathcal P(X)^A$ & ~ & ~  
+\end{tabular}
+
+\subsection*{2.2.4}
+
+1.) We take a bottom-up approach. First, for the left summand $B$ we have the arity map $\# : B \to \mathbb N$ which
+is constantly 0. Likewise for $A$ in the right summand. The right summand $(X \times A \times X)$ can be rewritten
+as $((X \times A) \times X)$. The arity for $(X \times A)$ is $\# : 1 \times A \to \mathbb N$ defined as $\# (\ast, a) \doteq 1 + 0 = 1$. Now consider the functor corresponding to this arity:
+$$F_{\#} (X) = \coprod_{(\ast,a) \in 1 \times A} X^{1}$$ 
+It's not hard to see that $F_{\#}(X)$ is isomorphic to $X \times A$.\\~\\
+Now, consider $(X \times A) \times X$. The arity for this functor is $\# : (1 \times A) \times 1 \to \mathbb N$ defined
+as $\#((\ast,a),\ast) \doteq 1 + 1 = 2$. The arity functor is then:
+$$F_{\#}(X) = \coprod_{((\ast,a),\ast) \in (1 \times A) \times 1} X^{2} $$
+It's not hard to see that this is isomorphic to $(X \times A) \times X$.\\~\\
+Now, consider $B + ((X \times A) \times X)$. The arity for this functor $\# : (B + ((1 \times A) \times 1)) \to \mathbb N$
+is defined as $\# (b,1) \doteq 0$ and $\# (((\ast, a),\ast),2) \doteq 2$. This generates a functor
+$$F_{\#}(X) \cong B + \coprod_{((\ast,a),\ast)} X^2 \cong B + ((X \times A) \times X)$$ 
+
+2.) TODO.
+
+\subsection*{2.2.5}
+
+Yep, recall that finite exponents can be viewed as ``syntactic sugar'' built from finite products. Furthermore, 
+constant functors $F(X) = A$ require us to use $A$ as the arity index set, and so restricting to finite arity index sets
+implies that constant functors (generated from such arities functors) can only produce finite sets.   
+
+\subsection*{2.2.6}
+
+Skip.
+
+\subsection*{2.2.7}
+
+1.) Applying $\mathcal P$ once to $f : X \to Y$ gives us $\mathcal P(f) : \mathcal P(Y) \to \mathcal P(X)$, which
+maps each subset of $Y$ to its pre-image. Applying $\mathcal P$ again gives us 
+$\mathcal N(f) : \mathcal N(X) \to \mathcal N(Y)$. It maps each set of subsets $A$ of $X$ to the set of subsets of $Y$ whose
+preimages are in $A$.\\~\\
+2.) Hmm. Okay. Not really sure if I see the point. Guess I would have to follow the references to learn more.
+
+\subsection*{2.2.8}
+
+\begin{center}
+\begin{tikzcd}[sep=60]
+X^A \times B \ar[r, "f^A \times B"] & Y^A \times B \\
+X \ar[u,"\langle \delta_a \text{,} \epsilon_a \rangle"] \ar[r,"f" below] & Y \ar[u, "\langle \delta_b \text{,} \epsilon_b \rangle" right] 
+\end{tikzcd}
+\end{center}
+1. Noted.\\~\\
+2. 
+
+\begin{lemma}
+For all $x \in X$, $\sigma \in A^{\star}$, $\delta_a^*(x,\sigma);f = ((f \times id_{A^\star});\delta_b^*)(x,\sigma)$.
+\end{lemma}
+
+\begin{proof}
+TODO.
+\end{proof}
+
+The below contains a misstep, at least in the non-empty case. The above lemma should provide the way forward. 
+
+We show that $\mathit{beh}_2(f(x))(\sigma) = \mathit{beh}_1(x)(\sigma)$ by induction on the length of $\sigma$.
+\begin{description}
+\item[Case $\sigma = \langle \rangle$:]~\\
+
+\begin{tabular}{lll}
+$beh_2(f(x))(\langle \rangle)$ & $=$ & \\
+$\epsilon_b(\delta_b^*(f(x),\langle \rangle))$ & $=$ & \\
+$\epsilon_b(f(x))$ & $=$ & \\
+$(f;\epsilon_b)(x)$ & $=$ & \\
+$(\epsilon_a;id_B)(x)$ & $=$ \\
+$(\epsilon_a)(x)$ & $=$ & \\
+$(\epsilon_a)(\delta_a^*(x, \langle \rangle))$ & $=$ & \\
+$beh_1(x)(\langle \rangle)$ & & 
+\end{tabular}
+
+\item[Case $\sigma = a \cdot \sigma'$:]~\\
+
+\begin{tabular}{lll}
+$beh_2(f(x))(a \cdot \sigma')$ & $=$ & \\
+$\epsilon_b(\delta_b^*(f(x),a \cdot \sigma'))$ & $=$ & \\
+$\epsilon_b(\delta_b^*(\delta_b(f(x))(a),\sigma'))$ & $=$ & \\
+$\epsilon_b(\delta_b^*((f;\delta_b)(x)(a),\sigma'))$ & $=$ & \\
+$\epsilon_b(\delta_b^*((\delta_a;f)(x)(a),\sigma'))$ & $=$ & \\
+%$beh_2(\delta_b(f(x))(a))(\sigma')$ & $=$ & (by the IH) \\
+%$beh_2((f;\delta_b)(x)(a))(\sigma')$ & $=$ & \\
+%$beh_2((f;\delta_b)(x)(a))(\sigma')$ 
+\end{tabular}
+
+\end{description} 
+
+\subsection*{2.2.9}
+
+Recall the definition of $\delta^* : S \times A^{\star} \to S$. It is
+$$\delta^*(x, \langle \rangle) \doteq x$$
+$$\delta^*(x, a \cdot \sigma) \doteq \delta^*(\delta(x)(a), \sigma)$$
+The idempotence of this monoid action follows directly from the first clause of its definition 
+$\delta^*(x, \langle \rangle) \doteq x$. \\~\\
+Given $\sigma,\sigma' \in A^\star$ we prove that 
+$\delta^*(x, \sigma \cdot \sigma') = \delta^*(\delta^*(x, \sigma), \sigma')$ by induction on $\sigma$.
+\begin{description}
+\item[Case $\sigma = \langle \rangle$:]~\\
+$\delta^*(x, \langle \rangle \cdot \sigma') = \delta^*(x, \sigma') = \delta^*(\delta^*(x, \langle \rangle), \sigma')$.
+\item[Case $\sigma = a \cdot \sigma''$:]~\\
+$\delta^*(x, (a \cdot \sigma'') \cdot \sigma') = \delta^*(x, a \cdot (\sigma'' \cdot \sigma')) = 
+\delta^*(\delta(x)(a), \sigma'' \cdot \sigma') = \delta^*(\delta^*(\delta(x)(a), \sigma''), \sigma')
+= \delta^*(\delta^*(x,a \cdot \sigma''), \sigma')$ 
+\end{description}
+
+\subsection*{2.2.10}
+
+Hello. TODO.
+
+\subsection*{2.2.12}
+
+1.) I'm already familiar with the content of part 1, but I'll reproduce it for review.
+Given two finite-dimensional $\mathbb R$-spaces $V$ and $W$, their product $V \times W$ 
+is the vector space whose elements are pairs $(v,w)$ where $v \in V$ and $w \in W$ (also, for $k \in \mathbb R$ we define 
+$k(v,w) \doteq (kv,kw)$),
+for given a vector space $Z$ and arrow $f : Z \to V$ and $g : Z \to W$ we obtain an 
+arrow $\langle f,g \rangle : Z \to V \times W$ defined such that $z \in Z \mapsto (f(z),g(z))$.
+Our projections $\pi : V \times W \to V$ and $\pi' : V \times W$ are as expected;
+they are linear since, for example, $\pi(k(v,w) + (v',w')) = kv + v' = k\pi(v,w) + \pi(v',w')$.
+\\~\\
+Now we'll show why $V \times W$ also happens to be a coproduct of $V$ and $W$. First, we need
+coprojections. We define $\kappa (v) \doteq (v,0_W)$ and $\kappa'(w) \doteq (0_V,w)$.
+Given a vector space $Y$ and two arrows $a : V \to Y$ and $b : W \to Y$, we define the 
+cotuple mapping $[a,b] : V \times W \to Y$ as $[a,b](v,w) \doteq a(v) + b(w)$.
+\\~\\
+The nullary product, aka final object, is the 0-dimensional vector space $1 = \{ \vec{0} \}$, which contains a single vector.
+We all know that there's a single function $!_V : V \to 1$ from any vector space $V$ into 
+$1$; to see that this function is linear, note that for $!_V(kv + w) = k\vec{0} + \vec{0} = k(!_V(v)) + !_V(w)$.
+\\~\\
+For the nullary coproduct, we have $0 = \{ \vec{0} \}$. Consider a vector space $V$ and a function $! : 0 \to V$.
+For $!$ to be linear, we must have $!(\vec{0}) = \vec{0}$, for if $!(\vec{0}) = v$ we must have 
+$!(\vec{0}) = !(k \vec{0}) = k!(\vec{0}) = kv$ for all $k$; this implies $v = \vec{0}$.
+\\~\\
+The elements $x \in V$ are determined by generalized points from the one-element vector space $\mathbb R$,
+but only with respect to a chosen unit vector $\vec{1} \in \mathbb R$.
+\\~\\~\\~\\
+2.) This part isn't a problem; instead, it's a passage to read.
+\\~\\
+3.) Another passage. It's interesting that $A^{\S}$ is non-finite.
+\\~\\
+4.) Lol. Another passage. I don't know what the summation symbol means and I don't have any idea what this is all
+used for. Guess I will have to follow the references if I want to know more.
+
+
+
+\section*{2.3}
+
+\subsection*{2.3.1}
+
+Suppose that the final coalgebra for $f$ is $y \overset{\leq}{\longrightarrow} f(y)$.
+For an arbitrary $x \in X$ with $x \leq f(x)$, we have the following scenario. 
+
+\begin{center}
+\begin{tikzcd}
+f(x)                 \ar[r,"\leq" above, dashed]  & f(y) \\
+x \ar[u,"\leq" left] \ar[r, "\leq" below, dashed] & y \ar[u, "\leq" right]
+\end{tikzcd}
+\end{center}
+
+By the Knaster-Tarski fixpoint theorem, $y$ is then the greatest fixpoint of $f$.
+
+\subsection*{2.3.2}
+
+1. By RAPL, we know that $(X \times B)^A \cong X^A \times B^A$. Hence there is a bijective correspondence between
+coalgebras $X \to (X \times B)^A$ and coalgebras $X \to X^A \times B^A$. We can apply prop 2.3.5, using 
+$B^A$ for $B$, to get that $(B^A)^{A^{\star}}$ is the final coalgebra; note that $(B^A)^{A^{\star}} \cong B^{A^+}$.
+TODO: describe the final coalgebra structure explicitly.
+
+\subsection*{2.3.3}
+
+Let $\alpha : 1 \to F(1)$ be the assumed inverse of $!_{F(1)} : F(1) \to 1$.
+Consider an arbitrary $F$-coalgebra $c : X \overset{c}{\longrightarrow} F(X)$. We have arrows
+$!_X : X \to 1$ and $F(!_X) : F(X) \to F(!)$. By finality, this is the unique pair
+of arrows making a square of the following two $F$-coalgebras:
+
+\begin{center}
+\begin{tikzcd}
+F(X) \ar[r, "F(!_X)" above] & F(1) \\
+X \ar[r, "!_X" below] \ar[u,"c" left] & 1 \ar[u, "\alpha" right]
+\end{tikzcd}
+\end{center}
+
+But is this square coalgebra morphism? In other words, does it commute? To answer this, we add $!_{F(1)}$ to the diagram.
+
+\begin{center}
+\begin{tikzcd}
+F(X) \ar[r, "F(!_X)" above] & F(1) \ar[d, "!_{F(1)}" left, bend right = 20] \\
+X \ar[r, "!_X" below] \ar[u,"c" left] & 1 \ar[u, "\alpha" right, bend right = 20]
+\end{tikzcd}
+\end{center}
+
+By finality, we have $c;F(!_X);!_{F(1)} = !_X$. Post-composing both sides with $\alpha$, we have 
+$c;F(!_X);!_{F(1)};\alpha = !_X;\alpha$. Since $!_{F(1)};\alpha = id_{F(1)}$, the aforementioned equation
+simplifies to $c;F(!_X) = !_X;\alpha$, i.e., the square commutes.
+
+\subsection*{2.3.4}
+
+We first describe the final coalgebra $Z \overset{c}{\to} F(Z)$ concretely. 
+The carrier set $Z$ is the set of all partial functions 
+$\varphi : 2^{\star} \rightharpoonup A$ such that $\varphi(a \cdot \sigma) \downarrow~~\Rightarrow~~\varphi(\sigma) \downarrow$.
+We define 
+$$c(\varphi) = \left \{ \begin{array}{ll} \kappa \ast & \text{ if } \varphi(\langle \rangle) \uparrow \\ \kappa'(a,\varphi',\varphi'') & \text{ where } \varphi(\langle \rangle) = a, \varphi'(\sigma) \doteq \varphi(0 \cdot \sigma), \text{ and } \varphi''(\sigma) \doteq \varphi(1 \cdot \sigma) \end{array} \right .$$
+We must prove that $c$ actually is the final coalgebra of the functor $F$ defined such that $F(X) \doteq 1 + (A \times X \times X)$.\\~\\
+For some arbitarary $F$-coalgebra $X \overset{d}{\longrightarrow} 1 + (A \times X \times X)$, the behavior
+morphism $\mathit{beh_d} : X \to Z$ is defined as follows, for $\sigma \in 2^\star$:
+$$ \mathit{beh_d}(x)(\sigma) \doteq 
+  \left \{ \begin{array}{ll} 
+    \uparrow & \text{ if } d(x) = \kappa \ast \\
+    a & \text{ if } d(x) = \kappa'(a,x',x'') \text{ and } \sigma = \langle \rangle \\
+    \mathit{beh_d}(x')(\sigma') & \text{ if } d(x) = \kappa'(a,x',x'') \text{ and } \sigma = 0 \cdot \sigma' \\
+    \mathit{beh_d}(x'')(\sigma'') & \text{ if } d(x) = \kappa'(a,x',x'') \text{ and } \sigma = 1 \cdot \sigma' 
+  \end{array} \right . $$
+
+Note that the above definition is well-founded by induction on $\sigma$.\\~\\
+We first show that this is a coalgebra map, i.e., it makes the following diagram commute:
+
+\begin{center}
+\begin{tikzcd}[sep = 60]
+1 + (A \times X \times X) \ar[r,"1 + (A \times \mathit{beh_d} \times \mathit{beh_d})", dashed] & 1 + (A \times Z \times Z) \\
+X \ar[r, "\mathit{beh_d}" below, dashed] \ar[u,"d" left] & Z \ar[u,"c" right]
+\end{tikzcd}
+\end{center}
+
+The commutativity and uniqueness of the above diagram is almost tautological, so I will not walk through it.\\~\\
+Our next step is to provide a coinductive definition of $\mathit{mir}$; it is the behavior map of the coalgebra
+$\alpha : Z \to 1 + (A \times Z \times Z)$ defined such that
+
+$$ \alpha(\varphi) \doteq \left \{
+  \begin{array}{ll}
+     \kappa \ast & \text{ if } \varphi(\langle \rangle) \uparrow \\
+     \kappa' (a,\lambda \sigma \in 2^{\star}. \varphi(1 \cdot \sigma), \lambda \sigma \in 2^\star. \varphi(0 \cdot \sigma)) &
+       \text{ if } \varphi(\langle \rangle) = a 
+  \end{array}
+  \right .
+  $$
+
+We then get 
+$$\mathit{beh}_{\alpha}(\varphi)(\sigma) \doteq \left \{ 
+ \begin{array}{ll}
+   \uparrow & \text{ if } \varphi(\langle \rangle) \uparrow \\
+   a & \text{ if } \varphi(\langle \rangle) = a \text{ and } \sigma = \langle \rangle \\
+   \mathit{beh}_{\alpha}(\lambda \sigma \in 2^\star. \varphi(1 \cdot \sigma))(\sigma') & \text{ if } \varphi(\langle \rangle) = a \text{ and } \sigma = 0 \cdot \sigma' \\
+  \mathit{beh}_{\alpha}(\lambda \sigma \in 2^\star. \varphi(0 \cdot \sigma))(\sigma') & \text{ if } \varphi(\langle \rangle) = a \text{ and } \sigma = 1 \cdot \sigma' 
+ \end{array}
+ \right .
+$$
+
+\subsection*{2.3.5}
+
+Intuitively obvious, but formalizing could take some work. I'll skip it for now.
+
+\subsection*{2.3.6}
+
+1.) Given some coalgebra $X \overset{f}{\to} (C + X \times B)^A$, we define $\mathit{beh}_f : X \to Z$ as\\~\\
+$\mathit{beh}_f(x)(\langle a \rangle) \doteq \left \{ \begin{array}{ll} \kappa_1 c & \text{ if } f(x)(a) = \kappa_1 c \\ \kappa_2 b & \text{ if } f(x)(a) = \kappa_2 (x,b) \end{array} \right .$\\
+$\mathit{beh}_f(x)(a \cdot \sigma) \doteq \left \{ \begin{array}{ll} \kappa_1 c & \text{ if } f(x)(a) = \kappa_1 c \\ \mathit{beh}_f(x')(\sigma) & \text{ if } f(x)(a) = \kappa_2 (x',b') \end{array} \right .$\\
+\\~\\
+We show that $\mathit{beh}_f$ is a coalgebra morphism.
+Let $x \in X$ and $a \in A$. Then either $f(x)(a) = \kappa_1 c$ for some $c \in C$ or $f(x)(a) = \kappa_2 (x',b)$ for $x' \in X$ and $b \in B$.
+\begin{description}
+\item[Case $f(x)(a) = \kappa_1 c$:]~\\~\\
+We have:\\~\\
+\begin{tabular}{ll}
+$(f;(C + \mathit{beh}_f \times B)^A)(x)(a)$ & $=$\\ 
+$(C + \mathit{beh}_f \times B)(f(x)(a))$ & $=$\\ 
+$(C + \mathit{beh}_f \times B)(\kappa_1 c)$ & $=$\\ 
+$\kappa_1 c$
+\end{tabular}~\\~\\~\\
+and:\\~\\
+\begin{tabular}{ll}
+$(\mathit{beh}_f;\zeta)(x)(a)$ & $=$\\
+$\zeta(\mathit{beh_f(x)})(a)$ & $=$ (\text{since} $\mathit{beh}_f(x)(\langle a \rangle) = \kappa_1 c$)\\
+$\kappa_1 c$
+\end{tabular}~\\~\\~\\
+Hence, $f;(C + \mathit{beh}_f \times B)^A = \mathit{beh}_f;\zeta$, i.e. $\mathit{beh}_f$ is a coalgebra map.
+\item[Case $f(x)(a) = \kappa_2(x',b)$:]~\\~\\
+TODO.
+\end{description}
+f(i)
+\section*{Exercises 2.4}
+
+TODO.
+
+\section*{Exercises 2.5}
+
+\subsection*{Exercise 2.5.1}
+
+Let $X$ be a set and $M$ a monoid. Let $f : X^\star \to M$ be a monoid map. The transpose $\overline{f} : X \to \mathcal UM$
+is characterized as follows:\\
+$\overline{f}(x) = f(\langle x \rangle)$.
+
+On the other hand, let $g : Y \to UN$ be a function in $\mbf{Sets}$. Then the tranpose $\overline{g} : Y^\star \to N$ is
+characterized as follows:\\
+$\overline{g}(\langle y_1, \ldots, y_n \rangle) = g(y_1) \cdots g(y_n)$.\\~\\
+TODO: find the unit and counit.
+
+\subsection*{Exercise 2.5.2}
+
+I don't get it.
+
+\subsection*{Exercise 2.5.3}
+
+First we need to define this functor's mapping on arrows. An arrow of $\mbf{Sets}/\mathbb N$ 
+$\vrt{I}{\mathbb N} \# \overset{p}{\to} \vrt{J}{\mathbb N}\#'$ can be thought of as
+an arity-preserving function between symbol sets $I$ and $J$. Our functor should map this arrow $p : \# \to \#'$
+to a natural transformation $\alpha$ of type $F_{\#} \to F_{\#'}$, i.e. of type 
+$\coprod_{i \in I} (-)^{\#(i)} \to \coprod_{j \in J} (-)^{\#'(j)}$. The component $\alpha_X$ at set $X$ must be a function 
+$\alpha_X : \coprod_{i \in I} X^{\#(i)} \to \coprod_{j \in J} X^{\#'(j)}$. We define
+$\alpha_X \doteq \coprod_{i \in I} \kappa_{p(i)}$. Note that this has the correct ``type'', since from $\# i = \#'p(i)$
+we can conclude that $X^{\# i} = X^{\#' p(i)}$.\\~\\
+We must now show naturality, i.e. for $f : X \to Y \in \mbf{Sets}_1$, the following diagram must commute.
+\begin{center}
+\begin{tikzcd}[sep = 60]
+\coprod_{i \in I} X^{\#(i)} \ar[d, "\alpha_X" left] \ar[r, "\coprod_{i \in I} f^{\#(i)}"] & \ar[d, "\alpha_Y" right] \coprod_{i \in I} Y^{\#(i)} \\
+\coprod_{j \in J} X^{\#'(j)} \ar[r, "\coprod_{j \in J} f^{\#'(j)}" below] & \coprod_{j \in J} Y^{\#'(j)}
+\end{tikzcd}
+\end{center} 
+
+Let $a \in \coprod_{i \in I} X^{\# i}$. Then $a = (k \in \mathbb N, h \in X^{\# k})$ for some $k \in I$. 
+\\~\\
+\begin{tabular}{ll}
+$(\alpha_X;\coprod_{j \in J} f^{\#'(j)})(a)$ & $=$ \\
+$(\coprod_{j \in J} f^{\#'(j)})(\alpha_X(a))$ & $=$ \\
+$(\coprod_{j \in J} f^{\#'(j)})(\alpha_X(k,h))$ & $=$ \\
+$(\coprod_{j \in J} f^{\#'(j)})(\kappa_{p(k)} h)$ & $=$ \\
+$(\coprod_{j \in J} f^{\#'(j)})(\kappa_{p(k)} h)$ & $=$ \\
+$\kappa_{p(k)} (f^{\#'p(k)}(h))$ & $=$ \\
+$\kappa_{p(k)}(h;f)$
+\end{tabular}\\~\\
+On the other hand, we have:\\~\\
+\begin{tabular}{ll}
+$(\coprod_{i \in I} f^{\#i}; \alpha_Y)(a)$ & $=$ \\
+$\alpha_Y((\coprod_{i \in I} f^{\#i})(a))$ & $=$ \\
+$\alpha_Y((\coprod_{i \in I} f^{\#i})(k,h))$ & $=$ \\
+$\alpha_Y((k,f^{\#k}(h)))$ & $=$ \\
+$\alpha_Y((k,h;f))$ & $=$ \\
+$\kappa_{p(k)} (h;f)$
+\end{tabular}\\~\\
+Thus the square commutes. \\~\\
+We now show that the functor $F_{(-)} : \mbf{Sets}/\mathbb N \to \mathit{Endo}(\mbf{Sets})$ preserves
+identities. Let $\# : I \to \mathbb N \in \mbf{Sets}/\mathbb N_0$; the identity $\mathit{id}_{\#}$ has underlying function
+$\mathit{id}_{I}$. Then we have $(F_{\mathit{id}_{\#}})_X = \coprod_{i \in I} \kappa_i = id_{(\coprod_{i \in I} X^{\# i})} = id_{F_{\#}(X)}$. 
+Hence $F_{\mathit{id}_{\#}} = \mathit{id}_{F_\#}$.\\~\\
+We now show that the functor $F_{(-)}$ preserves composition. Let $\# : I \to \mathbb N$, $\#' : J \to \mathbb N$, and
+$\#'' : K \to \mathbb N$. Further, let $p : \# \to \#'$ and $q : \#' \to \#''$ be arrows in $\mbf{Sets}/\mathbb N$.\\~\\
+\begin{tabular}{ll}
+$(F_{p;q})_X$ & $=$ \\
+$\coprod_{i \in I} \kappa_{q(p(i))}$ & $=$ \\
+$(\coprod_{i \in I} \kappa_{p(i)});(\coprod_{j \in J} \kappa_{q(j)})$ & $=$ \\
+$(F_{p})_X;(F_q)_X$
+\end{tabular}
+
+\subsection*{2.5.4}
+
+Hello
+
+\subsection*{2.5.7}
+
+\subsubsection*{1}
+
+Note that $\Psi$ is actually a family of functions $\Psi_{X,Y}$: 
+$\Psi_{X,Y}(f : FX \to Y) \doteq \eta_X;G(f)$.
+
+I assume that by ``natural'' here, we mean natural in the adjunction since, i.e., natural w.r.t. $X$ and $Y$.
+We must show that for all $g : X \to Z$ and $h : FZ \to Y$ we have
+$$\Psi_{X,Y}(F(g);h) = g;\Psi_{Z,Y}(h)~~~(i)$$
+and also for all $a : Z \to Y$ and $b : FX \to Z$ we have
+$$\Psi_{X,Y}(b;a) = \Psi_{X,Z}(b);G(a)~~~(ii)$$
+We first prove $(i)$:\\~\\
+\begin{tabular}{l}
+$\Psi_{X,Y}(F(g);h)$ \\
+$= \eta_X;G(F(g);h)$ \\
+$= \eta_X;G(F(g));G(h)$ \\
+$g;\eta_Z;G(h)$ \\
+$= g;\Psi_{Z,Y}(h)$\\
+\end{tabular}\\~\\
+We next prove $(ii)$:\\~\\
+\begin{tabular}{l}
+$\Psi_{X,Y}(b;a)$ \\
+$= \eta_X;G(b;a)$ \\
+$= \eta_X;G(b);G(a)$ \\
+$\Psi_{X,Z}(b);G(a)$
+\end{tabular}
+
+\subsubsection*{2}
+
+$(\Rightarrow)$\\
+Suppose that for all $X$, $\eta_{GX};G(\varepsilon_X) = \mit{id}_{GX}$ and
+$F(\eta_X);\varepsilon_{FX} = \mit{id}_{FX}$.
+To show that $\Psi_{X,Y} : \mathbb C(FX, Y) \to \mathbb D(X, GY)$ is a bijection, we demonstrate 
+an inverse: namely, $\Phi_{X,Y}(f : X \to GY) \doteq Ff;\varepsilon_{Y}$.\\~\\
+For $f : FX \to Y$ we have:\\~\\
+$\Phi(\Psi(f)) = \Phi(\eta_X;G(f)) = F(\eta_X;G(f));\varepsilon_{Y} = F(\eta_X);FG(f);\varepsilon_Y
+ = F(\eta_X);\varepsilon_{FX};f$\\
+$= \mit{id}_{FX};f = f$.\\~\\
+Note that the second-to-last equality above is one of the assumed triangle inequalities.
+In the other direction, for $g : X \to GY$ we have:\\~\\
+$\Psi(\Phi(g)) = \Psi(Fg;\varepsilon_Y) = \eta_X;G(Fg;\varepsilon_Y) = \eta_X;GFg;G(\varepsilon_Y) = g;\eta_{GY};G(\varepsilon_Y)$\\
+$= g;\mit{id}_{GY} = g$\\~\\
+$(\Leftarrow)$\\
+On the other hand, suppose that $\Psi_{X,Y}$ is a bijection. Then, applying the second part of (1), we have\\
+$\Psi_{X,Y}(\mit{id}_{FX}) = \eta;G(\mit{id}) = \eta$; hence $\Phi(\eta) = \mit{id}$. 
+
+
+
+
+\section*{Exercises 3.2}
+
+\subsection*{3.2.1}
+
+1.) We proceed by induction on the structure of $F$.
+
+\begin{description}
+\item[Case $F(X) = X$:]~\\
+$\mit{Rel}(F)(\bigcap_{i \in I} R_i) = \bigcap_{i \in I} R_i = \bigcap_{i \in I} \mit{Rel}(F)(R_i)$
+\item[Case $F(X) = A$:]~\\
+$\mit{Rel}(F)(\bigcap_{i \in I} R_i) = \mit{Eq}(A) = \bigcap_{i \in I} \mit{Eq}(A) = \bigcap_{i \in I} \mit{Rel}(F)(R_i)$\\~\\
+Note that this case used the non-emptiness of $I$.
+\item[Case $F(X) = F_1(X) \times F_2(X)$:]~\\
+$\mit{Rel}(F)(\bigcap_{i \in I} R_i)$ \\
+$= \{ ((x,y),(x',y')) \mid (x,x') \in \mit{Rel}(F_1)(\bigcap_{i \in I} R_i) \wedge (y,y') \in \mit{Rel}(F_2)(\bigcap_{i \in I} R_i) \}$\\~\\
+$= \{ ((x,y),(x',y')) \mid (x,x') \in \bigcap_{i \in I} \mit{Rel}(F_1)(R_i) \wedge (y,y') \in \bigcap_{i \in I} \mit(Rel)(F_2)(R_i) \}$\\~\\
+$= \left \{ ((x,y),(x',y')) \mid \begin{array}{ll} (x,x') \in \mit{Rel}(F_1)(R_i) \wedge (y,y') \in \mit(Rel)(F_2)(R_i) \\ \text{for all } i \in I \end{array} \right \}$\\~\\
+$= \bigcap_{i \in I} \{ ((x,y),(x',y')) \mid (x,x') \in \mit{Rel}(F_1)(R_i) \wedge (y,y') \in \mit{Rel}(F_2)(R_i)  \}$\\~\\
+$= \bigcap_{i \in I} \mit{Rel}(F)(R_i) $
+\item[Case $F(X) = \coprod_{j \in J} F_j$:]~\\
+$\mit{Rel}(F)(\bigcap_{i \in I} R_i)$\\
+$= \{ (\kappa_j(x), \kappa_j(y)) \mid (x,y) \in \mit{Rel}(F_j)(\bigcap_{i \in I} R_i) \}$ \\
+$= \{ (\kappa_j(x), \kappa_j(y)) \mid (x,y) \in \bigcap_{i \in I} \mit{Rel}(F_j)(R_i) \}$\\
+$= \bigcap_{i \in I} \{ (\kappa_j(x), \kappa_j(y)) \mid (x,y) \in \mit{Rel}(F_j)(R_i) \}$\\
+$= \bigcap_{i \in I} \mit{Rel}(F)(R_i)$
+\item[Case $F(X) = G^A$:]~\\
+$\mit{Rel}(F)(\bigcap_{i \in I} R_i)$\\
+$= \{ (f,g) \mid \forall a \in A. (f(a), g(a)) \in \mit{Rel}(G)(\bigcap_{i \in I} R_i) \}$\\
+$= \{ (f,g) \mid \forall a \in A. (f(a), g(a)) \in \bigcap_{i \in I} \mit{Rel}(G)(R_i) \}$\\
+$= \bigcap_{i \in I} \{ (f,g) \mid \forall a \in A. (f(a), g(a)) \in \mit{Rel}(G)(R_i) \}$\\
+$= \bigcap_{i \in I} \mit{Rel}(F)(R_i) $\\
+\end{description}~\\
+
+2. Again our proof is by induction on the structure of $F$.
+
+\begin{description}
+\item[Case $F(X) = X$:]~\\
+$\mit{Rel}(F)(\bigcup_{n \in \mathbb N} S_n) = \bigcup_{n \in \mathbb N} S_n = \bigcup_{n \in \mathbb N} \mit{Rel}(F)(S_n)$
+
+\item[Case $F(X) = A$:]~\\
+$\mit{Rel}(F)(\bigcup_{n \in \mathbb N} S_n) = \mit{Eq}(A) = \bigcup_{n \in \mathbb N} \mit{Eq}(A) = \bigcup_{n \in \mathbb N} \mit{Rel}(F)(S_n)$
+
+\item[Case $F(X) = F_1(X) \times F_2(X)$:]~\\
+$\mit{Rel}(F)(\bigcup_{n \in \mathbb N} S_n)$\\
+$= \{ ((x,y),(x',y')) \mid (x,x') \in \mit{Rel}(F_1)(\bigcup_{n \in \mathbb N} S_n)~\wedge~(y,y') \in \mit{Rel}(F_2)(\bigcup_{n \in \mathbb N} S_n) \}$\\
+$= \{ ((x,y),(x',y')) \mid (x,x') \in \bigcup_{n \in \mathbb N} \mit{Rel}(F_1)(S_n)~\wedge~(y,y') \in \bigcup_{n \in \mathbb N} \mit{Rel}(F_2)(S_n) \}$\\~\\
+Now, note that the above set contains an element $((x,y),(x',y'))$ whenever there exists $n,m \in \mathbb N$
+such that $(x,x') \in \mit{Rel}(F_1)(S_n)$ and $(y,y') \in \mit{Rel}(F_2)(S_m)$. Let $k = \mit{max}(n,m)$.
+We have $S_n,S_m \subseteq S_k$, and from the monotonicity of $\mit{Rel}(F_1)$ and $\mit{Rel}(F_2)$, 
+we get $(x,x') \in \mit{Rel}(F_1)(S_k)$ and $(y,y') \in \mit{Rel}(F_2)(S_k)$. Thus we continue our chain of equations with:\\~\\
+$= \bigcup_{n \in \mathbb N} \{ ((x,y),(x',y')) \mid (x,x') \in \mit{Rel}(F_1)(S_n) \wedge (y,y') \in \mit{Rel}(F_2)(S_n) \}$\\
+$= \bigcup_{n \in \mathbb N} \mit{Rel}(F)(S_n)$
+
+\item[Case $F(X) = \coprod_{j \in J} F_j$:]~\\
+$\mit{Rel}(F)(\bigcup_{n \in \mathbb N} S_n)$\\
+$= \bigcup_{j \in J} \{ (\kappa_j x, \kappa_j y) \mid (x,y) \in \mit{Rel}(F_j)(\bigcup_{n \in \mathbb N} S_n) \}$\\
+$= \bigcup_{j \in J} \{ (\kappa_j x, \kappa_j y) \mid (x,y) \in \bigcup_{n \in \mathbb N} \mit{Rel}(F_j)(S_n) \}$\\
+$= \bigcup_{j \in J} \bigcup_{n \in \mathbb N} \{ (\kappa_j x, \kappa_j y) \mid (x,y) \in \mit{Rel}(F_j)(S_n) \}$\\
+$= \bigcup_{n \in \mathbb N} \bigcup_{j \in J} \{ (\kappa_j x, \kappa_j y) \mid (x,y) \in \mit{Rel}(F_j)(S_n) \}$\\
+$= \bigcup_{n \in \mathbb N} \mit{Rel}(F)(S_n)$\\
+\end{description}
+
+\subsection*{3.2.2}
+
+\subsubsection*{1}
+
+Another proof by induction on the structure of $F$.
+
+\begin{description}
+\item[Case $F(X) = X$:]~\\
+Since $\mit{Rel}(F)(\leq)~=~\leq$, this case is trivial.
+\item[Case $F(X) = A$:]~\\
+We must show that $\mit{Rel}(F)(\leq) = \mit{Eq}(A)$ is a preorder. But it's a commonly known fact
+that equivalence relations (more specifically, discrete orderings) are preorders.
+\item[Case $F(X) = F_1(X) \times F_2(X)$:]~\\
+Here we have $((x,y),(x',y')) \in \mit{Rel}(F_1 \times F_2)(\leq)$ iff $(x,x') \in \mit{Rel}(F_1)(\leq)$ and $(y,y') \in \mit{Rel}(F_2)(\leq)$. This is a product ordering on $\mit{Rel}(F_1)(\leq)$ and $\mit{Rel}(F_2)(\leq)$, which are preorders by the IH; it is common knowledge that
+the product of preorders is a preorder.
+\item[Case $F(X) = \coprod_{j \in J} F_j$:]~\\
+Here we have $(\kappa_j x, \kappa_k y) \in \mit{Rel}(F)(\leq)$ iff $k = j$ and $(x,y) \in \mit{Rel}(F_j)(\leq)$.
+By the IH, $\mit{Rel}(F_j)(\leq)$ is a preorder, so this is a sum of preorders; it is well known that
+a sum of preorders is a preorder.
+
+\item[Case $F(X) = G^A$:]~\\
+This is a function space of preorders, where the domain $A$ is ordered discretely and the preorder of the codomain $G(X)$
+comes from our inductive hypothesis.
+
+\item[Case $F(X) = \mathcal P(G(X))$:]~\\
+
+Here we have $(U, V) \in \mit{Rel}(F)(\leq)$ iff 
+\begin{itemize}
+\item for each $u \in U$ there exists a $v \in V$ with $(u,v) \in \mit{Rel}(G)(\leq)$
+\item for each $v \in V$ there exists a $u \in U$ with $(u,v) \in \mit{Rel}(G)(\leq)$ 
+\end{itemize}
+
+As an inductive hypothesis, assume $\mit{Rel}(G)(\leq)$ is a preorder.
+Then $\mit{Rel}(F)(\leq)$ is reflexive, since given some $U \in F(X) = \mathcal P(G(X))$, we have $(U,U) \in \mit{Rel}(F)(\leq)$:
+for each $u \in U$, there exists some $v \in U$ (namely $v = u$) such that $(u,v) \in \mit{Rel}(G)(\leq)$.\\~\\
+To show transitivity, assume $(U,V) \in \mit{Rel}(F)(\leq)$ and $(V,W) \in \mit{Rel}(F)(\leq)$.
+Let $u \in U$. Since $(U,V) \in \mit{Rel}(F)(\leq)$ there exists a $v \in V$ such that $(u,v) \in \mit{Rel}(G)(\leq)$. Since
+$(V,W) \in \mit{Rel}(F)(\leq)$ there exists a $w \in W$ such that $(v,w) \in \mit{Rel}(G)(\leq)$. By the transitivity of
+$\mit{Rel}(G)(\leq)$ we get $(u,w) \in \mit{Rel}(G)(\leq)$. Likewise, for every $w \in W$ there exists a $u \in U$ such that
+$(u,w) \in \mit{Rel}(G)(\leq)$.
+\end{description}
+
+\subsubsection*{2}
+
+In the proof of part 1, we noted that all cases except for $F(X) = \mathcal P(G(X))$ are commonly known 
+compositional operators on prosets. These operators also preserve posets. 
+
+\subsection*{3}
+
+Once again, we use a proof by induction on the structure of $F$.
+
+\begin{description}
+
+\item[Case $F(X) = X$:]~\\
+
+Let $x \in F(X)$, $y \in F(Y)$ such that $(x,F(f)(y)) \in \mit{Rel}(F)(\leq_X)$.
+In the present case, this is equivalent to $x \leq_X f(y)$. By assumption, $f \dashv g$ is a Galois connection, 
+and so we have:\\~\\
+$(x,F(f)(y)) \in \mit{Rel}(F)(\leq_X) \leftrightarrow$\\ 
+$x \leq_X f(y) \leftrightarrow$\\ 
+$g(x) \leq_Y y \leftrightarrow$\\
+$(F(g)(x), y) \in \mit{Rel}(F)(\leq_Y)$ 
+
+\item[Case $F(X) = A$:]~\\
+
+Let $x \in F(X) = A$, $y \in F(Y) = A$ such that $(x,F(f)(y)) \in \mit{Rel}(F)(\leq_X)$.
+In the present case, this means that $x = id_A(y) = y$. This, in turn, is equivalent to $(F(g)(x),y) \in \mit{Rel}(F)(\leq_X)$.
+
+\item[Case $F(X) = F_1(X) \times F_2(X)$:]~\\
+
+Let $(x,x') \in F(X)$ and $(y,y') \in F(Y)$ such that $((x,x'),F(f)(y,y')) \in \mit{Rel}(F)(\leq_X)$.
+This is equivalent to \\~\\
+$((x,x'),(F_1(f)(y),F_2(f)(y'))) \in \mit{Rel}(F)(\leq_X)$. \\~\\ 
+Which in turn is equivalent to:\\~\\
+$(x,F_1(f)(y)) \in \mit{Rel}(F_1)(\leq_X) \wedge (x', F_2(f)(y')) \in \mit{Rel}(F_2)(\leq_X)$\\~\\
+By the inductive hypothesis, this is equivalent to\\~\\
+$(F_1(g)(x),y) \in \mit{Rel}(F_1)(\leq_Y) \wedge (F_2(g)(x'), y') \in \mit{Rel}(F_2)(\leq_Y)$
+which is equivalent to
+$(F(g)(x,x'), (y,y')) \in \mit{Rel}(F)(\leq_Y)$.
+
+\item[Case $F(X) = \coprod_{k \in K} F_k$:]~\\
+
+Let $\kappa_ix \in F(X)$ and $\kappa_jy \in F(Y)$.
+We have:\\~\\
+$(\kappa_ix, F(f)(\kappa_jy)) \in \mit{Rel}(F)(\leq_X) \leftrightarrow$\\
+$i = j \wedge (x,F_j(f)(y)) \in \mit{Rel}(F_j)(\leq_X) \leftrightarrow$\\
+$i = j \wedge (F_j(g)(x),y) \in \mit{Rel}(F_j)(\leq_Y) \leftrightarrow$\\
+$(F(g)(\kappa_ix), \kappa_jy) \in \mit{Rel}(F)(\leq_Y)$\\
+
+\item[Case $F(X) = G(X)^A$:]~\\
+
+Hullo
+
+
+\end{description}
+
+\section*{Exercises 3.3}
+
+\subsection*{3.3.1}
+
+TODO
+
+\subsection*{3.3.2}
+
+TODO
+
+\subsection*{3.3.3}
+
+\begin{center}
+\begin{tikzcd}
+F(Ker(f)) \ar[r, "F(p_1)" above, shift left = 1.0] \ar[r, "F(p_2)" below, shift right = 1.0] & F(X) \ar[drr,"F(g)" below, near start] \ar[r, "F(f)" above] & F(Y) \ar[dr,"~F(!)" above] & \\
+          &      &      & F(Q) \\
+Ker(f) \ar[uu] \ar[r,"p_1" above, shift left = 1] \ar[r, "p_2" below, shift right = 1]  & X \ar[drr, "g" below] \ar[uu,"a" left] \ar[r, "f" above, two heads]  & Y \ar[dr,"!" above, dashed] \ar[uu, "b" left]    & \\
+          &      &      & Q \ar[uu,"c" right] \\
+\end{tikzcd}
+\end{center}
+
+The coalgebra on the left is due to the fact that $\mit{Ker}(f)$ is a bisimulation: see prop 3.2.7 (2) on pg 70 left,
+and also theorem 3.3.2 on pg 72 right.\\~\\
+By assumption, we have $a;F(g) = g;c$ and $a;F(f) = f;b$. Since $f$ is a coequalizer, we have $f;! = g$, and so
+we have $a;F(f);F(!) = a;F(f;!) = a;F(g) = g;c = f;!;c$. From $a;F(f);F(!) = f;!;c$, we apply our second assumption
+$a;F(f) = f;b$ to get $f;b;F(!) = f;!;c$. Since $f$ is an epi, we then have $b;F(!) = !;c$, making the square on
+the right a coalgebra map.
+
+\subsection*{3.3.4}
+
+\section*{Exercises 4.2}
+
+\subsection*{4.2.3}
+Suppose we have the following pullback square.
+\begin{center}
+\begin{tikzcd}
+P \ar[r, "p_2" above] \ar[d, "p_1" left] \ar[dr,phantom, "\lrcorner", very near start] & \ar[d,"g" right] Y \\
+X \ar[r,"f" below]                       & Z
+\end{tikzcd}~~~~~~~~(1)
+\end{center}
+Now, consider this square
+\begin{center}
+\begin{tikzcd}
+P \ar[r,"p_1;f"] \ar[d, tail, "\langle p_1 \text{,} p_2 \rangle" left] & Z \ar[d,"\langle id \text{,} id \rangle" right, tail]  \\
+X \times Y \ar[r,"f \times g" below] & Z \times Z
+\end{tikzcd}
+\end{center}
+Assume some object $A$ and arrows $h : A \to X \times Y$ and $k : A \to Z$; the legs of $h$ will be called
+$h_1$ and $h_2$, i.e. $h = \langle h_1, h_2 \rangle$. Further suppose that $h;(f \times g) = k;\langle id, id \rangle$.
+Then $\langle h_1;f, h_2;g \rangle = h;(f \times g) = k;\langle id, id \rangle = \langle k, k \rangle$.
+In particular, this implies $h_1;f = k$.
+\begin{center}
+\begin{tikzcd}
+
+A \ar[rrd,"k"] \ar[ddr,"\langle h_1 \text{,} h_2 \rangle" left, bend right = 30] & & \\
+
+ & P \ar[r,"p_1;f" near start] \ar[d, tail, "\langle p_1 \text{,} p_2 \rangle" left] & Z \ar[d,"\langle id \text{,} id \rangle" right, tail]  \\
+ & X \times Y \ar[r,"f \times g" below] & Z \times Z
+\end{tikzcd}
+\end{center}
+
+We would like some arrow $r : A \to P$ such that $r;\langle p_1, p_2 \rangle = \langle h_1, h_2 \rangle$ and $r;(p_1;f) = k$.
+Since square $(1)$ is a pullback, we have an $r : A \to P$ making the following diagram commute.
+
+\begin{center}
+\begin{tikzcd}
+A \ar[rrd, "h_2" above] \ar[ddr, "h_1" left] \ar[dr,"r" below, dashed] & & \\
+ & P \ar[r, "p_2" above] \ar[d, "p_1" left, near start] \ar[dr,phantom, "\lrcorner", very near start] & \ar[d,"g" right] Y \\
+ & X \ar[r,"f" below]                       & Z
+\end{tikzcd}
+\end{center}
+
+I.e., $r;p_1 = h_1$ and $r;p_2 = h_2$. But then $r;\langle p_1, p_2 \rangle = \langle r;p_1, r;p_2 \rangle = \langle h_1, h_2 \rangle$, as desired. Furthermore, $r;(p_1;f) = h_1;f = k$.
+
+\section*{Exercises 4.3}
+
+\subsection*{4.3.1}
+
+\subsubsection*{1}
+
+Let $f \in \mathfrak M \cap \mathfrak E$. Then we have:\\~\\
+\begin{tikzcd}
+X \ar[r, "f", two heads] \ar[d,"id" left] & Y \ar[d, "id"] \\
+X \ar[r, "f" below, mapsto] & Y
+\end{tikzcd}\\~\\
+By applying the diagonal fill-in property, we get\\~\\
+\begin{tikzcd}
+X \ar[r, "f", two heads] \ar[d,"id" left] & Y \ar[d, "id"] \ar[dl, "f^{-1}" above, dashed] \\
+X \ar[r, "f" below, mapsto] & Y
+\end{tikzcd}\\~\\
+The diagonal-fill-in property tells us that the two triangles commute, i.e. $f$ and $f^{-1}$ form
+an iso pair.
+
+\subsubsection*{2}
+
+\begin{tikzcd}
+  & A \ar[dd, bend left = 40, "m" right, mapsto] \\
+X \ar[r, "e'" above, two heads] \ar[dr,"g" below] \ar[ur, "e" above, two heads] & A' \ar[d, "m'" left, mapsto]   \\
+  & Y  
+\end{tikzcd}
+
+Since $e;m = e';m'$ the diagonal-fill-in property gives
+
+\begin{tikzcd}
+  & A \ar[d, "\varphi" left, dashed] \ar[dd, bend left = 40, "m" right, mapsto] \\
+X \ar[r, "e'" above, two heads] \ar[dr,"g" below] \ar[ur, "e" above, two heads] & A' \ar[d, "m'" left, mapsto]   \\
+  & Y  
+\end{tikzcd}
+
+Both triangles commute: this gives the two equations that we desire. Its inverse $\varphi^{-1}$ 
+arises from an application of the 
+diagonal-fill-in property in the opposite direction.
+
+\subsubsection*{3}
+
+\begin{tikzcd}
+Y \ar[r, "\frak e(f)"] \ar[dr,"f"] \ar[ddr, "f;m" left] & A \ar[d, "\frak m(f)" right] \\
+  & Z \ar[d, "m" right] \\
+  & X
+\end{tikzcd}
+
+nuf said
+
+\subsection*{4.3.2}
+
+helo
+
+\subsection*{4.3.3}
+
+\subsubsection*{1}
+
+Objects are pairs $(X,R)$, where $X \in \mathbb C$ and $R \mapsto X \times X$ is an abstract mono.
+Arrows $(X,R) \to (Y,S)$ are pairs $(f, \varphi)$ where $f : X \to Y \in \mathbb C_1$ and $\varphi$ is as in:
+\begin{center}
+\begin{tikzcd}
+R \ar[d, mapsto] \ar[r, "\varphi"] & \ar[d, mapsto] S \\
+X \times X \ar[r, "f \times f"] & Y \times Y
+\end{tikzcd}
+\end{center} 
+
+\subsubsection*{2}
+
+An object $X \in \mathbb C_0$ maps to a relation $\mit{Eq}(X) \mapsto X \times X$, which is clearly an object
+of $\mit{EnRel}(\mathbb C)$. An arrow $f : X \to Y \in \mathbb C_1$ maps to the arrow $\phi$ obtained from the diagonal-fill-in-property. 
+
+\begin{center}
+\begin{tikzcd}
+X \ar[dd, "f" left] \ar[dr, "\langle id \text{,} id \rangle" left] \ar[rr, two heads] & & \ar[dl, mapsto] \mit{Eq}(X) \ar[dd, "\phi", dotted] \\
+  & X \times X \ar[dd, "f \times f" near start] &  \\
+Y \ar[rr, two heads] \ar[dr, "\langle id \text{,} id \rangle" left] & & \mit{Eq}(Y) \ar[dl, mapsto] \\
+  & Y \times Y & 
+\end{tikzcd}
+\end{center} 
+
+Note that $\phi$ refers to the quadrilateral on the right side, not just the rightmost edge. This is an arrow in $\mit{EnRel}(\mathbb C)$. Clearly, this functor preserves identities: since $\mit{EnRel}(X)$ is a thin category, the identity is the only
+arrow from $\mit{Eq}(X)$ to $\mit{Eq}(X)$. Composition is not much harder to see.
+
+\subsection*{Exercise 4.3.4}
+
+\subsubsection*{1}
+
+This is just an application of the diagonal-fill-in property:
+
+\begin{center}
+\begin{tikzcd}
+0 \ar[r, two heads] \ar[rr, "!", bend left = 30] \ar[dr, "!" below] & \ar[d, mapsto] \coprod_{!}(X) \ar[r, dotted] & \ar[dl, mapsto] M \\
+  & X &
+\end{tikzcd}
+\end{center}
+
+\subsubsection*{2}
+
+First, we show that this image is an upper bound of both $m$ and $n$. The two cases are symmetric, so we need only 
+demonstrate $m$.
+
+\begin{center}
+\begin{tikzcd}
+U + V \ar[r, "\frak e( \lbrack m \text{,} n \rbrack)", two heads] \ar[dr, "\lbrack m \text{,} n \rbrack~~" below] & 
+  \coprod_{[m,n]}(X) \ar[d, mapsto, "\frak m(\lbrack m \text{,} n \rbrack)" right]  \\
+U \ar[u, "\kappa_1"] \ar[r, "m" below, mapsto] & X
+\end{tikzcd}
+\end{center}
+
+We can see that both triangles commute, and so $(\kappa_1;\frak e([m,n]));\frak m([m,n]) = m$. Thus, we have an arrow
+of $\kappa_1;\frak e([m,n]) : U \to \coprod_{[m,n]}(X)$ in $\mit{Pred}(X)$.\\~\\
+Now assume some upper bound $w : W \mapsto X$ of $m : U \mapsto X$ and $n : V \mapsto X$ in $\mit{Pred}(X)$:
+
+TODO: finish the exercise
+
+\section*{Exercises 4.4}
+
+\subsection*{4.4.5}
+
+$\mit{EnRel}(F)$ should be $\mit{Rel}(F)$ restricted to endorelations. Jacobs wants is to
+somehow formulate this using the pullback presentation; let's try that.
+Recall the pullback-based presentation of $\mit{EnRel}(\mathbb C)$:
+
+\begin{center}
+\begin{tikzcd}
+\mit{EnRel}(\mathbb C) \ar[r,"p_2"] \ar[d, "p_1" left] & \ar[d] \mit{Rel}(\mathbb C) \\
+\mathbb C \ar[r, "\langle \mit{id} \text{,} \mit{id} \rangle" below] & \mathbb C \times \mathbb C
+\end{tikzcd}
+\end{center}
+
+An object of $\mit{EnRel}(\mathbb C)$ is an object $X$ of $\mathbb C$ paired with an endorelation on
+$X$. Thus, $\mit{EnRel}(F)(X, R \mapsto X \times X) \doteq (F(X), \mit{Rel}(F)(R))$. Hence, we define:
+$$ \mit{EnRel}(F) \doteq \langle p_1;F, p_2;\mit{Rel}(F) \rangle$$ 
+
+\section*{Exercises 5.1}
+
+\subsection*{5.1.1}
+
+Problem statement:\\~\\
+Let $\mathbb C$ be a category with coproducts $+$. Fix an arbitrary object $A \in \mathbb C$ and
+prove that the functor $X \mapsto A + X$ forms a monad on $\mathbb C$.\\~\\
+Solution:\\~\\
+Let $\mathbb C$ be a category with coproducts, and let $A \in \mathbb C_0$.
+We show that if $T(X) \doteq A + X$ then $T$ is a monad.\\~\\
+First, we define and prove functoriality. Let $f : X \to Y \in \mathbb C_1$. Define $T(f) \doteq \mit{id}_A + f$.
+This clearly preserves identities and composition.\\~\\
+Now, we give the unit and multiplication. For $X \in \mathbb C_0$, define 
+$$ \eta_X \doteq \kappa'_{A,X}$$
+and
+$$ \mu_X \doteq [\kappa_{A,X}, \mit{id}_{(A+X)}]$$
+We must now show that the monad properties hold.
+$$T(\eta_X);\mu_X = (\mit{id}_A + \eta_X);\mu_X = (\mit{id}_A + \kappa'_{A,X});[\kappa_{A,X};\mit{id}_{(A+X)}]=[\kappa_{A,X}, \kappa'_{A,X}] = \mit{id}_{(A+X)}$$
+$$\eta_{T(X)};\mu_X = \kappa'_{A,A+X};[\kappa_{A,X}, \mit{id}_{(A+X)}] = \mit{id}_{(A+X)}$$
+Finally, we have:
+\begin{center}
+\begin{tabular}{l}
+$T(\mu_X);\mu_X$ \\
+$= (\mit{id}_A + [\kappa_{A,X} , \mit{id}_{A +X}]);[\kappa_{A,X}, \mit{id}_{A+X}]$ \\
+$= [\kappa_{A,X}, [\kappa_{A,X},\mit{id}_{A+X}]]$ \\
+$= [\kappa_{A,A+X};[\kappa_{A,X} , \mit{id}_{A+X}], [\kappa_{A,X}, \mit{id}_{A+X}]]$ \\
+$= [\kappa_{A,A+X}, \mit{id}_{A + (A + X)}];[\kappa_{A,X}, \mit{id}_{A + X}]$ \\
+$= \mu_{T(X)};\mu_X$
+\end{tabular}
+\end{center}
+
+\subsection*{5.1.2}
+
+Describe sequential composition $\ocircle$ for Java programs, modelled as coalgebras $X \to \mathcal J(X)$, using the
+Java monad $\mathcal J$ described in example 5.1.3.8.
+
+\subsection*{5.1.3}
+
+\subsection*{5.1.4}
+
+Fix a set $C$ and consider the contravariant functor $X \mapsto C^X$. Prove that there is an adjunction.
+
+\begin{center}
+\begin{tikzcd}
+\mbf{Sets}^{op} \ar[r, "C^{(-)}", bend left = 20] \ar[r, "\top", phantom] & \mbf{Sets} \ar[l, "C^{(-)}" below, bend left = 20]
+\end{tikzcd}
+\end{center}
+
+Check that the monad induced by this adjunction on $\mbf{Sets}$, as in Lemma 5.1.6, is the continuation monad from Example 5.1.3.7.\\~\\
+--
+\\~\\
+First, we note that the adjunction really involves two functors $\mathcal C_0 : \mbf{Sets} \to \mbf{Sets}^{\mbf{op}}$ and
+$\mathcal C_1 : \mbf{Sets}^{\mbf{op}} \to \mbf{Sets}$. When applied to objects the two functors are equal, and so there is
+no need to distinguish between them: for all sets $X$, $\mathcal C^X \doteq \mathcal C_0^X = \mathcal C_1^X$.\\~\\
+The unit of our adjunction $\eta_X : X \to \mathcal C_1^{\mathcal C_0^X}$ is defined as $\eta_X(x) \doteq \lambda h. hx$. 
+We must demonstrate the following:
+\begin{center}
+\begin{tikzcd}
+\mathcal C_1^{\mathcal C_0^X} \ar[r, "\mathcal C_1^g"] & \mathcal C_1^Y & \mbf{Sets} \\
+X  \ar[u, "\eta_X" left] \ar[ur,"f" below]        &                & \\
+\mathcal C_0^X \ar[r, dotted, "g"]                 & Y & \mbf{Sets^{op}} 
+\end{tikzcd}
+\end{center}
+That is, for every $f : X \to \mathcal C_1^Y$ in $\mbf{Sets}$, there exists a unique 
+$g : \mathcal C_0^X \to Y$ in $\mbf{Sets^{op}}$
+such that $\eta_X;\mathcal C_1^g = f$. 
+We write $\underline{g} : Y \to \mathcal C_0^X$ for the function in $\mbf{Sets}$ underlying $g$.
+We obtain $\underline{g}$ from $f$ through currying
+and uncurrying:
+\begin{center}
+\begin{prooftree}
+\AxiomC{$X \overset{f}{\longrightarrow} \mathcal C^Y$}
+\doubleLine
+\UnaryInfC{$X \times Y \longrightarrow \mathcal C$}
+\doubleLine
+\UnaryInfC{$Y \overset{\underline{g}}{\longrightarrow} \mathcal C^X$}
+\end{prooftree} 
+\end{center}
+In words, $f$ and $\underline{g}$ can be thought of as the same two-argument function, but with
+the order of their parameters reversed: $\forall x \in X, y \in Y. fxy = \underline{g}yx$.\\~\\
+We demonstrate that $\eta_X;\mathcal C_1^g = f$ using extensionality.
+Let $x \in X$. Then,\\~\\
+$C_1^g(\eta_X(x)) = \mathcal C_1^g(\lambda h. hx) = \lambda y. (\lambda h. hx)(\underline{g} y) = \lambda y. \underline{g}yx
+= \lambda y. fxy = fx$.\\~\\
+To show uniqueness, let $a : \mathcal C_0^X \to Y \in \mbf{Sets}^{Op}$ that makes the diagram commute as with $g$.
+Then $$\lambda y. \underline{g}yx = fx = C_1^a(\eta_X(x)) = \mathcal C_1^a(\lambda h. hx) = \lambda y. (\lambda h. hx)(\underline{a} y) = \lambda y. \underline{a}yx$$
+By extensionality  we have $\underline{a} = \underline{g}$, and so $a = g$.
+
+The counit $\epsilon_Y : \mathcal C_0^{\mathcal C_1^Y} \to Y$ if the arrow in $\mbf{Sets}^{op}$ whose underlying function is the unit $\eta_Y$. (Recall that $\mathcal C_0^{\mathcal C_1^Y} = \mathcal C^{\mathcal C^Y} = \mathcal C_1^{\mathcal C_0^Y}$.) We know that the 
+multiplication $\mu_X$ of the monad derived from an adjunction $F \dashv U$ is obtained via
+$$UFUF \overset{U \epsilon F}{\longrightarrow} UF$$
+Hence, defining $q \doteq (\epsilon)_{\mathcal C_0^X}$ the component of the multiplication for the monad derived from our ``continuation adjunction'' at set $X$ is
+
+$$\mathcal C_1^{\mathcal C_0^{\mathcal C_1^{\mathcal C_0^X}}} \overset{\mathcal C_1^{q}}{\longrightarrow} \mathcal C_1^{\mathcal C_0^X}$$
+
+As a concrete demonstration, for $h \in \mathcal C^X$, we have 
+$$(\underline{\epsilon})_{\mathcal C_0^X}(h) = (\eta)_{\mathcal C_0^X}(h) = \lambda g \in \mathcal C_1^{\mathcal C_0^{X}}. gh 
+ $$
+
+Further, for $a \in C_1^{\mathcal C_0^{\mathcal C_1^{\mathcal C_0^X}}}$, 
+$$\mu_X(a) = \mathcal C_1^q(a) = \lambda h \in \mathcal C_0^X. a (\epsilon_{C_0^X}(h)) = \lambda h \in \mathcal C_0^X. 
+a (\lambda g \in \mathcal C_1^{\mathcal C_0^X}. gh) = \lambda h \in \mathcal C^X. 
+a (\lambda g \in \mathcal C^{\mathcal C^X}. gh)   $$
+
+It's clear that this matches the monad in example 7 (but I don't have much intuition for the monad at this point).
+
+
+
+\subsection*{5.1.5}
+
+Fix a set $C$ and consider the continuation monad $\mathcal C(X) = \mathcal C^{\mathcal C^X}$ from Example 5.1.3.7.
+Assume the set $C$ carries an operation $f : C^n \to C$, for some $n \in \mathbb N$. Prove that it gives rise to natural
+transformation:
+
+$$(\mathcal C(X))^n \Longrightarrow \mathcal C(X)$$
+
+\subsection*{5.1.9}
+
+Prove that the support natural transformation $\mathcal D \Rightarrow \mathcal P$ from $(4.5)$ is a map of monads.\\~\\
+
+First, we demonstrate the unit law. Let $x \in X$. Then 
+$$\mathit{supp}_X(\eta_x^{\mathcal D}(x)) = \mathit{supp}_X(1 \mid x \rangle) = \{ x \} = \eta_{X}^{\mathcal P}(x)$$.
+Next, we demonstrate the multiplication law. Consider an arbitrary element
+$\Sigma_{i=1}^n r_i \mid \Sigma_{j=1}^m q_{i,j} \mid x_{i,j} \rangle$ of $\mathcal D(X)$.\\~\\
+On one hand, we have:\\~\\
+$\mathit{supp}_X(\mu^{\mathcal D}_X(\Sigma_{i=1}^n r_i \mid \Sigma_{j=1}^m q_{i,j} \mid x_{i,j} \rangle \rangle))$\\
+$= \mathit{supp}_X (\Sigma_{i=1}^n \Sigma_{j=1}^m (r_i \cdot q_{i,j}) \mid x_{i,j} \rangle)$\\
+$= \{ x_{i,j} \mid i \in 1..n, j \in 1..m \}$\\~\\
+On the other hand, we have:\\~\\
+$\bigcup~\mathcal P \mathit{supp}_{X}(\mathit{supp}_{\mathcal D X}(\Sigma_{i=1}^n r_i \mid \Sigma_{j=1}^m q_{i,j} \mid x_{i,j} \rangle \rangle))$\\
+$= \bigcup~\mathcal P \mathit{supp}_{X}(\{ \Sigma_{j=1}^m q_{i,j} \mid x_{i,j} \rangle \mid i \in 1..n \})$\\
+$= \bigcup~\{ \{x_{11},\ldots,x_{1m} \}, \ldots, \{ x_{n1}, \ldots, x_{nm} \} \}$\\
+$= \{ x_{i,j} \mid i \in 1..n, j \in 1..m \}$ 
+\subsection*{5.1.15}
+
+First, we see that $F^{\infty}$ is functorial with the below diagram:
+
+\begin{center}
+\begin{tikzcd}
+F^{\infty}X \ar[r,dashed,"F^{\infty}f"] \ar[d,"\cong" left] & F^{\infty}Y \ar[dd,"\cong" left, "\zeta" right] \\
+X \times F(F^{\infty}(X) \ar[d,"f \times F(F^{\infty}X)" left] & & \\
+Y \times F(F^{\infty} X) \ar[r,dashed,"Y \times F(F^{\infty}f)" below] & Y \times F(F^{\infty}Y)
+\end{tikzcd}
+\end{center} 
+
+The following rearrangement of the above diagram is instructive, because it shows that 
+$\zeta : F^{\infty} \to - \times F(F^\infty -)$ is a natural transformation.
+
+
+\begin{center}
+\begin{tikzcd}
+F^{\infty}X \ar[r,dashed,"F^{\infty}f"] \ar[d,"\cong" left, "\zeta" right] & F^{\infty}Y \ar[d,"\cong" left, "\zeta" right] \\
+X \times F(F^{\infty} X) \ar[r,"f \times F(F^{\infty}f)" below] & Y \times F(F^{\infty}Y)
+\end{tikzcd}
+\end{center}  
+
+It's also a comonad. Its counit is 
+$F^{\infty}Y \overset{\zeta}{\longrightarrow} Y \times F(F^{\infty} Y) \overset{\pi_1}{\longrightarrow} Y$.
+\\~\\
+Its comultiplication $\delta : F^{\infty} X \overset{\delta}{\longrightarrow} F^{\infty}(F^{\infty}X)$
+arises from finality as in the following diagram
+\begin{center}
+\begin{tikzcd}
+F^{\infty} X \ar[r,"\delta", dashed] \ar[d, "\langle \mathit{id} \text{ , } \zeta;\pi_2 \rangle" left] & F^{\infty} F^{\infty} X \ar[d, "\zeta"] \\
+F^{\infty}(X) \times F(F^{\infty} X) \ar[r, dashed] & F^{\infty} X \times F(F^{\infty}F^{\infty}X) 
+\end{tikzcd}
+\end{center}
+
+We must show naturality of $\epsilon$ and $\delta$, as well as the comonad laws.
+
+\begin{description}
+\item[Naturality of $\varepsilon$:]~\\
+\begin{center}
+\begin{tabular}{ll}
+$\varepsilon;f$ & $=$\\
+$\zeta;\pi_1;f$ & $=$\\
+$\zeta;(f \times F(F^{\infty}X));\pi_1$ & $=$ \\
+$\zeta;\langle \pi_1;f, \pi_2 \rangle;\pi_1$ & $=$ \\
+$\zeta;\pi_1;f$ & $=$ \\
+$\zeta;(f \times F(F^{\infty}f));\pi_1$ & $=$ \\
+$\zeta;(f \times F(F^{\infty}X));(Y \times F(F^{\infty}f));\pi_1$ & $=$ \\
+$F^{\infty}f;\zeta;\pi_1$ & $=$ \\
+$F^{\infty}f;\varepsilon$ &
+\end{tabular}
+\end{center}
+
+\item[Naturality of $\delta$:]~\\
+
+Consider the following two coalgebras of the functor $F^{\infty}Y \times F-$. First, we have
+\begin{center}
+\begin{tikzcd}
+F^{\infty}X \ar[d, "\langle id \text{ , } \zeta;\pi_2 \rangle" left] \\
+F^{\infty}X \times F(F^{\infty}X) \ar[d, "F^\infty f \times F(F^\infty X)" left] \\
+F^{\infty}Y \times F(F^{\infty}X)
+\end{tikzcd} 
+\end{center}
+
+Second, we have the final coalgebra of $F^{\infty}Y \times F-$:
+
+\begin{center}
+\begin{tikzcd}
+F^{\infty} F^{\infty} Y \ar[d, "\zeta" left] \\
+F^\infty Y \times F(F^\infty F^\infty Y)
+\end{tikzcd}
+\end{center}
+
+To show that $F^{\infty}f;\delta = \delta;F^{\infty}F^{\infty}f$, we show that both $F^{\infty}f;\delta$ and 
+$\delta;F^{\infty}F^{\infty}f$ are morphisms from the first of the aformentioned coalgebras to the second.
+Then, because the second is final, they must be equal.
+
+We now show that $\delta;F^{\infty}F^{\infty}f$ is a morphism from the first coalgebra to the second.
+First, note that the below two squares commute:
+\begin{center}
+\begin{tikzcd}
+F^{\infty} X \ar[d, "\langle \mathit{id} \text{ , } \zeta;\pi_2 \rangle" left] \ar[r,"\delta" above,dashed] & \ar[d, "\zeta" left] F^{\infty} F^{\infty} X \ar[r, "F^{\infty}F^{\infty}f"] & \ar[d, "\zeta"] F^{\infty} F^{\infty} Y \\
+F^{\infty}X \times F(F^{\infty}X) \ar[r, "F^{\infty}X \times F\delta" below, yshift=-0.7ex] & F^{\infty}X \times F(F^{\infty}F^{\infty}X) \ar[r, "F^{\infty}f \times F(F^{\infty}F^{\infty}f)" below, yshift = -0.7ex] & F^{\infty}Y \times F(F^{\infty}F^{\infty}Y)
+\end{tikzcd}
+\end{center}
+
+Now, we can extend the above diagram into the following diagram, where the bottom rectangle also commutes, 
+demonstrating a morphism of coalgebras:
+
+\begin{center}
+\begin{tikzcd}
+F^{\infty} X \ar[d, "\langle \mathit{id} \text{ , } \zeta;\pi_2 \rangle" left] \ar[r,"\delta" above,dashed] & \ar[d, "\zeta" left] F^{\infty} F^{\infty} X \ar[r, "F^{\infty}F^{\infty}f"] & \ar[d, "\zeta"] F^{\infty} F^{\infty} Y \\
+F^{\infty}X \times F(F^{\infty}X) \ar[r, "F^{\infty}X \times F\delta" below, yshift=-0.7ex] \ar[d,"F^{\infty}f \times F(F^{\infty}X)" left] & F^{\infty}X \times F(F^{\infty}F^{\infty}X) \ar[r, "F^{\infty}f \times F(F^{\infty}F^{\infty}f)" below, yshift = -0.7ex] & F^{\infty}Y \times F(F^{\infty}F^{\infty}Y) \\
+F^{\infty}Y \times F(F^{\infty} X) \ar[rr,"F^{\infty}Y \times F(\delta;F^{\infty}F^{\infty}f)" below] & & F^{\infty}Y \times F(F^{\infty}F^{\infty}X) \ar[u, "F^{\infty} Y \times F(F^{\infty}F^{\infty}F)" right] 
+\end{tikzcd}
+\end{center}
+
+We now show that $F^{\infty}f;\delta$ is a morphism between the two aforementioned coalgebras. Since the coalgebra
+\begin{center}
+\begin{tikzcd}
+F^{\infty}X \ar[d, "\langle id \text{ , } \zeta;\pi_2 \rangle" left] \\
+F^{\infty}X \times F(F^{\infty}X) \ar[d, "F^\infty f \times F(F^\infty X)" left] \\
+F^{\infty}Y \times F(F^{\infty}X)
+\end{tikzcd} 
+\end{center}
+can be comapcted into
+\begin{center}
+\begin{tikzcd}
+F^{\infty}X \ar[d, "\langle F^{\infty}f \text{ , } \zeta;\pi_2 \rangle" left] \\
+F^{\infty}Y \times F(F^{\infty}X)
+\end{tikzcd} 
+\end{center}
+
+we must show that $F^{\infty}f;\delta;\zeta = \langle F^{\infty}f, \zeta;\pi_2 \rangle;(F^{\infty}Y \times F(F^{\infty}f;\delta))$.
+To this end, we have\\~\\
+\begin{tabular}{ll}
+$F^{\infty}f;\delta;\zeta$ & $=$ \\
+$F^{\infty}f;\langle \mathit{id}, \zeta;\pi_2 \rangle;(F^{\infty}Y \times F\delta)$ & $=$ \\
+$\langle F^{\infty}f, F^{\infty}f;\zeta;\pi_2;F\delta \rangle$ & $=$ \\
+$\langle F^{\infty}f, \zeta;(f \times F(F^{\infty}f));\pi_2;F\delta \rangle$ & $=$ \\
+$\langle F^{\infty}f, \zeta;\pi_2;F(F^{\infty}f);F\delta \rangle$ & $=$ \\
+$\langle F^{\infty}f, \zeta;\pi_2 \rangle;(F^{\infty}Y \times F(F^{\infty}f;\delta))$ &
+\end{tabular}
+
+\item[Comonad counit laws:]~\\
+
+The counit law $\delta;\epsilon_{F^{\infty}} = id$ is dual to the unit law proven in the book:
+$$\delta;\epsilon_{F^\infty X} = \delta;\zeta_{F^\infty};\pi_1 
+  = \langle id, \zeta;\pi_2 \rangle;(F^\infty X \times F\delta);\pi_1 = \langle id, \zeta;\pi_2;F\delta \rangle;\pi_1
+= id$$
+
+I wasn't able to prove the counit law $\delta;F^{\infty}\epsilon_X$. TODO: prove this law!!!
+
+\item[Comonad comultiplication laws:]~\\
+
+We must prove that for all objects $X$ we have $\delta_X;F^\infty\delta_X = \delta_X;\delta_{F^\infty X}$.
+We prove the above equation via finality, i.e., that both $\delta_X;F^\infty\delta_X$ and $\delta_x;\delta_{F^\infty X}$ 
+are coalgebra morphisms from the coalgebra
+\begin{center}
+\begin{tikzcd}
+F^\infty X \ar[d, "\langle \delta \text{,} \zeta;\pi_2 \rangle"] \\
+F^\infty F^\infty X \times F(F^\infty X)
+\end{tikzcd}~~to~~
+\begin{tikzcd}
+F^\infty F^\infty F^\infty X \ar[d, "\zeta"] \\
+F^\infty F^\infty X \times F(F^\infty F^\infty F^\infty X)
+\end{tikzcd}
+\end{center} 
+
+We start with $\delta_X;F^\infty(\delta_X)$. We must prove the following diagram commutes
+
+\begin{center}
+\begin{tikzcd}[sep=70]
+F^\infty X \ar[r, "\delta;F^\infty \delta"] \ar[d, "\langle \delta \text{,} \zeta;\pi_2 \rangle" left] & \ar[d, "\zeta"] F^\infty F^\infty F^\infty X \\
+F^\infty F^\infty X \times F(F^\infty X) \ar[r, "F^\infty F^\infty X \times F(\delta;F^\infty \delta)" below] & F^\infty F^\infty X \times F(F^\infty F^\infty F^\infty X)
+\end{tikzcd}
+\end{center}
+
+To this end, we have:
+
+\begin{tabular}{ll}
+$\langle \delta , \zeta;\pi_2 \rangle;(F^\infty F^\infty X \times F(\delta;F^\infty \delta)$ & $=$\\
+$\langle \delta , \zeta;\pi_2;F\delta;F(F^\infty \delta) \rangle$ & $=$ \\
+$\langle id, \zeta;\pi_2 \rangle;(\delta \times (F\delta;F(F^\infty\delta)))$ & $=$ \\
+$\langle id, \zeta;\pi_2 \rangle;(id \times F\delta);(\delta \times F(F^\infty \delta))$ & $=$ (by def. of $\delta$) \\
+$\delta;\zeta;(\delta \times F(F^\infty \delta))$ & $=$ (by naturality of $\zeta$) \\
+$\delta;F^\infty\delta;\zeta$
+\end{tabular}
+
+We next tackle $\delta_X;\delta_{F^\infty X}$, which requires us to show that the following diagram commutes:
+
+\begin{center}
+\begin{tikzcd}[sep=70]
+F^\infty X \ar[r, "\delta_X;\delta_{F^\infty X}"] \ar[d, "\langle \delta \text{,} \zeta;\pi_2 \rangle" left] & \ar[d, "\zeta"] F^\infty F^\infty F^\infty X \\
+F^\infty F^\infty X \times F(F^\infty X) \ar[r, "F^\infty F^\infty X \times F(\delta;\delta_{F^\infty X.})" below] & F^\infty F^\infty X \times F(F^\infty F^\infty F^\infty X)
+\end{tikzcd}
+\end{center}
+
+\begin{tabular}{ll}
+$\delta_X;\delta_{F^\infty X};\zeta_{F^\infty F^\infty X}$ & $=$ \\
+$\delta_X;\langle id \text{,} \zeta_{F^\infty X};\pi_2 \rangle;(id \times F \delta_{F^\infty X})$ & $=$ \\
+$\langle \delta_X \text{,} \delta_X;\zeta_{F^\infty X};\pi_2;F \delta_{F^\infty X} \rangle$ & $=$ \\
+$\langle \delta_X \text{,} \langle id, \zeta_X;\pi_2 \rangle;(id \times F \delta_X);\pi_2;F \delta_{F^\infty X}\rangle$ & $=$ \\
+$\langle \delta_X \text{,} \zeta_X;\pi_2;F \delta_X;F \delta_{F^\infty X} \rangle$ & $=$ \\
+$\langle \delta_X \text{,} \zeta_X;\pi_2;F(\delta_X;\delta_{F^\infty X}) \rangle$ 
+\end{tabular}
+
+\end{description}
+
+\section*{Exercises 5.2}
+
+\subsection*{5.2.8}
+
+\subsubsection*{1}
+
+In addition to the standard diagrams for $\mathcal K \ell$-laws, we also have
+
+\begin{center}
+\begin{tikzcd}
+ & \ar[dl, "\eta^F T" left] T \ar[dr, "T \eta^F"] & \\
+FT \ar[rr,"\lambda" below] & & TF  
+\end{tikzcd}
+\end{center}
+
+and
+
+\begin{center}
+\begin{tikzcd}
+F^2 T \ar[d, "\mu^F T" left] \ar[r, "F \lambda"] & FTF \ar[r, "\lambda F"] & TF^2 \ar[d, "T \mu^F"]  \\
+FT \ar[rr,"\lambda" below] & & TF
+\end{tikzcd}
+\end{center}
+
+\subsubsection*{2}
+
+For the unit, we have $$\eta^{TS} \doteq \mathit{id} \overset{\eta^T \eta^S}{\longrightarrow} TS$$
+For multiplication, we have 
+$$\mu^{TS} \doteq TSTS \overset{T \lambda S}{\longrightarrow} T^2S^2 \overset{\mu^T \mu^S}{\longrightarrow} TS$$.
+
+They are natural by construction; we must show that they satisfy the monad laws. 
+First, we have\\~\\
+\begin{tabular}{ll}
+$TS\eta^{TS};\mu^{TS}$ & $=$ \\
+$TS\eta^T\eta^S;T \lambda S;\mu^T\mu^S$ & $=$ \\
+$T \eta^T S \eta^S;\mu^T\mu^S$ & $=$~~~(since $T\eta^T;\mu^T = id$ and $S\eta^S;\mu^S = id$) \\
+$id$
+\end{tabular}\\~\\
+Next, we have\\~\\
+\begin{tabular}{ll}
+$\eta^{TS}TS;\mu^{TS}$ & $=$ \\
+$\eta^T\eta^S T S;T \lambda S;\mu^T\mu^S$ & $=$ \\
+$\eta^TT\eta^SS;\mu^T\mu^S$ & $=$~~~(since $\eta^T T;\mu^T = id$ and $\eta^S S; \mu^S = id$) \\
+$id$
+\end{tabular}\\~\\
+Finally, we have\\~\\
+\begin{tabular}{ll}
+$TS\mu^{TS};\mu^{TS}$ & $=$ \\
+$TS(T \lambda S;\mu^T\mu^S);T \lambda S;\mu^T \mu^S$ & $=$ \\
+$TST \lambda S;TS\mu^T \mu^S;T \lambda S;\mu^T \mu^S$ & $=$ \\
+$TST \lambda S;T(\lambda T;T\lambda;\mu^T S)\mu^S;\mu^T \mu^S$ & $=$ \\
+$TST \lambda S;T \lambda T S^2;T T\lambda S^2;T \mu^T S \mu^S;\mu^T \mu^S$ & $=$ \\
+$TST \lambda S;T \lambda T S^2;T T\lambda S^2;\mu^T T S \mu^S;\mu^T \mu^S$ & $=$ \\
+$TST \lambda S;T \lambda T S^2;\mu^T \lambda \mu^S;\mu^T \mu^S$ & $=$ \\
+$\ldots$
+\end{tabular}
+
+\subsection*{3}
+
+We only cover the natural transformation $T \overset{T \eta^S}{\Longrightarrow} TS$. The unit law is trivial:
+
+\begin{center}
+\begin{tikzcd}
+ & \ar[dl,"\eta^T" left] id \ar[dr, "\eta^{TS}"] & \\
+T \ar[rr, "T \eta^S" below] & & TS
+\end{tikzcd}
+\end{center}
+
+The above triangle commutes by the definition of $\eta^{TS}$: $$\eta^T;T\eta^S = \eta^T \eta^S = \eta^{TS}$$.
+
+For the multiplication law we need the following diagram to commute:
+
+\begin{center}
+\begin{tikzcd}
+TT \ar[r, "TT\eta^S" above] \ar[d, "\mu^T" left] & TTS \ar[r, "T\eta^STS"] & TSTS \ar[d,"T \lambda S;\mu^T\mu^S"]  \\
+T \ar[rr,"T \eta^S" below] &     & TS
+\end{tikzcd}
+\end{center}
+
+Since $\eta^S T;\lambda = T \eta^S$, we have \\~\\
+\begin{tabular}{ll}
+$TT\eta^S;T \eta^S TS;T \lambda S; \mu^T \mu^S$ & $=$ \\
+$TT \eta^S;TT\eta^SS;\mu^T\mu^S$ & $=$ \\
+$TT \eta^S;\mu^T S$ & $=$ \\
+$\mu^T \eta^S$ & $=$ \\
+$\mu^T 1;T \eta^S$
+
+\end{tabular}
+
+\section*{4}
+
+Recall that we have $\mathcal K \ell(S)(X) \doteq S(X)$ and $\mathcal K \ell (S)(f : X \to Y) \doteq S(f);\lambda$.
+Then, for our unit we have $\eta^{\mathcal K \ell(S)} = \eta^T \eta^S$; in the ambient category this has 
+the form $\mathit{id} \longrightarrow TS$, while in the Klesli category $\mathcal K \ell(T)$ it has
+the form $\mathit{id} \longrightarrow \mathcal{K} \ell (S) = S$.
+Our multiplication is $\mu^{\mathcal K \ell(S)} = \eta^T \mu^S$.\\~\\
+
+\begin{description}
+
+\item[Unit law 1:]~\\~\\
+We need to prove that the following diagram commutes in the category $\mathcal K \ell (T)$.
+\begin{center}
+\begin{tikzcd}
+ & \ar[dl, "\mathcal K \ell(S)(\eta^{\mathcal K \ell(S)})~~~~~~~~~~~~~~~" above] \mathcal K \ell(S) \ar[dr, double, no head] & \\
+\mathcal K \ell(S)^2 \ar[rr, "\mu^{\mathcal K \ell(S)}" below] & & \mathcal K \ell(S)
+\end{tikzcd}
+\end{center}
+Translating into the ambient category but keeping Kleisli composition, we need the following triangle to commute.
+
+\begin{center}
+\begin{tikzcd}
+ & SX \ar[dl, "\eta^T S;TS\eta^S" left] \ar[dr, "\eta^T S"] & \\
+S^2X \ar[rr, "\eta^TS^2;T(\mu^S)" below] & & SX
+\end{tikzcd}
+\end{center} 
+ 
+To derive the above triangle, note that $\eta^T \eta^S = \eta^T;T(\eta^S)$ and hence 
+$\mathcal K \ell(S)(\eta^T \eta^S) = \mathcal K \ell (\eta^T;T\eta^S) = S(\eta^T;T\eta^S);\lambda
+ = S\eta^T;ST\eta^S;\lambda = S \eta^T;\lambda;TS \eta^S = \eta^TS;TS \eta^S$.\\~\\
+To show that it commutes, we have\\~\\
+\begin{tabular}{ll}
+$(\eta^T S^2;T\mu^S) \ocircle (\eta^{T}S;TS \eta^S)$ & $=$ \\ 
+$\eta^{T}S;TS\eta^S;T(\eta^TS^2;T\mu^S);\mu^TS$ & $=$ \\
+$\eta^{T}S;TS\eta^S;T\eta^TS^2;T^2\mu^S;\mu^TS$ & $=$ \\
+$\eta^{T}S;TS\eta^S;T\eta^TS^2;\mu^T \mu^S$ & $=$ \\
+$\eta^{T}S;TS\eta^S;T \mu^S$ & $=$ \\
+$\eta^{T}S;TS$ & $=$ \\
+$\eta^T S$
+\end{tabular}\\~\\
+Finally, note that $\eta^T S$ is the identity natural transformation of the functor $\mathcal K \ell(S)$ in 
+the Kleisli category $\mathcal K \ell(T)$.
+
+\item[Unit law 2:]~\\~\\
+
+We now prove that the following diagram commutes in $\mathcal K \ell(T)$:
+\begin{center}
+\begin{tikzcd}
+ & \ar[dl, "\eta^{\mathcal K \ell(S)} \mathcal K \ell(S)~~~" left] \mathcal K \ell(S) \ar[dr, double, no head] & \\
+\mathcal K \ell(S)^2 \ar[rr, "\mu^{\mathcal K \ell(S)}" below] & & \mathcal K \ell(S)
+\end{tikzcd}
+\end{center}
+
+Translating this into the ambient category but keeping Kleisli composition gives
+
+\begin{center}
+\begin{tikzcd}
+ & \ar[dl, "(\eta^S;\eta^T S)S~~~" left] S \ar[dr, "\eta^T S"] & \\
+S^2 \ar[rr, "\eta^T S^2; T(\mu^S)" below] & & S
+\end{tikzcd}
+\end{center}
+
+To derive the above triangle, note that $\eta^T \eta^S = \eta^S;\eta^T S$ and hence $\eta^T S^2; T(\mu^S)$.
+
+\item[Multiplication law:]~\\~\\
+hello
+
+\end{description}
+
+\subsection*{5.2.9}
+
+TODO (depends on 5.2.9)
+
+\section*{Exercises 5.3}
+
+
+
+\section*{Exercises 5.4}
+
+\subsection*{5.4.2}
+ 
+Let $\ddisp{T(Y)}{\beta}{Y}$ be a monad algebra in $\mathcal{EM}(T)$. Furthermore, suppose there exists
+an arrow $\ddisp{T^2X}{\mu}{TX} \overset{f}{\to} \ddisp{T(Y)}{\beta}{Y}$; i.e., we have $f : TX \to Y$ in
+$\mathbb C$ such that $Tf;\beta = \mu;f$. Furthermore, suppose that in $\mathcal{EM}(T)$ we have $T(\alpha);f = \mu;f$.
+Combining the two equations established thus far gives $Tf;\beta = \mu;f = T(\alpha);f$.
+\\~\\
+We demonstrate that $\eta;f$ is a mediating morphism. 
+$$\alpha;\eta;f = \eta;T\alpha;f = \eta;Tf;\beta=f;\eta;\beta=f$$
+We also need to show that $\eta;f$ an algebra morphism; i.e., it makes the square commute:
+$$\alpha;\eta;f = f = T(id);f = T(\eta;\alpha);f = T\eta;T\alpha;f=T\eta;Tf;\beta=T(\eta;f);\beta$$
+TODO: show that $\eta;f$ is the unique algebra morphism that performs this mediation. 
+ 
+\subsection*{5.4.4}
+
+\subsubsection*{1}
+
+When $G = \mit{id}_{\mathbb C}$ we seek an $\mathcal{EM}$-law of type $T \Rightarrow T$. We choose $\mit{id}_{T-}$
+as our underlying natural transformation. It satifies the $\mathcal{EM}$-law properties
+
+\begin{tikzcd}
+ & \ar[dl,"\eta_{\mathit{id}(X)}" left] X \ar[dr, "id(\eta_{x})" right] & \\
+TX \ar[rr, "\mathit{id}_{TX}" below] & & TX
+\end{tikzcd} 
+
+The multiplication law is not hard to see, but I'm too lazy to transcribe to tex right now.
+
+\subsubsection*{2}
+
+Here we need a natural transformation of type $TB \Rightarrow B$. Noting that $TB$ is the constant 
+functor that maps $X \mapsto TB$ for all $X \in \mathbb C_0$, we can use the natural transformation
+$\alpha$ defined as $\beta$ at each component: $\alpha_X \doteq \beta$.
+\\~\\
+The unit law follows from the unit law for monad algebras (note that $\beta$ isn't just any algebra: it's a monad algebra):
+\begin{center}
+\begin{tikzcd}
+    & \ar[dl, "\eta_{BX}" left] B \ar[dr, "B(\eta_X) = \mathit{id}_B"] & \\
+ TB \ar[rr, "\beta" below] &   & B 
+\end{tikzcd}
+\end{center}
+Again, it satisfies multiplication for $\mathcal{EM}$-laws due to the multiplication law for the monad algebra $\beta$:
+\begin{center}
+\begin{tikzcd}
+T^2B \ar[r, "T(\beta)" above] \ar[d, "\mu" left] & TB \ar[r, "\beta" above] & B \ar[d,"B(\mu)=id_B" right]  \\
+TB \ar[rr, "\beta" below] & & B
+\end{tikzcd}
+\end{center}
+
+\subsubsection*{3}
+
+We need a natural transformation of signature $T(G_1 \times G_2) \Rightarrow (G_1 \times G_2)T$ i.e.
+$T(G_1 \times G_2) \Rightarrow G_1T \times G_2T$. We propose the natural transformation $\alpha$, 
+defined such that for $X \in \mathbb C$, $\alpha_X \doteq \langle T\pi_1;\rho_1, T\pi_2;\rho_2 \rangle$.
+\\~\\
+To show that this satisfies the unit diagram for $\mathcal{EM}$-laws, we first establish a lemma.
+For all $X \in \mathbb C$ we have $\eta_{(G_1X \times G_2X)};T \pi_1;\rho_1 = \pi_1;\eta_{G_1 X};\rho_1 = \pi_1;G_1(\eta_X)$.
+Likewise, $\eta_{(G_1X \times G_2X)};T \pi_2;\rho_2 = \pi_2;G_2(\eta_X)$.
+\\~\\
+With the above lemmas, we have 
+$$\eta_{(G_1X \times G_2X)};\langle T \pi_1; \rho_1, T \pi_2; \rho_2 \rangle = 
+\langle \pi_1;G_1(\eta_X), \pi_2;G_2(\eta_X) \rangle = G_1(\eta_X) \times G_2(\eta_X) = (G_1 \times G_2)(\eta_X)$$
+That is, the below diagram commutes
+%\begin{tikzcd}
+% & \ar[dl,"\eta_{(G_1 \times G_2)X}"] $G_1X \times G_2X$ \ar[dr, "(G_1 \times G_2)(\eta_X)"] & \\
+%$T(G_1 X \times G_2 X)$ & & $G_1TX \times G_2TX$ 
+%\end{tikzcd}
+
+\begin{center}
+\begin{tikzcd}
+ & \ar[dl,"\eta_{(G_1 \times G_2)X}~~" left] G_1X \times G_2X \ar[dr, "(G_1 \times G_2)(\eta_X)"] & \\
+T(G_1 X \times G_2 X) \ar[rr,"\langle T\pi_1;\rho_1 \text{,} T \pi_2;\rho_2 \rangle" below] & & G_1TX \times G_2TX 
+\end{tikzcd}
+\end{center}
+
+TODO: demonstrate that multiplication is satisfied.
+
+\section*{Chpt 6.4 Exercises}
+
+\subsection*{6.4.1}
+
+Consider the transition system $A^\star \to \mathcal P_{fin}(A^{\star})$ from Example 6.4.3 and prove
+$$\square(\{ x \in A^{\star} \mid \exists y \in A^{\star}. x = My \} ) (MI) \})$$
+--\\~\\
+Unrolling the definition of $\square(-)$ we get\\~\\
+$\square(\{ x \in A^{\star} \mid \exists y \in A^{\star}. x = My \})(MI) \leftrightarrow$\\
+$\exists P. P\text{ is an invariant} \wedge P \subseteq \{ x \in A^\star \mid \exists y \in A^\star. x = My \} \wedge P(MI)$\\~\\
+We provide such a predicate $P$. Let $P \doteq \{ My \mid y \in A^\star \}$. We must show that $P$ is an invariant, i.e. if $w \in P$ then $c(w) \in \mathit{Pred}(\mathcal P)(P)$. To this end, suppose $w \in P$. Then $\exists w'. w = Mw'$.
+Consider that $c(w)$ is the set of all $z \in A^\star$ such that either (substituting $Mw'$ for $w$):
+\begin{enumerate}
+\item $\exists x \in A^\star.~Mw'=xI \wedge z = xIU$
+\item $\exists x \in A^\star.~Mw' = Mx \wedge z = Mxx$
+\item $\exists x,y \in A^\star.~Mw'=xIIIy \wedge z = xUy$
+\item $\exists x,y \in A^\star.~Mw'=xUUy \wedge z =xy$
+\end{enumerate}
+
+Going through each case, we can clearly see that $z = Mz'$ for some $z' \in A^\star$. Hence $P$ is an invariant.
+
+
+\subsection*{6.4.2}
+
+Let $x \in P \wedge \square(P \Rightarrow \bigcirc P)$. Then $x \in P$ and $x \in \square(P \Rightarrow \bigcirc P)$.
+Since $x \in \square (P \Rightarrow \bigcirc P)$, there exists an invariant $Q$ with $Q \subseteq (P \Rightarrow \bigcirc P)$ and $x \in Q$.\\~\\
+To show $x \in \square P$, we must demonstrate an invariant $R$ with $R \subseteq P$. We choose $R = \{ y \mid x \rightarrow^* y \}$. That is, $R$ is the set of all states reachable from $x$. If we define $R_i \doteq \{ y \mid x \overset{i}{\rightarrow} y \}$, 
+then we have $R = \bigcup_{i \in \mathbb N} R_i$. We show by induction that $R_i \subseteq P \wedge Q$. It then follows that $R = \bigcup_{i \in \mathbb N} R_i \subseteq P \wedge Q \subseteq P$.
+
+\begin{description}
+\item[Base Case (i=0):]~\\
+$R_0 = \{ x \}$, and we established $x \in P \wedge Q$ in the first paragraph.
+\item[Inductive step:]~\\
+Assume $R_i \subseteq P \wedge Q$. Let $y \in R_{i+1}$. Then $\exists z \in R_i$ such that $x \rightarrow^* z \rightarrow y$.
+By the IH we have $z \in P \wedge Q$. Since $z \in Q \subseteq (P \Rightarrow \bigcirc P)$ and $z \in P$ we have $z \in \bigcirc P$. Since $z \rightarrow y$ and $z \in \bigcirc P$ we have $y \in P$. Since $Q$ is an invariant and $z \rightarrow y$ we have $y \in Q$. Therefore $y \in P \wedge Q$.
+\end{description}
+
+ 
+
+
+\end{document}
