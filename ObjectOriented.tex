@@ -79,31 +79,38 @@
 \maketitle
 
 \section{Syntax}
-
 Let $\mathit{FieldNames}$, $\mathit{MethodNames}$, and $\mathit{ClassNames}$ be countable sets of field names,
 method names, and class names, respectively. Our language's syntax is defined as follows:\\~\\
 \begin{tabular}{llll}
 \multicolumn{4}{l}{$x,y,z \in \mathit{Vars}$} \\
-\multicolumn{4}{l}{$\self (\text{self variable})$} \\
-\multicolumn{4}{l}{$c \in \mathit{ClassNames}$} \\ 
+\multicolumn{4}{l}{$\self~(\text{self variable}) \in \mathit{Vars}$} \\
+\multicolumn{4}{l}{$\alpha \in \mathit{ClassNames}$} \\ 
 \multicolumn{4}{l}{$f \in \mathit{FieldNames}$} \\
 & & & \\
-$\tau,\sigma$ (atomic types) & $::=$ & $c \mid \mathit{Int} \mid \mathit{Bool} \mid 1 \mid \tau \times \sigma$ & \\
-$\iota$ (types) & $::=$ & $\tau \mid (\tau_1,\ldots,\tau_k) \to \tau$ \\
-& & & \\
-$d$ (class defn.) & $::=$ & \multicolumn{2}{l}{$\lbrack f_i : \tau_i^{~i \in 1..n},~m_i : \sigma_i \to \sigma_i' = \lambda x~\varsigma z.t_i^{~i \in 1..k},~\mathit{constr} : \tau \to \tau_1 \times \cdots \times \tau_n = \lambda x. t \rbrack$} \\
+$\tau,\sigma$ (types) & $::=$ & $\alpha \mid \mathit{Int} \mid \mathit{Bool} \mid 1 \mid \tau \times \sigma \mid \tau \to \sigma$ & \\
+$\beta$ (class defn.) & $::=$ & \multicolumn{2}{l}{$\lbrack f_i : \tau_i^{~i \in 1..n},~m_i : \sigma_i \to \sigma_i' = \lambda x~\varsigma z.t_i^{~i \in 1..k},~\mathit{constr_i} : \tau \to \tau_1 \times \cdots \times \tau_n = \lambda x. t \rbrack$} \\
               & & \multicolumn{2}{l}{\emph{where the $f_i$'s are distinct, and the $m_i$'s are also distinct}} \\
  & & & \\
-$t,s$ (terms) & $::=$  & $self.f_{ij} := t$ & (field update) \\
-              & $\mid$ & $!self.f_{ij}$ & (field access)    \\
-              & $\mid$ & $t.m(t)$ & (method call)  \\
-              & $\mid$ & $\mbf{let}~x = t~\mbf{in}~t'$ & (monadic bind) \\
-              & $\mid$ & $\mathbf{if}~t~\mathbf{then}~t~\mathbf{else}~t$ & (if -- could this be a constant?) \\
-              & $\mid$ & $x$ & (variable occurrence) \\ 
-              & $\mid$ & $\mathit{constr}_i$ & (constructor occurrence) \\
-              & $\mid$ & $\mathit{k}$ & (constant occurrence) \\
+$c,d$ (commands) & $::=$  & $\self.f_{ij} := t$ & (field update) \\
+                 & $\mid$ & $!\self.f_{ij}$ & (field access)    \\
+                 & $\mid$ & $s.m(t)$ & (method call)  \\
+                 & $\mid$ & $\mbf{let}~x \Leftarrow c~\mbf{in}~d$ & (monadic bind) \\
+                 & $\mid$ & $\mbf{let}~x = t~\mbf{in}~d$ & (expression bind) \\
+                 & $\mid$ & $\mathbf{if}~t~\mathbf{then}~c~\mathbf{else}~d$ & (if command) \\
+                 & $\mid$ & $\mathit{constr}_i~t$ & (constructor application) \\
+
  & & & \\
-$p$ (program) & $:=$ & $c_i = d_i^{~i \in 1..n}$~~(where the $c_i$'s are distinct) & \\
+
+$t,s$ (terms) & $::=$  & $\mathit{k}$ & (constant occurrence) \\
+              & $\mid$ & $\mathit{t~s}$ & (application) \\
+              & $\mid$ & $x$ & (variable occurrence) \\ 
+              & $\mid$ & $\langle t, s \rangle$ & (pair) \\
+              & $\mid$ & $\mbf{inl}~t$ & (left injection) \\
+              & $\mid$ & $\mbf{inr}~t$ & (right injection) \\
+              & $\mid$ & $\mbf{case}~t~\mbf{with}~\mbf{inl}~x \to t~\mbf{inr}~x \to s$ & (case split) \\
+              & $\mid$ & $\pi_i~t$ & (projection) \\
+ & & & \\
+$p$ (program) & $:=$ & $\alpha_i = \beta_i^{~i \in 1..n}$~~(where the $\alpha_i$'s are distinct) & \\
 \if 0
  & & & \\
 $\Delta$ (Field environment) & $:=$ & $\Delta,c_i.f_j : \tau \mid \emptyset$ & \\
@@ -127,26 +134,6 @@ We define our typing judgments with respect to a background program $p = [f_{ij}
   {~}
   {\self : \tau \mid \Gamma \vdash_p \self : \tau}
 \and
-\inferrule[Constr]
-  {\mathit{constr}_i : \tau \to \tau_{i1} \times \cdots \times \tau_{in_i} = \lambda x.t' ~\in~ p}
-  {\self : c_k \mid \Gamma \vdash_p \mathit{constr}_i : \tau \to c_i}
-\and
-\inferrule[Inv]
-  {\self : c_k \mid \Gamma \vdash_p t : c_i \\ m_{ij} : \sigma_{ij} \to \sigma_{ij}' \in p \\ \self : c_k \mid \Gamma \vdash_p t' : \sigma_{ij}'}
-  {\self : c_k \mid \Gamma \vdash_p t.m_{ij}(t') : \sigma_{ij}'}
-\and
-\inferrule[Get]
-  {f_{ij} : \tau_{ij} \in p}
-  {\self : c_i \mid \Gamma \vdash_p~!a.f_{ij} : \tau_{ij}}
-\and
-\inferrule[Set]
-  {f_{ij} : \tau_{ij} \in p \\ \self : c_i \mid \Gamma \vdash_{p} t : \tau_{ij}}
-  {\self : c_i \mid \Gamma \vdash_p a.f_{ij} := t : 1}
-\and
-\inferrule[Bind]
-  {a : c_i \mid \Gamma \vdash_p t : \tau \\ a : c_i \mid \Gamma,x:\tau \vdash_p t' : \tau'}
-  {a : c_i \mid \Gamma \vdash_p \mbf{let}~x = t~\mbf{in}~t' : \tau'}
-\and
 \inferrule[App]
   {a : c_i \mid \Gamma \vdash_p t : \tau' \to \tau \\ a : c_i \mid \Gamma \vdash t' : \tau'}
   {a : c_i \mid \Gamma \vdash_p t~t' : \tau}
@@ -155,9 +142,36 @@ We define our typing judgments with respect to a background program $p = [f_{ij}
   {\mathit{ty}(k) = \iota}
   {a : c_i \mid \Gamma \vdash k : \iota}
 
-
 \end{mathpar}
-\caption{Typing judgments $\self \mid \Gamma \vdash_p t : \tau$}
+\caption{Expression typing judgments $\self : c_k \mid \Gamma \vdash_p t : \tau$}
+\begin{mathpar}
+
+\and
+\inferrule[Constr]
+  {\mathit{constr}_i : \tau \to \tau_{i1} \times \cdots \times \tau_{in_i} = \lambda x.t' ~\in~ p \\ c_i : \alpha_k \mid \Gamma \vdash_p t : \tau}
+  {\self : \alpha_k \mid \Gamma \vdash_p \mathit{constr}_i~t : T \alpha_i}
+\and
+\inferrule[Inv]
+  {x : \alpha_i \in (\self : \alpha_k \mid \Gamma) \\ m_{ij} : \sigma_{ij} \to \sigma_{ij}' \in p \\ y : \sigma_{ij}' \in (\self : \alpha_k \mid \Gamma)}
+  {\self : \alpha_k \mid \Gamma \vdash_p s.m_{ij}(t) : T \sigma_{ij}'}
+\and
+\inferrule[Get]
+  {f_{ij} : \tau_{ij} \in p}
+  {\self : c_i \mid \Gamma \vdash_p~!a.f_{ij} : T \tau_{ij}}
+\and
+\inferrule[Set]
+  {f_{ij} : \tau_{ij} \in p \\ \self : c_i \mid \Gamma \vdash_{p} t : \tau_{ij}}
+  {\self : c_i \mid \Gamma \vdash_p a.f_{ij} := t : T1}
+\and
+\inferrule[Term-Bind]
+  {a : c_i \mid \Gamma \vdash_p t : \tau \\ a : c_i \mid \Gamma,x:\tau \vdash_p c : T \tau'}
+  {a : c_i \mid \Gamma \vdash_p \mbf{let}~x = t~\mbf{in}~c : T \tau'}
+\and
+\inferrule[Monad-Bind]
+  {a : c_i \mid \Gamma \vdash_p c : T \tau \\ a : c_i \mid \Gamma, x:\tau \vdash_p d : T \tau'}
+  {a : c_i \mid \Gamma \vdash_{p} \mbf{let}~x \Leftarrow c~\mbf{in}~d : T \tau'}
+\end{mathpar}
+\caption{Command typing judgments $\self : \alpha_k \mid \Gamma \vdash_p c : T \tau$}
 \end{figure}
 
 \begin{figure}
@@ -251,7 +265,6 @@ We refer to the set $\sem{c_i = d_i^{~i \in 1..n}}$ as $S$, because it is used t
 Now that we have defined a set $S$ representing the program state, our computation monad
 $T(X) \doteq ((S \times X) + 1 + 1)^S$ is fully defined.
 We can now interpret methods, fields, OOP objects, and classes.
-
 
 As a first approximation, a getter for a field field $f : \tau$ can be interpreted as an arrow of the form 
 $\mathbb N \to \sem{\tau}$ in $\mathcal K \ell(T)$, and a setter for $f : \tau$ can be interpreted as an arrow
