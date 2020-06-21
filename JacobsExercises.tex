@@ -1535,6 +1535,99 @@ $$\pi^*_{I,J} u^* (Y_{K \times J} \mapsto \Pi_{j \in J} Y_{(k,j)}) \overset{\con
 %$$ u^* \overset{u^* \eta}{\longrightarrow} u^* (Y \mapsto \Pi_{j \in J} Y_{i,j}) \pi^*_{I,J} 
 %   \overset{\cong}{\longrightarrow} (Y \mapsto \Pi_{j \in J} Y_{k,j}) (u \times id)^* \pi^*_{I,J}$$
 
+\section*{Lemma 1.9.3}
+
+\subsection*{i}
+We give a full proof of lemma 1.9.3 (i) sketched on pg 10075.\\~\\
+
+\subsubsection*{Functoriality of $\coprod_{I,J}$}
+
+In the proof, Jacobs defines $\coprod_{(I,J)}(I \times J,X) \doteq (I,J \times X)$. We define it on arrows:
+Given 
+\begin{center}
+\begin{tikzcd}[sep=60]
+(I \times J , X) \ar[rr, "(id \text{,} f : (I \times J) \times X \to Y)"] & & (I \times J, Y)
+\end{tikzcd}
+\end{center}
+into 
+\begin{center}
+\begin{tikzcd}[sep=60]
+(I , J \times X) \ar[rr, "(id \text{,} \langle \pi';\pi \text{,} a;f \rangle)"] & & (I , J \times Y)
+\end{tikzcd}
+\end{center}
+
+This functor preserves composition, since the composition
+
+\begin{center}
+\begin{tikzcd}[sep=60]
+(I \times J , X) \ar[r, "(id \text{,} f)"] & (I \times J, Y) \ar[r, "(id \text{,} g)"] & (I \times J, Z) 
+\end{tikzcd}
+\end{center}
+
+is equal to the arrow 
+
+\begin{center}
+\begin{tikzcd}[sep=60]
+(I \times J , X) \ar[rr, "(id \text{,} \langle \pi \text{,} f \rangle; g)"] & & (I \times J, Z)
+\end{tikzcd}
+\end{center}
+
+which maps to the arrow
+
+\begin{center}
+\begin{tikzcd}[sep=60]
+(I , J \times X) \ar[rr, "(id \text{,} \langle \pi';\pi \text{,} a;\langle \pi \text{,} f \rangle; g) \rangle"] & & (I , J \times Z)
+\end{tikzcd}
+\end{center}
+
+On the other hand, if we map first and then compose we get
+
+\begin{center}
+\begin{tikzcd}[sep=60]
+(I  , J \times X) \ar[r, "(id \text{,} \langle \pi';\pi \text{,} a;f \rangle)"] & (I , J \times Y) \ar[r, "(id \text{,} \langle \pi';\pi \text{,} a;g)"] & (I , J \times Z) 
+\end{tikzcd}
+\end{center}
+
+Noting that, $a \doteq \langle \langle \pi,\pi';\pi \rangle, \pi';\pi' \rangle$, composing the above two arrows gives:
+
+\begin{center}
+\begin{tabular}{ll}
+$(\mathit{id}, \langle \pi, \langle \pi';\pi,a;f \rangle \rangle;\langle \pi';\pi,a;g\rangle)$ &  \\
+$= (\mathit{id}, \langle \pi, \langle \pi';\pi,a;f \rangle \rangle;\langle \pi';\pi,\langle \langle \pi,\pi';\pi \rangle, \pi';\pi' \rangle;g)$ & \\
+$= (\mathit{id}, \langle \langle \pi, \pi';\pi \rangle, a;f \rangle;g)$  & \\
+$= (\mathit{id}, a;\langle \pi,f \rangle;g)$
+\end{tabular}
+\end{center}
+
+The last line in the above proof comes from the fact that 
+$$\langle \pi,\pi';\pi \rangle = \langle \langle \pi,\pi';\pi \rangle, \pi';\pi' \rangle;\pi = a;\pi$$
+
+TODO: show this functor preserves identities
+
+\subsubsection*{Unit and counit}
+
+We define the unit of our adjunction as $\eta_X \doteq (I \times J, X) \overset{(\mathit{id},\langle \pi;\pi',\pi' \rangle)}{\longrightarrow} (I \times J, J \times X)$.\\~\\
+We define the counit as $\varepsilon_X \doteq (K, J \times X) \overset{(id, \pi';\pi')}{\longrightarrow} (K,X)$.\\~\\
+TODO: Prove the triangle identities\\~\\
+TODO: Jacobs derived the adjunction using a natural isomorphism: can we derive unit and counit directly from this iso?
+
+\subsubsection*{Beck-Chevalley}
+
+Our Beck-Chevalley condition is that the following canonical natural transformation
+\begin{center}
+\begin{tikzcd}
+\coprod_{K,J} (u \times \mathit{id})^* \ar[d,"\coprod (u \times \mathit{id})^* \eta"] \\ 
+\coprod_{K,J} (u \times \mathit{id})^* \pi^*_{I,J} \coprod_{I,J} = \coprod_{K,J} \pi^*_{K,J} u^* \coprod_{I,J} 
+  \ar[d, "\varepsilon u^* \coprod_{I,J}"] \\
+u^* \coprod_{I,J}
+\end{tikzcd}
+\end{center}
+is an iso. Note that the equality in the middle comes from the fact that this is a split fibration.\\~\\
+We will first examine the components of the above canonical natural transformation concretely, and then we
+will find its inverse. 
+
+
+
 \section{Lemma 1.9.5}
 
 We give the full proof of Lemma 1.9.5, sketched on pg 10077. Without loss of generality, we only cover products.
