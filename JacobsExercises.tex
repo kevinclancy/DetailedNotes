@@ -789,6 +789,38 @@ $(c) \Rightarrow (b)$
 
 \subsection*{1.3.3}
 
+\subsubsection*{Functoriality of $\Pi_I$}
+ 
+$\Pi_I$ maps an arrows of $\mathbb B / I$ of the form
+\begin{center}
+\begin{tikzcd}
+Y \ar[rr,"q" above] \ar[rd,"\varphi" below] &   &  \ar[dl, "\psi"] Z \\
+                                      & I &  
+\end{tikzcd}
+\end{center}
+to the universal property of equalizers arrow in $\mathbb B$ below 
+
+\begin{center}
+\begin{tikzcd}[sep=45]
+\prod_I \phi \ar[r, tail, "e_\varphi"] \ar[d,dashed] & (I \Rightarrow Y) \ar[d,"I \Rightarrow q"] \ar[r,"I \Rightarrow \varphi" above, bend left=20] \ar[r, bend right=20, "\Lambda(\pi)" below] & (I \Rightarrow I) \ar[d, double, no head] \\
+\prod_I \psi \ar[r, tail, "e_\psi" below] & (I \Rightarrow Z) \ar[r, bend left=30,"I \Rightarrow \psi" above] \ar[r, bend right=20,"\Lambda(\pi)" below] & (I \Rightarrow I) 
+
+\end{tikzcd}
+\end{center}
+
+This equalizer arrow exists because 
+$$e_{\varphi};(I \Rightarrow q);(I \Rightarrow \psi) = e_\varphi;(I \Rightarrow \varphi) = e_\varphi;\Lambda(\pi)
+ = e_\varphi;(I \Rightarrow q); \Lambda(\pi)$$
+
+The last equation on the right becomes clear if we think about what $\Lambda(\pi)$ is: intuitively, it maps to
+the identity. Formally, for all $A \in \mathbb B_0, f : A \to (I \Rightarrow Z)$ we have
+$\Lambda^{-1}(f;\Lambda(\pi)) = (I \times (f; \Lambda \pi));\mathit{ev} = (I \times f);(I \times \Lambda \pi);\mathit{ev}
+= (I \times f);\pi = \pi$. Then, since $\pi$ is independent of our choice of $f$, 
+for all $f,g : A \to (I \Rightarrow Z)$ we have $\Lambda^{-1}(f;\Lambda \pi) = \pi = \Lambda^{-1}(g;\Lambda \pi)$,
+and so mapping across the adjunction gives $f;\Lambda \pi = g;\Lambda \pi$.
+
+\subsubsection*{Adjunction}
+
 We need a bijection between arrows in $\mathbb B$ of the form $$X \overset{a}{\longrightarrow} \Pi_{I} \ddisp{Y}{f}{I}$$
 and arrows in $\mathbb B / I$ of the form 
 \begin{center}
@@ -799,8 +831,8 @@ I &
 \end{center}
 
 For simplicity, we'll assume exponents curry the left component of products rather than the right, so given $A \times B \overset{\varphi}{\to} C$ we have $B \overset{\Lambda(\varphi)}{\to} (A \Rightarrow C)$
-Let's start going from top to bottom. Suppose we have an arrow $X \overset{a}{\longrightarrow} \Pi_{I} (Y \overset{f}{\to} I)$.
-By naturality of the isomorphism $\mathit{Hom}(I \times X, -) \cong \mathit{Hom}(X, I \Rightarrow -)$ corresponding to the adjunction $I \times - \dashv (I \Rightarrow -)$, we have that the conclusion of 
+Let's start going from $\mathbb B$ to $\mathbb B / I$. Suppose we have an arrow $X \overset{a}{\longrightarrow} \Pi_{I} (Y \overset{f}{\to} I)$.
+By naturality of the isomorphism $\mathit{Hom}(I \times X, -) \cong \mathit{Hom}(X, I \Rightarrow -)$ corresponding to the adjunction $(I \times -) \dashv (I \Rightarrow -)$, we have that the conclusion of 
 
 \begin{prooftree}
 
@@ -846,7 +878,7 @@ $= \langle \pi_{I,X};\mathit{id}_I, \pi_{I,X}';a;e \rangle;\pi_{I,I \Rightarrow 
 $= \pi_{I,X}$ & (basic property of products)
  
 \end{tabular}\\~\\
-To go from top to bottom, we start with an $h : I \times X \to Y$ such that $h;f = \pi_{I,X}$.
+To go from $\mathbb B / I$ to $\mathbb B$, we start with an $h : I \times X \to Y$ such that $h;f = \pi_{I,X}$.
 
 We have $\Lambda(h) : X \to (I \Rightarrow Y)$, and so if $\Lambda(h);(I \Rightarrow f) = \Lambda(h);\Lambda(\pi)$ 
 then, by the equalizer property, there is a unique arrow $a : X \to \Pi_I(f : Y \to I)$ such that $a;e=h$.
@@ -867,8 +899,23 @@ $= \Lambda(h;f)$ & (substitution) \\
 $= \Lambda h;(I \Rightarrow f)$ & (naturality of $\mathit{Hom}(I \times X, -) \cong \mathit{Hom}(X, I \Rightarrow -)$) 
 \end{tabular}
 \end{center}
-TODO: show adjunction is isomorphism \\
-TODO: show adjunction is natural
+
+\subsubsection*{Adjunction triangle}
+
+To finish, we show this is an adjunction using the counit adjunction triangle.
+We obtain our counit from transposing the identity: 
+$\varepsilon = \Lambda^{-1}(\mathit{id};e) = \Lambda^{-1}(e)$. 
+Since 
+$$(I \times a)\Lambda^{-1}(e) = (I \times a);(I \times e);\mathit{ev} = (I \times (a;e));\mathit{ev} = (\Lambda^{-1}(a;e)) = h$$
+the counit adjunction triangle below commutes in $\mathbb B / I$:
+\begin{center}
+\begin{tikzcd}[sep=50]
+I \times X \overset{\pi}{\to} I \ar[dr, "I^*(a)~~~" below] \ar[r, "h"] & Y \overset{f}{\to} I  \\
+ & I \times \Pi_I f \overset{\pi}{\to} I \ar[u,"\Lambda^{-1}(e)" right]
+\end{tikzcd}
+\end{center}
+ 
+
 
 \subsection*{1.3.4}
 
