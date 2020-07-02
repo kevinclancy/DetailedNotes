@@ -1712,6 +1712,87 @@ This bijection clearly exists. We must show that it underlies an adjunction $u^*
 
 TODO: we must also show Beck-Chevalley
 
+\subsection*{Lemma 1.9.8 (i)}
+
+We have the following situation:
+
+\begin{center}
+\begin{tikzcd}[sep=60]
+ & Y \ar[ddl,"\varphi", near end] & & \Pi_{I,J}(Y)  \ar[ddr,phantom,"\lrcorner", very near start] \ar[r] \ar[dd] & (J \Rightarrow Y) \ar[dd,"J \Rightarrow \varphi"] \\
+\pi^*(X) \ar[dr,phantom,"\lrcorner", very near start] \ar[ur, "f"] \ar[d,"\pi^*(\psi)" left] \ar[rr] & & X \ar[dr,"\psi" left] \ar[ur,"f^\sharp"] & & \\
+I \times J \ar[rrr,"\pi_{I,J}" below] & ~ & & I \ar[r,"\Lambda(id_{I \times J})" below] & (J \Rightarrow I \times J)
+\end{tikzcd}
+\end{center}
+
+Let's establish some intuition for $f$ and $f^\sharp$ and consider why they encode the same information.
+
+\begin{itemize}
+\item Intuitively, $\pi^*(X)$ is the set of all triples $(i,j,x) \in I \times J \times X$ such that $\psi(x)=i$.
+\item Intuitively, $f(i,j,x);\varphi = (i,j)$.
+\item Intuitively, $\Pi_{I,J}(Y)$ is the set of pairs $(i,h)$ such that $h \in J \Rightarrow Y$ maps any $j$ to an 
+      encoding of $(i,j)$ which can be decoded by $\varphi$. I.e., it maps to the set of all $i \in I$ that can be encoded
+      as a pair with any element of $J$ within $Y$. Each such $i \in I$ is paired with its encoding strategy.
+\item So $f^\sharp$ is kind of a curried, or delayed, version of $f$.
+\end{itemize}
+But to make this formal, we must explain it in terms of arrow composition, pullback properties, etc. 
+First, we establish that $X \times J \cong \pi^*(X)$. We do this by showing that $J \times X$ satisfies the
+same universal mapping property as $\pi^*(X)$. We have the following pullback square:
+
+\begin{center}
+\begin{tikzcd} 
+X \times J \ar[d,"\langle \pi;\psi \text{,} \pi' \rangle" left] \ar[r,"\pi"] & \ar[d, "\psi"] X \\
+I \times J \ar[r, "\pi" below] & I
+\end{tikzcd}
+\end{center}
+
+Consider an object $Z$ with $a : Z \to I \times J$ and $b : Z \to X$ with $a;\psi=b;\pi$.
+Then $\langle b;\pi', a \rangle : Z \to J \times X$ is the pullback arrow we are seeking. 
+We have $\langle a, b;\pi' \rangle;\pi = a$ and $\langle a,b;\pi'\rangle;\langle \pi;\psi,\pi' \rangle
+= \langle a;\psi, b;\pi' \rangle = \langle b;\pi, b;\pi' \rangle = b$. (Exercise: why is this the unique 
+arrow with this property?).   
+
+If we consider how the pullback UMP based isomorphism $\gamma : X \times J \overset{\cong}{\to} \pi^*(X)$ is derived,  
+we see that $\gamma;\pi^*(\psi) = \psi \times J$, and hence $\psi \times J \cong \pi^*(\psi)$ in $\mathbb B / (I \times J)$.
+Appealing to the naturality of the adjunction $(- \times J) \dashv (J \Rightarrow -)$ we have that the conclusion of
+
+\begin{prooftree}
+
+\AxiomC{$X \overset{f^\sharp}{\longrightarrow} (J \Rightarrow Y)$}
+
+\UnaryInfC{$X \overset{f^\sharp;e}{\longrightarrow} (J \Rightarrow Y) \overset{J \Rightarrow \varphi}{\longrightarrow} (J \Rightarrow I \times J)$}
+
+\doubleLine
+
+\UnaryInfC{$X \times J \overset{\Lambda^{-1}(f^\sharp;e;J \Rightarrow \varphi)}{\longrightarrow} Y$} 
+
+\end{prooftree}
+
+is equal to the conclusion of
+\begin{prooftree}
+
+\AxiomC{$X \overset{f^\sharp}{\longrightarrow} (J \Rightarrow Y)$}
+
+\UnaryInfC{$X \times J \overset{\Lambda^{-1}(f^\sharp;e)}{\longrightarrow} Y$}
+
+\doubleLine
+
+\UnaryInfC{$X \times J \overset{\Lambda^{-1}(f^\sharp;e)}{\longrightarrow} Y \overset{\varphi}{\longrightarrow} I \times J$}
+\end{prooftree}
+
+But the top conclusion is equal to $\psi \times J$, for we have:
+\begin{center}
+\begin{tabular}{ll}
+$\Lambda^{-1}(f^\sharp;e;J \Rightarrow \varphi)$ &  \\
+$= \Lambda^{-1}(f^\sharp;\pi_{I,J}(\varphi);\Lambda(\mathit{id_{I \times J}}))$ &  \\ 
+$= \Lambda^{-1}(\psi;\Lambda(\mathit{id_{I \times J}}))$ &  \\ 
+$= ((\psi;\Lambda(\mathit{id_{I \times J}})) \times J);\mathit{ev}$ &  \\ 
+$= (\psi \times J);(\Lambda(\mathit{id_{I \times J}}) \times J);\mathit{ev}$ & \\
+$= (\psi \times J);\Lambda^{-1}(\Lambda(\mathit{id_{I \times J}}))$ & \\
+$= ((f^\sharp;\pi_{I,J}(\varphi)) \times J)$ & \\
+$= \psi \times J$ &
+\end{tabular}
+\end{center}
+
 \section*{Exercises 2.1}
 
 \subsection*{2.1.1}
