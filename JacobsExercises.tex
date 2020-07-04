@@ -1718,13 +1718,13 @@ We have the following situation:
 
 \begin{center}
 \begin{tikzcd}[sep=60]
- & Y \ar[ddl,"\varphi", near end] & & \Pi_{I,J}(Y)  \ar[ddr,phantom,"\lrcorner", very near start] \ar[r] \ar[dd] & (J \Rightarrow Y) \ar[dd,"J \Rightarrow \varphi"] \\
+ & Y \ar[ddl,"\varphi", near end] & & \Pi_{I,J}(Y)  \ar[ddr,phantom,"\lrcorner", very near start] \ar[r,"e" above] \ar[dd, "\Pi_{I,J}(\varphi)"] & (J \Rightarrow Y) \ar[dd,"J \Rightarrow \varphi"] \\
 \pi^*(X) \ar[dr,phantom,"\lrcorner", very near start] \ar[ur, "f"] \ar[d,"\pi^*(\psi)" left] \ar[rr] & & X \ar[dr,"\psi" left] \ar[ur,"f^\sharp"] & & \\
 I \times J \ar[rrr,"\pi_{I,J}" below] & ~ & & I \ar[r,"\Lambda(id_{I \times J})" below] & (J \Rightarrow I \times J)
 \end{tikzcd}
 \end{center}
 
-Let's establish some intuition for $f$ and $f^\sharp$ and consider why they encode the same information.
+Let's establish some intuition for $f$ and $f^\sharp$ and consider why they ``encode the same information''.
 
 \begin{itemize}
 \item Intuitively, $\pi^*(X)$ is the set of all triples $(i,j,x) \in I \times J \times X$ such that $\psi(x)=i$.
@@ -1750,6 +1750,8 @@ Then $\langle b;\pi', a \rangle : Z \to J \times X$ is the pullback arrow we are
 We have $\langle a, b;\pi' \rangle;\pi = a$ and $\langle a,b;\pi'\rangle;\langle \pi;\psi,\pi' \rangle
 = \langle a;\psi, b;\pi' \rangle = \langle b;\pi, b;\pi' \rangle = b$. (Exercise: why is this the unique 
 arrow with this property?).   
+
+\subsubsection*{Transposing from $\mathbb B / I$ to $\mathbb B / (I \times J)$}
 
 If we consider how the pullback UMP based isomorphism $\gamma : X \times J \overset{\cong}{\to} \pi^*(X)$ is derived,  
 we see that $\gamma;\pi^*(\psi) = \psi \times J$, and hence $\psi \times J \cong \pi^*(\psi)$ in $\mathbb B / (I \times J)$.
@@ -1792,6 +1794,60 @@ $= ((f^\sharp;\pi_{I,J}(\varphi)) \times J)$ & \\
 $= \psi \times J$ &
 \end{tabular}
 \end{center}
+Hence $\Lambda^{-1}(f^\sharp;e);\varphi = \psi \times J$.\\~\\
+Given $f^\sharp : X \to \Pi_{I,J}(Y)$ such that $f^\sharp;\Pi_{I,J}(\varphi)=\psi$, we obtain its transpose as 
+$\gamma^{-1};\Lambda^{-1}(f^\sharp;e)$. This is in fact an arrow in $\mathbb B / (I \times J)$ from $\pi^{*}(\psi)$
+to $\varphi$, since $\gamma^{-1};\Lambda^{-1}(f^\sharp;e);\varphi = \gamma^{-1};(\psi \times J) = \pi^*(\psi)$.
+
+\subsubsection*{Transposing from $\mathbb B / (I \times J)$ to $\mathbb B / I$}
+
+Given an arrow $\pi^*(X) \overset{f}{\longrightarrow} Y$ such that $f;\varphi = \pi^*(\psi)$ we obtain 
+$$X \overset{\Lambda(\gamma;f)}{\longrightarrow} (J \Rightarrow Y)$$ 
+The following square commutes
+\begin{center}
+\begin{tikzcd}
+X \ar[r, "\Lambda(\gamma;f)"] \ar[d, "\psi" left] & (J \Rightarrow Y) \ar[d,"J \Rightarrow \varphi"] \\
+I \ar[r,"\Lambda(\mathit{id})" below] & (J \Rightarrow I \times J) 
+\end{tikzcd}
+\end{center}
+due to the following argument\\~\\
+\begin{tabular}{ll}
+$\psi;\Lambda\mathit{id}$ & \\
+$= \Lambda \Lambda^{-1} (\psi;\Lambda \mathit{id})$ & \\
+$= \Lambda ( ( (\psi;\Lambda \mathit{id}) \times J);\mathit{ev})$ & \\
+$= \Lambda ( (\psi \times J);(\Lambda \mathit{id} \times J);\mathit{ev})$ & \\
+$= \Lambda ( (\psi \times J); \Lambda^{-1} \Lambda \mathit{id})$ & \\
+$= \Lambda(\psi \times J)$ & \\
+$= \Lambda(\gamma;\pi^*(\psi))$ & \\
+$= \Lambda(\gamma;f;\varphi)$ & \\
+$= \Lambda(\gamma;f);(J \Rightarrow \varphi)$  
+\end{tabular}\\~\\
+Hence, by the UMP of $\Pi_{I,J}(Y)$ we get a unique arrow $f^\sharp : X \to \Pi_{I,J}(Y)$ such that 
+$f^\sharp;e = \Lambda(\gamma;f)$ and $f^\sharp;\Pi_{I,J}(\varphi) = \psi$. $f^\sharp$ is the transpose of $f$.
+\subsubsection*{Functoriality of $\pi^*$}
+
+The functoriality of $\pi^*$ comes, unsurprisingly, from the UMP of pullbacks.
+
+\begin{center}
+\begin{tikzcd}
+ & \pi^*(Y) \ar[rr, "a_{\psi}"] \ar[ddl,"\pi^*(\psi)", near end] & & Y \ar[dd, "\psi", near end] \\
+\pi^*(X) \ar[rr,"a_{\varphi}" above] \ar[ur, "\pi^*(f)", dashed] \ar[d,"\pi^*(\varphi)" left] & & X \ar[dr, "\varphi~~" below] \ar[ur,"f"] & \\
+I \times J \ar[rrr,"\pi_{I,J}" below] & & & I  
+\end{tikzcd}
+\end{center}
+
+Consider the arrows $\pi^*(X) \overset{a_\varphi;f}{\longrightarrow} Y$ and $\pi^*(X) \overset{\pi^*(\varphi)}{\longrightarrow} I \times J$. 
+Since $a_{\varphi};f;\psi = a_{\varphi};\varphi = \pi^*(\varphi);\pi_{I,J}$, we have a unique arrow $\pi^*(X) \overset{\pi^*(f)}{\longrightarrow} \pi^*(Y)$ such that 
+$$\pi^*(f);\pi^*(\psi) = \pi^*(\varphi)$$
+$$\text{and}$$
+$$\pi^*(f);a_{\psi} = a_\varphi;f$$
+
+TODO: show this preserves composition
+
+\subsubsection*{Counit adjunction triangle}
+
+We obtain the counit via transposing the identity: 
+$$\varepsilon = \gamma^{-1};\Lambda^{-1}(\mathit{id_{\Pi_{I,J}(Y)}};e) = \gamma^{-1};\Lambda^{-1}(e)$$.
 
 \section*{Exercises 2.1}
 
@@ -2124,7 +2180,6 @@ the canonical vertical map
 $$Eq'(Ku,Kv) \longrightarrow L(Eq(u,v))$$
 is an isomorphism.
 
- 
 
 
 \end{document}
