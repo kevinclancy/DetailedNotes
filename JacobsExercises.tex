@@ -1849,6 +1849,23 @@ TODO: show this preserves composition
 We obtain the counit via transposing the identity: 
 $$\varepsilon = \gamma^{-1};\Lambda^{-1}(\mathit{id_{\Pi_{I,J}(Y)}};e) = \gamma^{-1};\Lambda^{-1}(e)$$.
 
+\begin{center}
+\begin{tikzcd}
+X \times J \ar[drr, "f^\sharp \times J" below] & \ar[drr,"\pi^*(f^\sharp)~~~" left] \ar[rr,"\gamma_{\psi}^{-1};\Lambda^{-1}(f^\sharp;e)"] \ar[l,"\gamma_{\psi}^{-1}" above] \pi^*(X) & & Y \\
+ & & \Pi(Y) \times J \ar[r,"\gamma_{\Pi(\varphi)}" below] & \pi^*(\Pi(Y)) \ar[u, "\gamma_{\Pi(\varphi)}^{-1}; \Lambda^{-1}(e)" right] 
+\end{tikzcd}
+\end{center}
+
+It's not hard to see that the ``outer loop'' here commutes. But we need to show the triangle commutes, and that would follow from $\gamma^{-1};(f^\sharp \times J);\gamma = \pi^*(f^\sharp)$. 
+
+Since $\pi^*(f^\sharp)$ was derived from a UMP (see the ``functoriality of $\pi^*$'' subsection), we need only show that $\gamma^{-1};(f^\sharp \times J);\gamma$ satisifies $\pi^*(f^\sharp)$'s UMP properties:
+
+\begin{itemize}
+\item $\gamma^{-1};(f^\sharp \times J);\gamma;\pi^*(\Pi(\varphi)) = \pi^*(\psi)$
+\item $\gamma^{-1};(f^\sharp \times J);\gamma;a_{\Pi(\varphi)} = a_{\psi};f^{\sharp}$
+\end{itemize}
+
+
 \section*{Exercises 2.1}
 
 \subsection*{2.1.1}
