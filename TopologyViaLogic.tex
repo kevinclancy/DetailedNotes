@@ -1,0 +1,156 @@
+\documentclass{article}
+
+\usepackage{amscd}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{stmaryrd}
+\usepackage{mathpartir}
+\usepackage{multicol}
+\usepackage{enumitem}
+\usepackage[section]{placeins} % float barriers
+\usepackage{natbib}
+\usepackage{xcolor} 
+\usepackage{bussproofs} 
+\usepackage{diagrams}
+\usepackage{tikz}
+
+\usetikzlibrary{cd}
+ 
+\newtheorem{lemma}{Lemma}
+
+%example: \limit{j \in J}{F_j}
+\newcommand{\limit}[2]{\underset{\overset{\longleftarrow}{#1}}{\text{lim}}~#2}
+\newcommand{\lims}[1]{\underset{\longleftarrow}{\text{lim}}~#1}
+\newcommand{\mbf}{\mathbf}
+\newcommand{\sem}[1]{\llbracket #1 \rrbracket}
+
+
+\newcommand{\vrt}[2]{
+\pile{
+#1 \\
+\downarrow \\
+#2
+}
+}
+
+\newcommand{\ddisp}[3]{
+\left(
+\scriptsize
+\begin{tikzcd}
+#1 \ar[d, "\footnotesize{#2}"] \\
+#3
+\end{tikzcd}
+\normalsize
+\right)
+}
+
+\newcommand{\disp}[3]{
+\left(
+\tiny
+\begin{array}{c}
+#1 \\
+\downarrow\\
+#3
+\end{array}
+\begin{array}{l}
+~ \\
+#2 \\
+~
+\end{array}
+\normalsize
+\right)
+}
+
+\newcommand{\dispp}[3]{
+\tiny
+\begin{tikzcd}
+#1 \ar[d, "#2"] \\
+#3
+\end{tikzcd}
+\normalsize
+}
+
+\title{Solutions: Topology via Logic}
+
+\begin{document}
+
+\maketitle
+
+\section*{Chpt 3}
+
+\subsection*{3.1}
+
+Prove directly that the subsets of $\mathbb R$ that satisfy the second condition in Proposition 3.9.1 are closed
+under finite intersections and arbitrary unions and hence form a frame (a subframe of $\mathcal P \mathbb R$).\\~\\
+Seems fairly straightforward. I can think this one through, so I don't feel the need to transcribe it.
+
+\subsection*{3.2}
+
+A subbasic assertion $(x \pm \varepsilon)$ clearly contains more than one point. So the only way to obtain a smaller open
+set is to take a finite meet of several subbasic assertions. It isn't hard to see that this either results in $\mathit{false}$ 
+or yet another subbasic assertion, and so it isn't possible to obtain a singleton set in this way. Therefore singleton 
+sets are not open.
+
+\subsection*{3.4}
+
+\begin{lemma}
+For all open sets $U$ in a toplogical space, $\neg U = \text{Int}(U^C)$ 
+\label{lemma3.4.1}
+\end{lemma}
+
+\begin{proof}
+By the definition of $- \to -$, $$V \subseteq U \to \emptyset~(\mathit{aka}~\neg U) \leftrightarrow V \cap U \subseteq \emptyset$$
+
+In words, an open set is contained in $\neg U$ iff it is contained in $U^C$, since $V \cap U \subseteq \emptyset \leftrightarrow V \cap U = \emptyset$. But $\neg U$ is an open set by definition, and so it is the union of all open sets it contains. Hence it is the union of all open sets in $U^C$, i.e. $\neg U = \text{Int}(U^C)$.
+
+\end{proof}
+
+\begin{lemma}
+For all open sets $U$ in a toplogical space, $\text{Int}(U^C)^C = \text{Cl}(U)$
+\label{lemma3.4.2}
+\end{lemma}
+
+\begin{proof}
+We show that they have the same complements: $\text{Int}(U^C) = \text{Cl}(U)^C$.
+We have $$V \subseteq \mathit{Int}(U^C) \leftrightarrow V \subseteq U^C \leftrightarrow U \subseteq V^C \leftrightarrow \mathit{Cl}(U) \subseteq V^C  \leftrightarrow V \subseteq \mathit{Cl}(U)^C$$
+
+\end{proof}
+
+Finally, we get
+
+$$\neg \neg U = \mathit{Int}( \mathit{Int}(U^C)^C) = \mathit{Int}( \mathit{Cl}(U) ) $$
+
+by applying Lemma \ref{lemma3.4.1} on the left and Lemma \ref{lemma3.4.2} on the right.
+
+\subsection*{3.5}
+
+It's easy to see that $x \wedge \neg x = \mbf{false}$, since the interior of a set's complement is contained
+in it its complement we have $\sem{\neg x} \subseteq \sem{x}^C$ and hence $\sem{x \wedge \neg x} = \sem{x} \cap \sem{\neg x} = \emptyset = \mbf{false}$.
+
+In $\Omega \mathbb R$, for any set $x$ of the form $(a,b)$ with $a < b$ we have $x \vee \neg x \neq \mbf{true}$. 
+This is because $\sem{\neg x} = \mathit{Int}(\sem{x}^C) = (-\infty,a) \cup (b, \infty)$.
+
+\subsection*{3.6}
+
+This actually isn't an exercise.
+
+\subsection*{3.7}
+
+This is true not just for Heyting algebras, but all lattices. We first prove
+$$(a \wedge \bigvee_{s \in S} x) \leq \bigvee_{x \in S} (a \wedge x)$$
+
+Showing that for all $z$, $z \leq a \wedge \bigvee S \Rightarrow z \leq \bigvee_{x \in S}(a \wedge x)$ 
+is sufficient for this. To this end, let $z \leq a \wedge \bigvee S$. Then $z \leq a$ and $z \leq \bigvee S$. Hence $z$ is not an upper bound of $S$, i.e. there is some $x \in S$ with $z \leq x$. Then $z \leq a \wedge x \leq \bigvee_{x \in S} (a \wedge x)$.
+
+Now we prove inequality in the other direction.
+
+$$\bigvee_{x \in S} (a \wedge x) \leq (a \wedge \bigvee_{s \in S} x)$$
+
+For any $x$, $a \wedge x \leq (a \wedge \bigvee_{s \in S} x)$ due to the monotonicity of $- \wedge -$ in its second argument. Since $(a \wedge \bigvee_{s \in S} x)$ is an upper bound of the set $\{ a \wedge x \mid x \in S \}$, it is greater than this set's least upper bound $\bigvee_{x \in S} (a \wedge x)$.   
+
+
+
+
+\end{document}
