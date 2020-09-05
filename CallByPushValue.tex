@@ -1,0 +1,122 @@
+\documentclass{article}
+
+\usepackage{amscd}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{stmaryrd}
+\usepackage{mathpartir}
+\usepackage{multicol}
+\usepackage{enumitem}
+\usepackage[section]{placeins} % float barriers
+\usepackage{natbib}
+\usepackage{xcolor} 
+\usepackage{bussproofs} 
+\usepackage{diagrams}
+\usepackage{tikz}
+
+\usetikzlibrary{cd}
+
+\newtheorem{lemma}{Lemma}
+
+%example: \limit{j \in J}{F_j}
+\newcommand{\limit}[2]{\underset{\overset{\longleftarrow}{#1}}{\text{lim}}~#2}
+\newcommand{\lims}[1]{\underset{\longleftarrow}{\text{lim}}~#1}
+\newcommand{\mbf}{\mathbf}
+\newcommand{\sem}[1]{\llbracket #1 \rrbracket}
+\newcommand{\gr}[1]{\textcolor{gray}{#1}}
+
+\newcommand{\vrt}[2]{
+\pile{
+#1 \\
+\downarrow \\
+#2
+}
+}
+
+\newcommand{\ddisp}[3]{
+\left(
+\scriptsize
+\begin{tikzcd}
+#1 \ar[d, "\footnotesize{#2}"] \\
+#3
+\end{tikzcd}
+\normalsize
+\right)
+}
+
+\newcommand{\disp}[3]{
+\left(
+\tiny
+\begin{array}{c}
+#1 \\
+\downarrow\\
+#3
+\end{array}
+\begin{array}{l}
+~ \\
+#2 \\
+~
+\end{array}
+\normalsize
+\right)
+}
+
+\newcommand{\dispp}[3]{
+\tiny
+\begin{tikzcd}
+#1 \ar[d, "#2"] \\
+#3
+\end{tikzcd}
+\normalsize
+}
+
+\title{Notes: \emph{Call-By-Push-Value: A Functional/Imperative Synthesis} }
+
+\begin{document}
+
+\maketitle
+ 
+\section*{2}
+
+\subsection*{2.6}
+
+Here we give categorical semantics for all CBPV types and judgments. Categorical constructs are written in \gr{gray} to distinguish them from the syntax of cbpv. It is given with respect to a distributive category $\mathcal C$ and a strong monad $\gr{T}$ such that the exponential $\gr{A \Rightarrow B}$ exists whenever $\gr{B}$ is the carrier of a $\gr{T}$-algebra.
+
+\subsubsection*{Value Types}
+
+Value types, written as $\gr{A,B,C}$ are interpreted as $C$ objects.
+
+\begin{mathpar}
+\inferrule
+  {\sem{\underline{B} : \mathit{CompTy}} = (\gr{A}, \gr{f})}
+  {\sem{U\underline{B} : \mathit{ValTy}} \doteq \gr{A}}
+\and
+\inferrule
+  {\sem{B_i : \mathit{ValTy}} = \gr{A_i}^{i \in I} \\ \text{I is a finite set}}
+  {\sem{\Sigma_{i \in I} A_i : \mathit{ValTy}} \doteq \gr{\Sigma}_{i \in I} \gr{A_i}}
+\and
+\inferrule
+  {~}
+  {\sem{1 : \mathit{ValTy}} = \gr{1}}
+\and
+\inferrule
+  {\sem{A : \mathit{ValTy}} = \gr{A} \\ \sem{A' : \mathit{ValTy}} = \gr{A'}}
+  {\sem{A \times A' : \mathit{ValTy}} \doteq \gr{A \times A'}}
+\end{mathpar}
+
+\subsubsection*{Computation Types}
+
+\begin{mathpar}
+\inferrule
+  {\sem{A : \mathit{ValTy}} = \gr{A}}
+  {\sem{FA : \mathit{CompTy}} \doteq \gr{FA}}
+\and
+\inferrule
+  {\sem{A : \mathit{ValTy}} = \gr{A} \\ \sem{B : \mathit{CompTy}} = (\gr{B},\gr{f})}
+  {\sem{A \to B : \mathit{CompTy}} \doteq (\gr{A \Rightarrow B}, \gr{\Lambda(\mathit{str}_{A,A \Rightarrow B};T(\mathit{ev}_{A,A \Rightarrow B});f)})}
+\end{mathpar}
+
+
+\end{document}
