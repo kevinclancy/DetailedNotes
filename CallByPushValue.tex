@@ -25,7 +25,7 @@
 \newcommand{\lims}[1]{\underset{\longleftarrow}{\text{lim}}~#1}
 \newcommand{\mbf}{\mathbf}
 \newcommand{\sem}[1]{\llbracket #1 \rrbracket}
-\newcommand{\gr}[1]{\textcolor{gray}{#1}}
+\newcommand{\gr}[1]{\textcolor{blue}{#1}}
 
 \newcommand{\vrt}[2]{
 \pile{
@@ -103,7 +103,7 @@ Value types, written as $\gr{A,B,C}$ are interpreted as $C$ objects.
 \and
 \inferrule
   {\sem{A : \mathit{ValTy}} = \gr{A} \\ \sem{A' : \mathit{ValTy}} = \gr{A'}}
-  {\sem{A \times A' : \mathit{ValTy}} \doteq \gr{A \times A'}}
+  {\sem{A \times A' : \mathit{ValTy}} = \gr{A \times A'}}
 \end{mathpar}
 
 \subsubsection*{Computation Types}
@@ -111,11 +111,88 @@ Value types, written as $\gr{A,B,C}$ are interpreted as $C$ objects.
 \begin{mathpar}
 \inferrule
   {\sem{A : \mathit{ValTy}} = \gr{A}}
-  {\sem{FA : \mathit{CompTy}} \doteq \gr{FA}}
+  {\sem{FA : \mathit{CompTy}} = \gr{FA}}
 \and
 \inferrule
   {\sem{A : \mathit{ValTy}} = \gr{A} \\ \sem{B : \mathit{CompTy}} = (\gr{B},\gr{f})}
-  {\sem{A \to B : \mathit{CompTy}} \doteq (\gr{A \Rightarrow B}, \gr{\Lambda(\mathit{str}_{A,A \Rightarrow B};T(\mathit{ev}_{A,A \Rightarrow B});f)})}
+  {\sem{A \to B : \mathit{CompTy}} = (\gr{A \Rightarrow B}, \gr{\Lambda(\mathit{str}_{A,A \Rightarrow B};T(\mathit{ev}_{A,A \Rightarrow B});f)})}
+\and
+\inferrule
+  {\sem{B_i : \mathit{CompTy}} = (\gr{B_i}, \gr{f_i})^{i \in 1..n}}
+  {\sem{\Pi_{i \in I} B_i : \mathit{CompTy}} = \gr{\langle \cdots T(\pi_i);f_i~^{i \in 1..n} \cdots \rangle} }
+(\text{where } \gr{\pi_i : (\Pi_{i \in I} B_i) \to B_i} \text{ is the obvious projection.})
+\end{mathpar}
+
+\subsection*{Typing Judgments}
+
+\begin{mathpar}
+\inferrule
+  {~}
+  {\sem{\Gamma, x:A, \Gamma' \vdash^v x : A} = \gr{\pi_x} : \sem{\Gamma,x:A,\Gamma'} \to \sem{A}}
+\and
+\inferrule
+  {\sem{\Gamma \vdash^v V : A} = \gr{f} : \sem{\Gamma} \to \sem{A}}
+  {\sem{\Gamma \vdash^c \mbf{return}~A : FA} = \gr{f}}
+\and
+\inferrule
+  {\sem{\Gamma \vdash^c M : \underline{B}} = \gr{f} : \sem{\Gamma} \to \mathit{Carrier}(\sem{\underline{B}})}
+  {\sem{\Gamma \vdash^v \mbf{thunk}~M : U\underline{B}} = \gr{f}}
+\and
+\inferrule
+  {\sem{\Gamma \vdash^V V : U \underline{B}} = \gr{f} : \sem{\Gamma} \to \sem{U\underline{B}}}
+  {\sem{\Gamma \vdash^C \mbf{force}~V : \underline{B}} = \gr{f}}
+\and
+\inferrule
+  {\sem{\Gamma \vdash^v V : A_i} = \gr{f} : \sem{\Gamma} \to \sem{A_i}}
+  {\sem{\Gamma \vdash^v (\hat{\iota},V) : \Sigma_{i \in I} A_i} = \gr{f;\kappa_i}}
+\and
+\inferrule
+  {\sem{\Gamma \vdash^v V : \Sigma_{i \in I}A_i} = \gr{f} \\ \cdots \sem{\Gamma,x:A_i \vdash^c M_i : \underline{B}} = \gr{g_i} \cdots_{i\in I}}
+  {\sem{\Gamma \vdash^c \mbf{pm}~V~\mbf{as}~\{ \ldots, (i,x).M_i,\ldots \} : \underline{B}} = \gr{\langle id_{\sem{\Gamma}}, f \rangle;[\cdots g_i \cdots]_{\sem{\Gamma}}}}
+\and
+\inferrule
+  {\sem{\Gamma \vdash^v V : A} = \gr{f} \\ \sem{\Gamma \vdash^v V' : A'} = \gr{g}}
+  {\sem{\Gamma \vdash^v (V,V') : A \times A'} = \gr{\langle f, g \rangle}}
+\and
+\inferrule
+  {\sem{\Gamma \vdash^v V : A \times A'} = \gr{f} \\ \sem{\Gamma,x:A,y:A' \vdash^c M : \underline{B}} = \gr{g}}
+  {\sem{\Gamma \vdash^c \mbf{pm}~V~\mbf{as}~(x,y).M : \underline{B}} = \gr{\langle \mathit{id}_{\sem{\Gamma}},f \rangle; g}}
+\and
+\inferrule
+  {\cdots \Gamma \vdash^c M_i : \underline{B_i} \cdots _{i \in I}}
+  {\Gamma \vdash^c \lambda \{ \ldots, i. M_i, \ldots \}}
+\and
+\inferrule
+  {\Gamma \vdash^c M : \Pi_{i \in I} \underline{B_i}}
+  {\Gamma \vdash^c \hat{\iota}`M : \underline{B_i}}
+\and
+\inferrule
+  {\Gamma,x:A \vdash^c M : \underline{B}}
+  {\Gamma \vdash^c \lambda x. M : A \to B}
+\and
+\inferrule
+  {\Gamma \vdash^v V : A \\ \Gamma \vdash^c M : A \to \underline{B}}
+  {\Gamma \vdash^c V ` M : \underline{B}}
+\end{mathpar}
+
+\subsection*{Stack Typing Judgments}
+
+\begin{mathpar}
+\inferrule
+  {~}
+  {\Gamma \mid \underline{C} \vdash^k \mathit{nil} : \underline{C}}
+\and
+\inferrule
+  {\Gamma, x:A \vdash^c M : \underline{B} \\ \Gamma \mid \underline{B} \vdash^k K : \underline{C}}
+  {\Gamma \mid FA \vdash^k [\cdot]~\mbf{to}~x. M :: K : \underline{C}}
+\and
+\inferrule
+  {\Gamma \mid \underline{B_{\hat{\iota}}} \vdash^k K : \underline{C}}
+  {\Gamma \mid \Pi_{i \in I} \underline{B_i} \vdash^k \hat{\iota} :: K : \underline{C}}
+\and
+\inferrule
+  {\Gamma \vdash^v V : A \\ \Gamma \mid \underline{B} \vdash^k K : \underline{C}}
+  {\Gamma \mid A \to \underline{B} \vdash^k V :: K : \underline{C}}
 \end{mathpar}
 
 
