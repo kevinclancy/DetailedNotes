@@ -138,8 +138,12 @@ This actually isn't an exercise.
 
 \subsection*{3.7}
 
-This is true not just for Heyting algebras, but all lattices. We first prove
-$$(a \wedge \bigvee_{s \in S} x) \leq \bigvee_{x \in S} (a \wedge x)$$
+We need to prove that that in $a \wedge \bigvee S$, $a$ distributes over $\bigvee S$, i.e. that $a \wedge \bigvee S = \bigvee_{b \ in S} (a \wedge b)$. $\mbf{Crucially}$, we need to show that $\bigvee_{b \in S} (a \wedge b)$ exists at all, for if I understand correctly, we are only allowed to assume that $\bigvee S$ exists.
+
+\subsubsection*{Lattices}
+
+If we were allowed to assume that $\bigvee_{b \in S} (a \wedge b)$ exists, this would be true not just for Heyting 
+algebras, but all lattices. We first prove $$(a \wedge \bigvee_{s \in S} x) \leq \bigvee_{x \in S} (a \wedge x)$$.
 
 Showing that for all $z$, $z \leq a \wedge \bigvee S \Rightarrow z \leq \bigvee_{x \in S}(a \wedge x)$ 
 is sufficient for this. To this end, let $z \leq a \wedge \bigvee S$. Then $z \leq a$ and $z \leq \bigvee S$. Hence $z$ is not an upper bound of $S$, i.e. there is some $x \in S$ with $z \leq x$. Then $z \leq a \wedge x \leq \bigvee_{x \in S} (a \wedge x)$.
@@ -150,7 +154,31 @@ $$\bigvee_{x \in S} (a \wedge x) \leq (a \wedge \bigvee_{s \in S} x)$$
 
 For any $x$, $a \wedge x \leq (a \wedge \bigvee_{s \in S} x)$ due to the monotonicity of $- \wedge -$ in its second argument. Since $(a \wedge \bigvee_{s \in S} x)$ is an upper bound of the set $\{ a \wedge x \mid x \in S \}$, it is greater than this set's least upper bound $\bigvee_{x \in S} (a \wedge x)$.   
 
+\subsubsection*{Heyting algebras}
 
+We need only prove that $\bigvee_{b \in S} a \wedge b$ exists. To do that, we show that $a \wedge \bigvee S$ is the least upper 
+bound of $X \doteq \{ a \wedge b \mid b \in S \}$.\\~\\
+$a \wedge \bigvee S$ is clearly an upper bound of $X$ due to the monoticity of $-\wedge-$ in its second argument.\\~\\
+To show that it is the \emph{least} upper bound of $X$, let $z$ be an upper bound of $X$. Then for all $b \in S$, $a \wedge b \leq z \therefore b \leq a \to z \therefore \bigvee S \leq a \to z \therefore (a \wedge \bigvee S) \leq z$. 
 
+\subsection*{3.8}
+
+TODO
+
+\section*{Chpt 4} 
+
+\subsection*{4.1}
+
+The carrier set is the set of elements of the lattice. $- \wedge -$ is interpreted as the greatest lower bound operator.
+$- \vee -$ is interpreted as the least upper bound operator. $\mbf{true}$ is interpreted as the top element. $\mbf{false}$ 
+is interpreted as the bottom element. TODO: derive the algebraic lattice equations from order theoretic properties of lattices.
+
+\subsection*{4.2}
+
+This isn't an exercise, but okay.
+
+\subsection*{4.3}
+
+a
 
 \end{document}
