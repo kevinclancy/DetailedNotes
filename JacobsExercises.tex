@@ -24,6 +24,7 @@
 \newcommand{\limit}[2]{\underset{\overset{\longleftarrow}{#1}}{\text{lim}}~#2}
 \newcommand{\lims}[1]{\underset{\longleftarrow}{\text{lim}}~#1}
 \newcommand{\mbf}{\mathbf}
+\newcommand{\sem}[1]{\llbracket #1 \rrbracket}
 
 \newcommand{\vrt}[2]{
 \pile{
@@ -1865,6 +1866,45 @@ Since $\pi^*(f^\sharp)$ was derived from a UMP (see the ``functoriality of $\pi^
 \item $\gamma^{-1};(f^\sharp \times J);\gamma;a_{\Pi(\varphi)} = a_{\psi};f^{\sharp}$
 \end{itemize}
 
+TODO: prove these. The first one is pretty simple, but the second one might be worth typing out.
+
+\subsubsection{Beck-Chevalley}
+
+Let's denote the isomorphism $(u \times id)^*;\pi^* \cong \pi^*u^*$ by $\alpha$.
+Recall that the canonical isomorphism is then
+
+\begin{center}
+\begin{tikzcd}
+u^* \Pi \ar[d, "\eta u^* \Pi" right] \\
+\Pi \pi^* u^* \Pi \ar[d, "\Pi \alpha \Pi" right] \\
+\Pi (u \times \mathit{id})^* \pi^* \Pi \ar[d, "\Pi (u \times \mathit{id}^*)\pi^* \Pi" right] \\
+\Pi (u \times \mathit{id})^* 
+\end{tikzcd}
+\end{center}
+
+Our strategy will be to show that both the unit $\eta$ and the counit $\varepsilon$ are invertible separately.
+Then, drawing out a pasting diagram for the above isomoprhism, it isn't hard to see that the canonical isomorphism
+as a whole is invertible.
+
+Let's first examine the counit. Recall that the component $\varepsilon_{\varphi}$ of the counit at 
+$\ddisp{X}{\varphi}{I \times J}$ equal to $\gamma^{-1}_X;\Lambda^{-1}(e_{\varphi})$. Its inverse is $\varphi;\gamma_I$,
+for we have 
+\begin{center}
+\begin{tabular}{ll}
+$\gamma^{-1}_X;\Lambda^{-1}(e_{\varphi});\varphi;\gamma_I$ & \\
+$= \gamma^{-1}_X;\Lambda^{-1}(e_{\varphi};J \Rightarrow \varphi);\gamma_I$ & \\
+$= \gamma^{-1}_X;\Lambda^{-1}(\Pi_{I,J}(\varphi);\Lambda(\mathit{id}_{I \times J}));\gamma_I$ & \\
+$= \gamma^{-1}_X;(\Pi_{I,J}(\varphi);\Lambda(\mathit{id}_{I \times J}) \times J);\mathit{ev};\gamma_I$ & \\
+$= \gamma^{-1}_X;(\Pi_{I,J}(\varphi) \times J);(\Lambda(\mathit{id}_{I \times J}) \times J);\mathit{ev};\gamma_I$ & \\
+$= \gamma^{-1}_X;(\Pi_{I,J}(\varphi) \times J);(\Lambda^{-1} \Lambda(\mathit{id}_{I \times J}));\gamma_I$ & \\
+$= \gamma^{-1}_X;(\Pi_{I,J}(\varphi) \times J);\gamma_I$ & \\
+$= \pi_{I,J}^*(\Pi_{I,J}(\varphi))$ &
+\end{tabular}
+\end{center}
+
+
+
+
 
 \section*{Exercises 2.1}
 
@@ -2197,6 +2237,100 @@ the canonical vertical map
 $$Eq'(Ku,Kv) \longrightarrow L(Eq(u,v))$$
 is an isomorphism.
 
+\section*{9.3}
+
+\subsection*{Weakening and Contraction Comonads}
+
+\subsection*{Examples}
+
+For the weakening and contraction comonad on the fibration $\vrt{s(\mathbb B)}{\mathbb B}$,
+$(I,X) \mapsto (I \times X, X)$, for functoriality we have 
+$$(u : I \to J, f : I \times X \to Y) \mapsto (\langle \pi;u,f \rangle, \langle\pi;\pi,\pi' \rangle;f)$$
+
+Naturality of $\epsilon$:
+
+\begin{center}
+\begin{tikzcd}[sep=80]
+(I \times X, X) \ar[d,"(\pi \text{,} \pi')" left] \ar[r, "(\langle \pi;u \text{,} f \rangle \text{,} \langle \pi;\pi \text{,} \pi' \rangle;f)"] & \ar[d,"(\pi \text{,} \pi')"] (J \times Y , Y) \\ 
+(I,X) \ar[r,"(u\text{,}f)" below] & (J,Y)
+\end{tikzcd}
+\end{center}
+
+is then argued as follows:
+
+composing the bottom left corner of the above square directly gives: $$(\pi;u,\langle \pi;\pi, \pi' \rangle;f)$$
+
+Noting that $\langle \pi;u,f \rangle ; \pi = \pi;u$, we compose the top right corner to get:
+$$(\pi;u, \langle \pi;\pi;u, \langle \pi;\pi,\pi' \rangle;f \rangle;\pi')$$
+which simplifies to 
+$$(\pi;u,\langle \pi;\pi, \pi' \rangle;f)$$
+
+It's clear that $\epsilon_X$ is cartesian, since its second component is $\pi'$. Finally, we must prove that the above square is a pullback. TODO.
+
+
+
+\section*{10.1}
+
+\subsection*{Modelling the DTT}
+
+In subsequent chapters, while Jacobs gives the categorical tools to model the DTT, I don't think he ever spells out how 
+to interpret individual inference rules. I guess that is left as an exercise to the reader, one which I will attempt here.\\~\\
+Assume a comprehension category $\mathcal P : \mathbb E \to \mathbb B^{\to}$. If $E$ is an object of $\mathbb E$ then we 
+say that a \emph{term of type E} is an arrow $u : pE \to \{ E \}$ such that $\mathcal PE;u = \mathit{id}_{\{ E \}}$. The
+various judgment forms are then interpreted as follows.
+\begin{enumerate}
+\item A judgment $\Gamma \vdash \sigma : \mathit{Type}$ is interpreted as an object of $\mathbb E$.
+\item A judgment $\Gamma \vdash M : \sigma$ is interpreted as a term of type $\sem{\Gamma \vdash \sigma : \mathit{Type}}$
+ (as defined in the paragraph above).
+\item TODO: A judgment $\Gamma \vdash M = N : \sigma$ is interpreted as...
+\item TODO: A judgment $\Gamma \vdash \sigma = \tau$ is interpreted as...
+\end{enumerate}~\\
+
+\subsubsection*{Term Model Fibration}
+
+In order to interpret rules involving substitution on the left side of the turnstile, we'll need a category that is like the category $\mathbb T$ described by Jacobs, but pairs contexts with contexts rather than pairing contexts with types. We call this category $\mathbb T'$, and define it as follows.
+\\~\\
+\textbf{Objects:} An object of $\mathbb T'$ is a pair of two contexts $\Gamma$ and $\Delta$ such that $\Gamma,\Delta \vdash 1 : Type$. We write such pairs as $(\Gamma \mid \Delta)$.\\~\\
+\textbf{Arrows:} An arrow from $(\Gamma \mid \Gamma')$ to $(\Delta \mid \Delta')$, where $\Delta \doteq x_1 : \tau_1, \ldots, x_m : \tau_m$ and $\Delta' \doteq x'_1 : \tau'_1, \ldots, x'_n : \tau'_n$ is a tuple $(M_1, \ldots, M_m,M_1',\ldots,M_n')$ such that 
+$$\Gamma \vdash M_i : \tau_i[M_1/x_1,\ldots,M_{i-1}/x_{i-1}] \text{ for } i \in 1..m$$
+$$ \text{and} $$
+$$\Gamma,\Gamma' \vdash M_i' : \tau_i'[M_1/x_1, \ldots, M_m/x_m, M_1' / x_1', \ldots, M'_{i-1}/x'_{i-1}] \text{ for } i \in 1..n$$
+(TODO: I need some way to delimit a definition block such as the one above.)\\~\\
+From the above category $\mathbb T'$ and the category $\mathbb C$ of contexts described by Jacobs, we obtain a fibration 
+$\vrt{\mathbb T'}{\mathbb C}p$ defined as $p(\Gamma \mid \Gamma') \doteq \Gamma$. We also have a functor $\{ - \} : \mathbb T' \to \mathbb C$ defined as $\{ \Gamma \mid \Gamma' \} \doteq \Gamma,\Gamma'$. Together $p$ and $\{ - \}$ form a comprehension category $\mathcal P : \mathbb T' \to \mathbb B^{\to}$, where 
+$\mathcal P(\Gamma \mid \Delta) \doteq [\Gamma \mid \Delta] \overset{(x_1, \ldots, x_n)}{\longrightarrow} [\Gamma]$.\\ (TODO: provide full defns and prove this).
+
+Its weakening and contraction comonad $(W,\epsilon,\delta)$ is defined as $W(\Gamma \mid \Delta) \doteq (\Gamma,\Delta \mid \Delta)$, $\epsilon_{(\Gamma \mid \Delta)} = \overline{\mathcal P(\Gamma \mid \Delta)^*} = (x_1, \ldots, x_n, x_{m+n+1}, \ldots, x_{m+n+n})$.
+
+\subsubsection*{Type Formation Judgments}
+
+I will write $(\Gamma,\sigma)$ as shorthand for $\sem{\Gamma \vdash \sigma : \mathit{Type}}$.
+I will write $[ \Gamma, \sigma ]$ as shorthand for $\{ \sem{\Gamma \vdash \sigma : \mathit{Type}} \}$. \\~\\
+First, we interpret the projection rule
+\begin{mathpar}
+\inferrule
+  {E \doteq \sem{\Gamma \vdash \sigma : \mathit{Type}}}
+  {\sem{\Gamma, x:\sigma \vdash x : \sigma} = \mathit{TODO}}
+\end{mathpar}
+We need more than just a comprehension category for that one. Let's try substitution:
+\begin{mathpar}
+\inferrule
+  {u \doteq \sem{\Gamma \vdash M : \sigma} \\ v \doteq \sem{\Gamma,x:\sigma,\Delta \vdash N : \tau}}
+  {\sem{\Gamma, \Delta[M/x] \vdash N[M/x] : \tau[M/x]} = \mathit{TODO}}
+\end{mathpar}
+From now on, let's not transcribe into latex unless I have already figured out the interpretation...
+
+\begin{mathpar}
+\inferrule[Contraction]
+  {\sem{\Gamma,x:\sigma,y:\sigma,\Delta \vdash \tau : \mathit{Type}} = X}
+  {\sem{\Gamma,x:\sigma,\Delta[x/y] \vdash \tau[x/y] : \mathit{Type}} \doteq (p\delta_{(\Gamma,\sigma)})^*(X)}
+\and
+\inferrule[Weakening]
+  {\sem{\Gamma \vdash \sigma : \mathit{Type}} = X \\ \sem{\Gamma \vdash \tau : \mathit{Type}} = Y}
+  {\sem{\Gamma,x:\sigma \vdash \tau : \mathit{Type}} \doteq (p\epsilon_X)^*(Y)}
+\end{mathpar}
+ 
+ 
 
 
 \end{document}
