@@ -25,6 +25,7 @@
 \newcommand{\lims}[1]{\underset{\longleftarrow}{\text{lim}}~#1}
 \newcommand{\mbf}{\mathbf}
 \newcommand{\sem}[1]{\llbracket #1 \rrbracket}
+\newcommand{\defeq}{\overset{\mathit{def}}{=}}
 
 
 \newcommand{\vrt}[2]{
@@ -285,5 +286,56 @@ $= \{ b \in \Omega E \mid \bigcap S \vDash \Omega f(b) \}$ \\
 $= \{ b \in \Omega E \mid \mid \forall K \in S. \Omega f(b) \in K \}$\\
 $= \bigcap_{K \in S} \{ b \in \Omega E \mid \Omega f(b) \in K \}$\\
 $= \bigcap_{K \in S} \{ b \in \Omega E \mid K \vDash \Omega f(b) \}$\\
-$= \bigcap_{K \in S} Qf(K)$
+$= \bigcap_{K \in S} Qf(K)$\\~\\
+We now show that $Qf$ preserves directed joins:~\\~\\
+$Qf(\bigsqcup^{\uparrow} S)$\\
+$= \{ b \mid \bigsqcup^{\uparrow} S \vDash \Omega f(b) \}$\\
+$= \{ b \mid \exists K \in S. K \vDash \Omega f (b) \}$\\
+$= \bigcup_{K \in S} \{ b \mid K \vDash \Omega f(b) \}$\\
+$= \bigcup_{K \in S} Qf(K)$\\
+$= \bigsqcup^{\uparrow} Qf(S)$\\~\\
+TODO: show that $Q$ is functorial.
+
+
+\section*{9}
+
+\subsection*{9.1}
+
+For $p \in P$, the sets $\uparrow p$ form a basis for the Alexandrov topology on $P$, so we just need to define our isomorphism on these sets.
+The only obvious mapping that I can see is $\uparrow p \mapsto \uparrow (\downarrow p)$, i.e. the principal upset of $p$ is mapped to the set of all ideals containing the principal downset of $p$.
+
+Our isomorphism $h : \mathcal{A}(P) \to \mathit{Scott}(\mathit{Idl}(P))$ is then defined as
+$$ h( \bigcup_i  \uparrow a_i ) \defeq \bigcup_i ( \uparrow (\downarrow a_i) )$$
+
+I.e., an upward closed subset of $P$ is mapped to the set of all ideals that contain at least one element of $P$.
+The latter is clearly Scott open.\\~\\
+We now prove that the map $h$ is onto. Let $A \in \mathit{Scott}(\mathit{Idl}(P))$. For $I \in A$, since $I$ is an ideal, it can be expressed as a directed join of principal downsets: $I = \bigcup^{\uparrow}_{p \in I}\downarrow p$.
+Since $A$ is Scott open, it is inaccessible by directed joins; therefore there exists a $p_I \in I$ such that 
+$\downarrow p_I \in A$.  
+
+Then $\bigcup_{I \in A} \uparrow p_I$ is an upward closed set. We now prove $h(\bigcup_{I \in A} \uparrow p_I)=A$. Or, unfolding the definition of $h$, $\bigcup_{I \in A} (\uparrow (\downarrow p_I) ) = A$. 
+
+\begin{description}
+
+\item[$\bigcup_{I \in A} (\uparrow (\downarrow p_I) ) \subseteq A$:]~\\~\\
+Let $J \in \bigcup_{I \in A} (\uparrow (\downarrow p_I) )$. Then there exists an $I \in A$ with $p_I \in J$ and hence $\downarrow p_I \subseteq J$. Since $\downarrow p_I \in A$ and $A$ is upward closed we have $J \in A$.
+
+\item[$A \subseteq \bigcup_{I \in A} (\uparrow (\downarrow p_I) )$:]~\\
+
+Let $J \in A$. Then there exists a $p_J \in J$ with $\downarrow p_J \in A$. Since $J$ contains $\downarrow p_J$
+we have $J \in \bigcup_{I \in A} (\uparrow (\downarrow p_I) )$.
+
+\end{description}~\\
+We now prove that the map $h$ is one-to-one. Let $X,Y \in \mathcal A(P)$ with $h(X) = h(Y)$ or, unfolding the
+definition of $h$, $\bigcup_{x \in X} (\uparrow (\downarrow x)) = \bigcup_{y \in Y} (\uparrow (\downarrow y))$.
+
+\begin{description}
+
+\item[$\bigcup_{x \in X} (\uparrow (\downarrow x)) \subseteq \bigcup_{y \in Y} (\uparrow (\downarrow y))$:]~\\
+
+Hello
+
+\end{description}
+
+
 \end{document}
