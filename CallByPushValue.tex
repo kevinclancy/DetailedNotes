@@ -26,6 +26,7 @@
 \newcommand{\mbf}{\mathbf}
 \newcommand{\sem}[1]{\llbracket #1 \rrbracket}
 \newcommand{\gr}[1]{\textcolor{blue}{#1}}
+\newcommand{\bk}[1]{\textcolor{black}{#1}}
 
 \newcommand{\vrt}[2]{
 \pile{
@@ -82,7 +83,12 @@
 
 \subsection*{2.6}
 
-Here we give categorical semantics for all CBPV types and judgments. Categorical constructs are written in \gr{gray} to distinguish them from the syntax of cbpv. It is given with respect to a distributive category $\mathcal C$ and a strong monad $\gr{T}$ such that the exponential $\gr{A \Rightarrow B}$ exists whenever $\gr{B}$ is the carrier of a $\gr{T}$-algebra.
+Levy gives a full categorical semantics in chapter 9. I have not yet read chapter 9, but I'd like to gain a complete understanding of chapter 2 before moving forward. To do this, I'm going to to try to follow the bread crumb trail of categorical details in chapter 2 and try to fill in the blanks. 
+
+Here we give categorical semantics for all CBPV types and judgments. Categorical constructs are written in \gr{gray} to distinguish them from the syntax of cbpv. It is given with respect to a distributive category $\gr{\mathcal C}$ and a strong monad $\gr{T}$ such that the exponential $\gr{A \Rightarrow B}$ exists whenever $\gr{B}$ is the carrier of a $\gr{T}$-algebra. Additionally we have a pair of adjoint functors $\gr{F : \mathcal C \leftrightarrows \mathcal \mathit{TAlg} : U}$, whose resulting monad $\gr{UF}$ is has a strength $\gr{s_{A,B} : A \times UFB \to UF(A \times B)}$. We write $\gr{t}$ for the strength of $\gr{T}$.
+
+A value $\Gamma \vdash^v V : A$ is interpreted as a morphism of type $\gr{\sem{\bk{\Gamma}} \to \sem{\bk{A}}}$. A 
+computation $\Gamma \vdash^c M : \underline{B}$ is interpreted as a morphism of type $\gr{\sem{\bk{\Gamma}} \to U\sem{\bk{\underline B}}}$ 
 
 \subsubsection*{Value Types}
 
@@ -127,6 +133,10 @@ Value types, written as $\gr{A,B,C}$ are interpreted as $C$ objects.
 
 \begin{mathpar}
 \inferrule
+  {\sem{\Gamma \vdash^c M : FA} = \gr{f : \sem{\bk{\Gamma}} \to U\sem{\bk{FA}}} \\ \sem{\Gamma,x:A \vdash^c N : \underline{C}} = \gr{g : \sem{\bk{\Gamma}} \times \sem{\bk{A}} \to \sem{\bk{\underline{C}}}}}
+  {\sem{\Gamma \vdash M~\mbf{to}~x. N : \underline{C}} = \gr{\sem{\bk{\Gamma}} \overset{\langle \sem{\bk{\Gamma}}, f \rangle}{\longrightarrow} \sem{\Gamma} \times UF\sem{\bk{A}}  \overset{\sem{\bk{\Gamma}} \times s}{\longrightarrow} UF(\sem{\bk{\Gamma}} \times \sem{\bk{A}}) \overset{UFg}{\longrightarrow} UFU \sem{\bk{\underline{C}}} \overset{U \epsilon}{\longrightarrow} U\sem{\bk{\underline{C}}} }  }
+\and
+\inferrule
   {~}
   {\sem{\Gamma, x:A, \Gamma' \vdash^v x : A} = \gr{\pi_x} : \sem{\Gamma,x:A,\Gamma'} \to \sem{A}}
 \and
@@ -159,20 +169,20 @@ Value types, written as $\gr{A,B,C}$ are interpreted as $C$ objects.
   {\sem{\Gamma \vdash^c \mbf{pm}~V~\mbf{as}~(x,y).M : \underline{B}} = \gr{\langle \mathit{id}_{\sem{\Gamma}},f \rangle; g}}
 \and
 \inferrule
-  {\cdots \Gamma \vdash^c M_i : \underline{B_i} \cdots _{i \in I}}
-  {\Gamma \vdash^c \lambda \{ \ldots, i. M_i, \ldots \}}
+  {\cdots \sem{\Gamma \vdash^c M_i : \underline{B_i}} = \gr{f_i} \cdots _{i \in I}}
+  {\sem{\Gamma \vdash^c \lambda \{ \ldots, i. M_i, \ldots \} : \Pi_{i \in I} \underline{B_i}} = \gr{\langle \cdots f_i \cdots \rangle}}
 \and
 \inferrule
-  {\Gamma \vdash^c M : \Pi_{i \in I} \underline{B_i}}
-  {\Gamma \vdash^c \hat{\iota}`M : \underline{B_i}}
+  {\sem{\Gamma \vdash^c M : \Pi_{i \in I} \underline{B_i}} = \gr{f}}
+  {\sem{\Gamma \vdash^c \hat{\iota}`M : \underline{B_i}} = \gr{f;\pi_i}}
 \and
 \inferrule
-  {\Gamma,x:A \vdash^c M : \underline{B}}
-  {\Gamma \vdash^c \lambda x. M : A \to B}
+  {\sem{\Gamma,x:A \vdash^c M : \underline{B}} = \gr{f}}
+  {\sem{\Gamma \vdash^c \lambda x. M : A \to B} = \gr{\Lambda(f)}}
 \and
 \inferrule
-  {\Gamma \vdash^v V : A \\ \Gamma \vdash^c M : A \to \underline{B}}
-  {\Gamma \vdash^c V ` M : \underline{B}}
+  {\sem{\Gamma \vdash^v V : A} = \gr{f} \\ \sem{\Gamma \vdash^c M : A \to \underline{B}} = \gr{g}}
+  {\sem{\Gamma \vdash^c V ` M : \underline{B}} = \gr{\langle \mathit{id}, f \rangle;\Lambda^{-1}(g)}}
 \end{mathpar}
 
 \subsection*{Stack Typing Judgments}
@@ -180,20 +190,24 @@ Value types, written as $\gr{A,B,C}$ are interpreted as $C$ objects.
 \begin{mathpar}
 \inferrule
   {~}
-  {\Gamma \mid \underline{C} \vdash^k \mathit{nil} : \underline{C}}
+  {\sem{\Gamma \mid \underline{C} \vdash^k \mathit{nil} : \underline{C}} = \gr{\pi'}}
 \and
 \inferrule
-  {\Gamma, x:A \vdash^c M : \underline{B} \\ \Gamma \mid \underline{B} \vdash^k K : \underline{C}}
-  {\Gamma \mid FA \vdash^k [\cdot]~\mbf{to}~x. M :: K : \underline{C}}
+  {\sem{\Gamma, x:A \vdash^c M : \underline{B}} = \gr{f} \\ \sem{\Gamma \mid \underline{B} \vdash^k K : \underline{C}} = \gr{g}}
+  {\sem{\Gamma \mid FA \vdash^k [\cdot]~\mbf{to}~x. M :: K : \underline{C}} = \gr{\langle \pi, f \rangle; g}}
 \and
 \inferrule
-  {\Gamma \mid \underline{B_{\hat{\iota}}} \vdash^k K : \underline{C}}
-  {\Gamma \mid \Pi_{i \in I} \underline{B_i} \vdash^k \hat{\iota} :: K : \underline{C}}
+  {\sem{\Gamma \mid \underline{B_{\hat{\iota}}} \vdash^k K : \underline{C}} = \gr{f}}
+  {\sem{\Gamma \mid \Pi_{i \in I} \underline{B_i} \vdash^k \hat{\iota} :: K : \underline{C}} = \gr{(\mathit{id} \times \pi_i);f}}
 \and
 \inferrule
-  {\Gamma \vdash^v V : A \\ \Gamma \mid \underline{B} \vdash^k K : \underline{C}}
-  {\Gamma \mid A \to \underline{B} \vdash^k V :: K : \underline{C}}
+  {\sem{\Gamma \vdash^v V : A} = \gr{f} \\ \sem{\Gamma \mid \underline{B} \vdash^k K : \underline{C}} = \gr{g}}
+  {\sem{\Gamma \mid A \to \underline{B} \vdash^k V :: K : \underline{C}} = \gr{\langle \mathit{id}, (f \times \mathit{id});\mathit{ev} \rangle;g}}
 \end{mathpar}
+
+We must prove that each of the above stack interpretations are $T$-homomorphisms over $\sem{\Gamma}$.
+
+
 
 
 \end{document}
