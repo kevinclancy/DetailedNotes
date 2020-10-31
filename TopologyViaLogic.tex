@@ -254,6 +254,49 @@ We now prove the $(\Rightarrow)$ direction. Suppose that $A$ is compact.
 
 TODO: finish. But here are some thoughts while I am thinking about this. A compact set of infinite strings must be a finite set due to the ``every open cover has a finite subcover'' formulation of compactness. Is the complement of a finite set of infinite strings open? Yes: for each string we can observe the disjunction of negations of all prefixes. We then take the conjunction of the resulting disjunctions (which is a finite conjunction since the set of strings is finite.)
 
+\subsection*{8.2}
+
+We first show that $Qf(K)$ is a filter.
+
+\begin{description}
+
+\item[$Qf(K)\text{ is upward closed}:$]~\\~\\
+Let $b \in Qf(K)$ and $c \in \Omega E$ with $b \leq c$. Then $K \vDash \Omega f(b) \leq \Omega f (b) \vee \Omega f (c) = \Omega f(b \vee c) = \Omega f(c)$.
+
+\item[$Qf(K)\text{ is closed under finite meets}:$]~\\~\\
+Let $S \subseteq_{\mathit{fin}} \Omega E$. Suppose that $K \vDash \Omega f(b)$ for all $b \in S$. Then $K \vDash \wedge_{b \in S} \Omega f(b)$.
+Hence $K \vDash \Omega f(\wedge_{b \in S} b)$.
+  
+\end{description}
+
+It's easy to see that $Qf(K)$ is inaccessible by directed joins, for suppose that $K \vDash \Omega f(\bigvee^{\uparrow} B)$. Since $\Omega f$ 
+is a frame homomorphism we have $K \vdash \bigvee^{\uparrow} \Omega f(B)$. Since directed joins are disjunctions, we have that 
+$K \vdash \Omega f(b)$ for some $b \in B$. Hence $Qf(K)$ is Scott open.\\~\\
+For the next part, we have \\~\\
+\begin{tabular}{l}
+$Qf(K)$  \\
+$= Qf( \wedge C )$ \\
+$= \{ b \in \Omega E \mid \wedge C \vDash \Omega f(b) \}$ \\
+$= \{ b \mid y \vDash \Omega f(b) \text{ for all } y \in C \}$ \\
+$= \{ b \mid \mathit{pt} f(y) \vDash b \text{ for all } y \in C \}$  
+\end{tabular}\\~\\~\\
+We now show that $Qf$ preserves finite meets:~\\~\\
+$Qf( \bigcap S )$\\
+$= \{ b \in \Omega E \mid \bigcap S \vDash \Omega f(b) \}$ \\
+$= \{ b \in \Omega E \mid \mid \forall K \in S. \Omega f(b) \in K \}$\\
+$= \bigcap_{K \in S} \{ b \in \Omega E \mid \Omega f(b) \in K \}$\\
+$= \bigcap_{K \in S} \{ b \in \Omega E \mid K \vDash \Omega f(b) \}$\\
+$= \bigcap_{K \in S} Qf(K)$\\~\\
+We now show that $Qf$ preserves directed joins:~\\~\\
+$Qf(\bigsqcup^{\uparrow} S)$\\
+$= \{ b \mid \bigsqcup^{\uparrow} S \vDash \Omega f(b) \}$\\
+$= \{ b \mid \exists K \in S. K \vDash \Omega f (b) \}$\\
+$= \bigcup_{K \in S} \{ b \mid K \vDash \Omega f(b) \}$\\
+$= \bigcup_{K \in S} Qf(K)$\\
+$= \bigsqcup^{\uparrow} Qf(S)$\\~\\
+TODO: show that $Q$ is functorial.
+
+
 \section*{9}
 
 \subsection*{9.1}
@@ -293,5 +336,6 @@ definition of $h$, $\bigcup_{x \in X} (\uparrow (\downarrow x)) = \bigcup_{y \in
 Hello
 
 \end{description}
+
 
 \end{document}
