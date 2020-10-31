@@ -1,5 +1,5 @@
 \documentclass{article}
-
+ 
 \usepackage{amscd}
 \usepackage{graphicx}
 \usepackage{amsmath}
@@ -15,7 +15,7 @@
 \usepackage{bussproofs} 
 \usepackage{diagrams}
 \usepackage{tikz}
-
+ 
 \usetikzlibrary{cd}
  
 \newtheorem{lemma}{Lemma}
@@ -25,6 +25,7 @@
 \newcommand{\lims}[1]{\underset{\longleftarrow}{\text{lim}}~#1}
 \newcommand{\mbf}{\mathbf}
 \newcommand{\sem}[1]{\llbracket #1 \rrbracket}
+\newcommand{\defeq}{\overset{\mathit{def}}{=}}
 
 
 \newcommand{\vrt}[2]{
@@ -179,6 +180,118 @@ This isn't an exercise, but okay.
 
 \subsection*{4.3}
 
-a
+\subsubsection*{Order Theoretic $\Rightarrow$ Algebraic}
+
+We first assume the order theoretic properties of a Heyting algebra and derive the two listed equalities from them.
+
+\begin{description}
+
+\item[$\mbf{a \wedge (a \to b) = a \wedge b:}$]~\\
+
+We show $a \wedge (a \to b)$ is the greatest lower bound of $\{ a, b\}$. First, we show it is a lower bound. Clearly, $a \wedge (a \to b) \leq a$. Furthermore, by reflexivity we have $a \to b \leq a \to b$ and hence $a \wedge (a \to b) \leq b$.
+
+Now we show that $a \wedge (a \to b)$ is the \emph{least} upper bound of $\{ a, b \}$. Suppose $z$ is some other lower bound of $\{ a, b \}$, i.e. $z \leq a$ and $z \leq b$. Then
+
+\[
+\begin{array}{ll}
+ ~ & z \leq a \text{ and } z \wedge a \leq z \leq b \\
+ \leftrightarrow & z \leq a \text{ and } z \leq a \to b \\
+ \leftrightarrow & z \leq a \wedge (a \to b)
+\end{array} 
+\]
+
+\item[$\mbf{c = c \wedge (a \to ((a \wedge c) \vee b)):}$]~\\
+
+By the connecting lemma ($a = a \wedge b \Leftrightarrow a \leq b$), we just need to show that
+$c \leq a \to ((a \wedge c) \vee b)$. We have
+$$c \leq a \to ((a \wedge c) \vee b)~~~\Leftrightarrow~~~a \wedge c \leq (a \wedge c) \vee b$$
+The right-hand inequality above is true because $(a \wedge c) \vee b$, being the least upper bound 
+of $a \wedge c$ and $b$, is in particular an upper bound of $a \wedge c$.
+
+\end{description}
+
+\subsubsection*{Algebraic $\Rightarrow$ Order Theoretic}
+
+\section*{5}
+
+\subsection*{5.1}
+
+\newcommand{\comp}{\mathit{comp}}
+
+Due to the following equivalences:
+$$\mathit{comp}(b_1 b_2 \cdots) \vdash `s_i = 1'~~~\Leftrightarrow~~~(b_1 b_2 \cdots) \vdash \Omega \mathit{comp}(`s_i = 1')$$
+$$\mathit{comp}(b_1 b_2 \cdots) \vdash `s_i = 1'~~~\Leftrightarrow~~~(b_1 b_2 \cdots) \vdash \Omega \mathit{comp}(`s_i = 1')$$
+We need $\Omega \comp(`s_i = 0') = `s_i = 1'$ and $\Omega \comp(`s_i = 1') = `s_i = 0'$.\\~\\
+Of course, by definition $\Omega \comp$ must also be a frame homomorphism from $\Omega 2^{*\omega}$ to $\Omega 2^{* \omega}$, i.e. a model morphism for the presentation\\~\\
+\begin{tabular}{ll}
+$P = \mathit{Fr} \langle `s_n = 0', `s_n = 1' : n \geq 1 \mid$ & $`s_n = 0' \wedge `s_n = 1' = \mbf{false}$ \\
+ & $`s_{n+1} = 0' \vee `s_{n+1}=1' \leq `s_n = 0' \vee `s_n = 1' \rangle$\\
+\end{tabular}\\~\\
+The term model $T$ of the presentation $P$ is initial ($\mbf{TODO}$: prove lemma?). We have another model $T'$ of $P$ that is similar to the term model. Its carrier set is the set of equivalence classes of expressions built from $- \wedge -$, $\bigvee -$, $\mbf{true}$, $\mbf{false}$, $`s_n = 0'$, and $`s_n = 1'$. Such that $\sem{a \wedge b} = \sem{a} \wedge \sem{b}$, $\sem{\bigvee_{i \in I} a_i} = \bigvee_{i \in I} \sem{a_i}$, $\sem{\mbf{true}} = \sem{\mbf{true}}$, $\sem{\mbf{false}} = \mbf{false}$, $\sem{`s_n = 1'} = `s_n = 0'$, and $\sem{`s_n = 0'} = `s_n = 1'$.
+
+TODO: finish (maybe it we be easier to have a model/algebra that uses sets of finite and infinite bit strings as its carrier set?)  
+
+\subsection*{8}
+
+\subsubsection*{8.1}
+We first prove the $(\Leftarrow)$ direction. Consider what it means for a subset $A \subseteq 2^{* \omega}$ to be open: it means that for all $l,s \in \mathit{pt}~2^{* \omega}$ such that $l \sqsubseteq s$
+we have $s \in A \Rightarrow l \in A$.\\~\\
+Now, let $A \subseteq 2^{\omega}$ be closed. We define:\\~\\
+
+For $x \in A'$ we define $l_x$ as the shortest prefix of $x$ that is not a prefix of any element of $A$. $l_x$ would not be well defined if $A'$ were not open, because then we would have some element of $A'$ that is a prefix of some element of $A$. We define
+$$T \doteq \{ l_x \mid x \in A' \}$$
+We further define:
+$$U_i \doteq \bigvee \{ \mbf{starts}~l \mid \text{length}~l = i \text{ and } l \not \in T \} $$
+$$W_i \doteq  \bigvee \{ \mbf{starts}~l \mid \text{length}~l = i \}$$
+Clearly, $\bigcap U_i = \bigcap W_i - \uparrow T$.\\~\\
+We now prove that $A = \bigcap_{i} U_i$. Let $x \in A$. Let $i \in \mathbb N$ and consider the the length-$i$ prefix $x_i$ of $x$. $x_i \not \in T$ since $T$ does not contain prefixes of elements of $A$ by definition. Hence $x \in U_i$ for all $i \in \mathbb N$. Hence $x \in \bigcap_{i} U_i$.
+
+Conversely, let $x \in \bigcap_i U_i = \bigcap_i W_i - \uparrow T$. Since $x \in \bigcap_i W_i$, it is an infinite string. Since $x \not \in \uparrow T$, each of its prefixes is shared with an element of $A$. Hence $x \in A$.
+
+Each $U_i$ is compact and saturated, and we have $A = \bigcap_{i} U_i$. Since $A$ is the intersection of compact saturated sets,
+it is itself compact and saturated. \\~\\
+We now prove the $(\Rightarrow)$ direction. Suppose that $A$ is compact.
+
+TODO: finish. But here are some thoughts while I am thinking about this. A compact set of infinite strings must be a finite set due to the ``every open cover has a finite subcover'' formulation of compactness. Is the complement of a finite set of infinite strings open? Yes: for each string we can observe the disjunction of negations of all prefixes. We then take the conjunction of the resulting disjunctions (which is a finite conjunction since the set of strings is finite.)
+
+\section*{9}
+
+\subsection*{9.1}
+
+For $p \in P$, the sets $\uparrow p$ form a basis for the Alexandrov topology on $P$, so we just need to define our isomorphism on these sets.
+The only obvious mapping that I can see is $\uparrow p \mapsto \uparrow (\downarrow p)$, i.e. the principal upset of $p$ is mapped to the set of all ideals containing the principal downset of $p$.
+
+Our isomorphism $h : \mathcal{A}(P) \to \mathit{Scott}(\mathit{Idl}(P))$ is then defined as
+$$ h( \bigcup_i  \uparrow a_i ) \defeq \bigcup_i ( \uparrow (\downarrow a_i) )$$
+
+I.e., an upward closed subset of $P$ is mapped to the set of all ideals that contain at least one element of $P$.
+The latter is clearly Scott open.\\~\\
+We now prove that the map $h$ is onto. Let $A \in \mathit{Scott}(\mathit{Idl}(P))$. For $I \in A$, since $I$ is an ideal, it can be expressed as a directed join of principal downsets: $I = \bigcup^{\uparrow}_{p \in I}\downarrow p$.
+Since $A$ is Scott open, it is inaccessible by directed joins; therefore there exists a $p_I \in I$ such that 
+$\downarrow p_I \in A$.  
+
+Then $\bigcup_{I \in A} \uparrow p_I$ is an upward closed set. We now prove $h(\bigcup_{I \in A} \uparrow p_I)=A$. Or, unfolding the definition of $h$, $\bigcup_{I \in A} (\uparrow (\downarrow p_I) ) = A$. 
+
+\begin{description}
+
+\item[$\bigcup_{I \in A} (\uparrow (\downarrow p_I) ) \subseteq A$:]~\\~\\
+Let $J \in \bigcup_{I \in A} (\uparrow (\downarrow p_I) )$. Then there exists an $I \in A$ with $p_I \in J$ and hence $\downarrow p_I \subseteq J$. Since $\downarrow p_I \in A$ and $A$ is upward closed we have $J \in A$.
+
+\item[$A \subseteq \bigcup_{I \in A} (\uparrow (\downarrow p_I) )$:]~\\
+
+Let $J \in A$. Then there exists a $p_J \in J$ with $\downarrow p_J \in A$. Since $J$ contains $\downarrow p_J$
+we have $J \in \bigcup_{I \in A} (\uparrow (\downarrow p_I) )$.
+
+\end{description}~\\
+We now prove that the map $h$ is one-to-one. Let $X,Y \in \mathcal A(P)$ with $h(X) = h(Y)$ or, unfolding the
+definition of $h$, $\bigcup_{x \in X} (\uparrow (\downarrow x)) = \bigcup_{y \in Y} (\uparrow (\downarrow y))$.
+
+\begin{description}
+
+\item[$\bigcup_{x \in X} (\uparrow (\downarrow x)) \subseteq \bigcup_{y \in Y} (\uparrow (\downarrow y))$:]~\\
+
+Hello
+
+\end{description}
 
 \end{document}
