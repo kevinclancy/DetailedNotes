@@ -231,6 +231,30 @@ The term model $T$ of the presentation $P$ is initial ($\mbf{TODO}$: prove lemma
 
 TODO: finish (maybe it we be easier to have a model/algebra that uses sets of finite and infinite bit strings as its carrier set?)  
 
+\subsection*{7}
+
+\subsubsection*{7.1}
+
+\begin{description}
+
+\item[$(\Rightarrow)$:]~\\~\\
+Trivially follows from the definition of the specialization preorder.
+
+\item[$(\Leftarrow)$:]~\\~\\
+Suppose that for every subbasic open $a$, $x \vDash a$ implies $y \vDash a$.\\~\\
+Let $b$ be an arbitrary open. Then $b = \bigvee_{i \in I} (a_{i1} \wedge \cdots \wedge a_{i n_i})$, where
+$I$ is an aribtrary index set and the $a_{ij}$'s are subbasic opens.\\~\\
+Suppose $x \vDash b$.\\~\\
+\begin{tabular}{l}
+$\therefore \exists i \in I. x \vDash a_{i1} \wedge \cdots \wedge a_{i n_i}$ \\
+$\therefore x \vDash a_{i j}$ for $j \in 1..n_i$ \\
+$\therefore y \vDash a_{i j}$ for $j \in 1..n_i$ \\
+$\therefore \exists i \in I. y \vDash a_{i1} \wedge \cdots \wedge a_{i n_i}$ \\
+$\therefore y \vDash b$ \\
+\end{tabular}~\\~\\
+Since $x \vDash b$ implies $y \vDash b$ we have $x \sqsubseteq y$.
+\end{description}
+
 \subsection*{8}
 
 \subsubsection*{8.1}
@@ -336,6 +360,7 @@ definition of $h$, $\bigcup_{x \in X} (\uparrow (\downarrow x)) = \bigcup_{y \in
 Hello
 
 \end{description}
+
 
 
 \end{document}
