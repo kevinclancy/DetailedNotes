@@ -257,6 +257,17 @@ Since $x \vDash b$ implies $y \vDash b$ we have $x \sqsubseteq y$.
 
 \subsection*{8}
 
+\subsubsection*{Lemma 8.2.4 (i)}
+
+It's clear that $\uparrow C$ has the same conjunction as $C$. It wasn't immediately obvious to me
+why $\uparrow C$ is the largest such set. To see why, consider a point $p$ that is not in 
+$\uparrow C$. For each $c \in C$ there exists an $a_c$ such that $c \vDash a_c$ and $p \not \vDash a_c$.
+Then $p \not \vDash \bigvee_{c \in C} a_c$. But for all $c \in C$ we have $c \vDash \bigvee_{c \in C} a_c$;
+this join is in the conjunction $\wedge C$ but it is not satisfied by $p$!
+
+
+\subsubsection*{Chpt 8 Exercises}
+
 \subsubsection*{8.1}
 We first prove the $(\Leftarrow)$ direction. Consider what it means for a subset $A \subseteq 2^{* \omega}$ to be open: it means that for all $l,s \in \mathit{pt}~2^{* \omega}$ such that $l \sqsubseteq s$
 we have $s \in A \Rightarrow l \in A$.\\~\\
