@@ -318,7 +318,7 @@ $= \{ b \mid \mathit{pt} f(y) \vDash b \text{ for all } y \in C \}$
 We now show that $Qf$ preserves finite meets:~\\~\\
 $Qf( \bigcap S )$\\
 $= \{ b \in \Omega E \mid \bigcap S \vDash \Omega f(b) \}$ \\
-$= \{ b \in \Omega E \mid \mid \forall K \in S. \Omega f(b) \in K \}$\\
+$= \{ b \in \Omega E \mid \forall K \in S. \Omega f(b) \in K \}$\\
 $= \bigcap_{K \in S} \{ b \in \Omega E \mid \Omega f(b) \in K \}$\\
 $= \bigcap_{K \in S} \{ b \in \Omega E \mid K \vDash \Omega f(b) \}$\\
 $= \bigcap_{K \in S} Qf(K)$\\~\\
@@ -330,6 +330,24 @@ $= \bigcup_{K \in S} \{ b \mid K \vDash \Omega f(b) \}$\\
 $= \bigcup_{K \in S} Qf(K)$\\
 $= \bigsqcup^{\uparrow} Qf(S)$\\~\\
 TODO: show that $Q$ is functorial.
+We now show that $Q$ is functorial. 
+Let $\mathit{id}_D : D \to D$ be the (continuous) identity map on locale $D$. 
+Then for any $K \in QD$,\\~\\
+$Q(\mathit{id}_D)(K)$\\
+$= \{ b \in \Omega(D) \mid K \vDash \Omega \mathit{id_D} (b) \}$\\ 
+$= \{ b \in \Omega(D) \mid K \vDash id_{\Omega D}(b)\}$\\
+$= K$\\~\\
+Hence $Q(\mathit{id}_D) = \mathit{id}_{QD}$.\\~\\
+Now suppose that $f : C \to D$ and $g : D \to E$ are continuous functions between topological spaces.\\~\\
+For $K \in QD$ we have\\~\\
+$Q(f;g)(K)$\\
+$= \{ b \in \Omega E \mid K \vDash (\Omega (f;g)) (b) \}$\\
+$= \{ b \in \Omega E \mid K \vDash (\Omega f)(\Omega g (b)) \}$\\
+$= \{ b \in \Omega E \mid Qf(K) \vDash (\Omega g) (b) \}$\\
+$= \{ b \in \Omega E \mid (Qg)(Qf(K)) \vDash b \}$\\
+$= (Qf;Qg)(K)$\\~\\
+Done. Bonus question: what is the codomain of this functor? The domain is the category of locales and continuous functions. Is the codomain just $\mbf{Sets}$, or could we choose something more specific?
+
 
 
 \section*{9}
