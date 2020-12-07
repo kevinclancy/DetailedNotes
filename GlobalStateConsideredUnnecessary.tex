@@ -1,0 +1,146 @@
+\documentclass{article}
+ 
+\usepackage{amscd}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{stmaryrd}
+\usepackage{mathpartir}
+\usepackage{multicol}
+\usepackage{enumitem}
+\usepackage[section]{placeins} % float barriers
+\usepackage{natbib}
+\usepackage{xcolor} 
+\usepackage{bussproofs} 
+\usepackage{diagrams}
+\usepackage{tikz}
+
+\usetikzlibrary{cd}
+ 
+\newtheorem{lemma}{Lemma}
+
+%example: \limit{j \in J}{F_j}
+\newcommand{\limit}[2]{\underset{\overset{\longleftarrow}{#1}}{\text{lim}}~#2}
+\newcommand{\lims}[1]{\underset{\longleftarrow}{\text{lim}}~#1}
+\newcommand{\mbf}{\mathbf}
+
+
+\newcommand{\vrt}[2]{
+\pile{
+#1 \\
+\downarrow \\
+#2
+}
+}
+
+\newcommand{\ddisp}[3]{
+\left(
+\scriptsize
+\begin{tikzcd}
+#1 \ar[d, "\footnotesize{#2}"] \\
+#3
+\end{tikzcd}
+\normalsize
+\right)
+}
+
+\newcommand{\disp}[3]{
+\left(
+\tiny
+\begin{array}{c}
+#1 \\
+\downarrow\\
+#3
+\end{array}
+\begin{array}{l}
+~ \\
+#2 \\
+~
+\end{array}
+\normalsize
+\right)
+}
+
+\newcommand{\dispp}[3]{
+\tiny
+\begin{tikzcd}
+#1 \ar[d, "#2"] \\
+#3
+\end{tikzcd}
+\normalsize
+}
+
+\title{Notes for: \emph{Global State Considered Unnecessary} by Uday Reddy}
+
+\begin{document}
+
+\maketitle
+
+
+\section*{Appendix A: Categorical Details}
+
+In the definition of the $\dagger-$ comonad, the first thing to note is that he is specifying these natural transformations as points in coherence spaces. The notation for the definition of $\mathit{dup}_A$ needs clarification. I think it should say $\langle a_1, \ldots, a_n \rangle \mapsto \langle \langle a_1 \rangle, \ldots, \langle a_n \rangle \rangle$.
+
+The function corresponding to the point $\mathit{read}_A$ of 
+$\dagger A \multimap A$ is:
+$$\mathit{read_A}(S) \doteq \{ a \mid \langle a \rangle \in S \}$$
+(It's instructive to consider the above definition in the special case that $S$ is an \emph{active} point of $\dagger A$.)
+
+The function corresponding to the point $\mathit{dup}_A$ of $\dagger A \multimap \dagger \dagger A$ is:
+$$\mathit{dup}_A(S) \doteq \{ \langle \langle a_1 \rangle, \ldots, \langle a_n \rangle \rangle \mid \langle a_1, \ldots, a_n \rangle \in S \} $$
+
+I don't think $\dagger -$'s functorial mapping on functions was defined anywhere. Here's my guess: letting $f : A \to B$ be a linear function from coherence space $A$ to coherence space $B$, we obtain a linear mapping $\dagger f : \dagger A \to \dagger B$ from the coherence space $\dagger A$ to the coherence space $\dagger B$ defined as:
+$$\dagger f \in (\dagger A \multimap \dagger B) \doteq \{ ( \langle a_1,\ldots,a_n \rangle, \langle b_1, \ldots, b_n \rangle)  \mid (a_1,b_1),\ldots,(a_n,b_n) \in f \}$$
+ 
+\begin{lemma}
+$\mathit{read_A} : \dagger A \to A$ is a natural transformation.
+\end{lemma}
+
+\begin{proof}
+Let $f : A \multimap B$ be a stable linear function between coherence spaces $A$ and $B$. Then,\\~\\
+\begin{tabular}{ll}
+$(z,b) \in (\mathit{read}_A;f)$ & $\mathit{iff}$ \\
+$\exists a \in A.~((z,a) \in \mathit{read}_A \wedge (a,b) \in f) $ & iff \\
+$\exists a \in A.~(z = \langle a \rangle \wedge (a,b) \in f)$ & iff \\
+
+$\exists b \in B.~(z,\langle b \rangle) \in \dagger f$ & iff \\
+$(z,b) \in (\dagger f;\mathit{read}_b)$ & ~ 
+\end{tabular} 
+\end{proof}
+
+\begin{lemma}
+$\mathit{dup}_A : \dagger A \to \dagger \dagger A$ is a natural transformation. 
+\end{lemma}
+
+\begin{proof}
+
+Let $f : A \to B$ be a stable linear function between coherence spaces $A$ and $B$. Then,\\~\\
+\begin{tabular}{ll}
+$(\langle a_1,\ldots,a_n \rangle,t) \in (\mathit{dup}_A; \dagger \dagger f)$ & iff \\
+$t = \langle \langle b_1 \rangle,\ldots, \langle b_n \rangle \rangle$ with $(a_1,b_1),\ldots,(a_n,b_n) \in f$ & iff \\
+$(\langle a_1,\ldots,a_n \rangle,t)  \in (\dagger f; dup_B)$
+\end{tabular}~\\
+
+\end{proof}
+
+Next we show that the comonad laws hold.
+
+\begin{lemma}
+For all coherence spaces $A$, $\mathit{dup}_A;\dagger(\mathit{read}_A) = \mathit{id}_{\dagger A}$.
+\end{lemma}
+
+\begin{proof}~\\~\\
+\begin{tabular}{ll}
+$(\langle a_1, \ldots, a_n \rangle, \langle a_1', \ldots, a_n' \rangle) \in \mathit{dup}_A;\dagger(\mathit{read}_A)$ & iff \\
+$(\langle \langle a_1 \rangle, \ldots, \langle a_n \rangle \rangle, \langle a_1', \ldots, a_n' \rangle) \in \dagger(\mathit{read}_A)$ & iff \\
+$(\langle a_1 \rangle, a_1'),\ldots,(\langle a_n \rangle, a_n') \in \mathit{read_A}$ & iff \\
+$a_1 = a_1', \ldots, a_n = a_n'$ & iff \\
+$(\langle a_1, \ldots, a_n \rangle, \langle a_1', \ldots, a_n' \rangle) \in \mathit{id}_{\dagger A}$
+\end{tabular}~\\
+\end{proof}
+
+\end{document}
+
+
+
