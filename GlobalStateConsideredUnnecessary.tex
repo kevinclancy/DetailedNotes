@@ -80,7 +80,7 @@
 
 \section*{Appendix A: Categorical Details}
 
-In the definition of the $\dagger-$ comonad, the first thing to note is that he is specifying these natural transformations as points in coherence spaces. The notation for the definition of $\mathit{dup}_A$ needs clarification. After careful consideration of the needs of the coKlesli category for $\dagger -$, the domain of $\mathit{dup}$ needs to contain arbitrary sequences of sequences. Intuitively, a token of $\dagger A$ is a sequences of usages (e.g. method calls) of an object. In Reddy's notation, each $s_i$ is an element of $| \dagger A |$, and $s_1 \cdots s_n$ is their concatenation, which is also an element of $| \dagger A|$. So he is quantifying over all natural numbers $n$ and all partitions $s_1 \cdots s_n$ of an arbitrary string in $| \dagger A|$.  $\langle a_1, \ldots, a_n \rangle \mapsto \langle \langle a_1 \rangle, \ldots, \langle a_n \rangle \rangle$. Below I used the wrong definition of $\mathit{dup}$, which is why I couldn't prove all of the comonad laws. Will fix soon.
+In the definition of the $\dagger-$ comonad, the first thing to note is that he is specifying these natural transformations as points in coherence spaces. The notation for the definition of $\mathit{dup}_A$ needs clarification. (At least, I needed clarification when I first saw it.) Each $s_i$ is an element of $| \dagger A |$, and $s_1 \cdots s_n$ is their concatenation, which is also an element of $| \dagger A|$. So he is quantifying over all natural numbers $n$ and all partitions $s_1 \cdots s_n$ of an arbitrary string in $| \dagger A|$.
 
 The function corresponding to the point $\mathit{read}_A$ of 
 $\dagger A \multimap A$ is:
@@ -88,7 +88,7 @@ $$\mathit{read_A}(S) \doteq \{ a \mid \langle a \rangle \in S \}$$
 (It's instructive to consider the above definition in the special case that $S$ is an \emph{active} point of $\dagger A$.)
 
 The function corresponding to the point $\mathit{dup}_A$ of $\dagger A \multimap \dagger \dagger A$ is:
-$$\mathit{dup}_A(S) \doteq \{ \langle \langle a_1 \rangle, \ldots, \langle a_n \rangle \rangle \mid \langle a_1, \ldots, a_n \rangle \in S \} $$
+$$\mathit{dup}_A(S) \doteq \{ \langle s_1,\ldots,s_n \rangle \mid n \in \mathbb N, s_1 s_2 \cdots s_n \in S \} $$
 
 I don't think $\dagger -$'s functorial mapping on functions was defined anywhere. Here's my guess: letting $f : A \to B$ be a linear function from coherence space $A$ to coherence space $B$, we obtain a linear function $\dagger f : \dagger A \to \dagger B$ defined as:
 $$\dagger f \in (\dagger A \multimap \dagger B) \doteq \{ ( \langle a_1,\ldots,a_n \rangle, \langle b_1, \ldots, b_n \rangle)  \mid (a_1,b_1),\ldots,(a_n,b_n) \in f \}$$
@@ -114,13 +114,18 @@ $\mathit{dup}_A : \dagger A \to \dagger \dagger A$ is a natural transformation.
 \end{lemma}
 
 \begin{proof}
+Intuitively we can see that this is true since partitioning and then mapping through $f$ gives us the same results as mapping through $f$ and then partitioning.\\~\\
 
 Let $f : A \to B$ be a stable linear function between coherence spaces $A$ and $B$. Then,\\~\\
 \begin{tabular}{ll}
-$(\langle a_1,\ldots,a_n \rangle,t) \in (\mathit{dup}_A; \dagger \dagger f)$ & iff \\
-$t = \langle \langle b_1 \rangle,\ldots, \langle b_n \rangle \rangle$ with $(a_1,b_1),\ldots,(a_n,b_n) \in f$ & iff \\
-$(\langle a_1,\ldots,a_n \rangle,t)  \in (\dagger f; dup_B)$
-\end{tabular}~\\
+$(s,z) \in (\mathit{dup}_A; \dagger \dagger f)$ & iff \\~\\
+ ~ & ~ \\
+$s = t_1 \cdots t_m$ and $(\langle t_1, \ldots, t_m \rangle,z) \in \dagger \dagger f$ & iff \\~\\
+ ~ & ~ \\
+$s = t_1 \cdots t_m$ and $\forall i \in 1..m.~t_i = a_{i1} \cdots a_{i k_i}$ and \\ 
+$z = \langle r_i, \ldots, r_m \rangle$ and $\forall i \in 1..m.~r_i = b_{i1} \cdots b_{i k_i}$ and $\forall i j.~(a_{ij}, b_{ij}) \in f$ & iff \\~\\
+$(s,z) \in (\dagger f; \mathit{dup}_{B})$
+\end{tabular}
 
 \end{proof}
 
@@ -131,18 +136,16 @@ For all coherence spaces $A$, $\mathit{dup}_A;\dagger(\mathit{read}_A) = \mathit
 \end{lemma}
 
 \begin{proof}~\\~\\
-\begin{tabular}{ll}
-$(\langle a_1, \ldots, a_n \rangle, \langle a_1', \ldots, a_n' \rangle) \in \mathit{dup}_A;\dagger(\mathit{read}_A)$ & iff \\
-$(\langle \langle a_1 \rangle, \ldots, \langle a_n \rangle \rangle, \langle a_1', \ldots, a_n' \rangle) \in \dagger(\mathit{read}_A)$ & iff \\
-$(\langle a_1 \rangle, a_1'),\ldots,(\langle a_n \rangle, a_n') \in \mathit{read_A}$ & iff \\
-$a_1 = a_1', \ldots, a_n = a_n'$ & iff \\
-$(\langle a_1, \ldots, a_n \rangle, \langle a_1', \ldots, a_n' \rangle) \in \mathit{id}_{\dagger A}$
-\end{tabular}~\\
+I'm going to elide the proof of this, but it's easy to see since the partition of a sequence is only in the domain of the point $\dagger (read_A)$ if it consists solely of singletons.
 \end{proof}
 
 \begin{lemma}
-
+For all coherence spaces $A$, $\mathit{dup}_A;\mathit{read}_{\dagger A} = \mathit{id}_{\dagger A}$.
 \end{lemma}
+
+\begin{proof}
+The only partition of $\langle a_1, \ldots, a_k \rangle$ in the domain of the point $\mathit{read}_{\dagger A}$ is trivial ``non-partition'' with $n=1$: $\langle \langle a_1, \ldots, a_k \rangle \rangle$. 
+\end{proof}
 
 \end{document}
 
