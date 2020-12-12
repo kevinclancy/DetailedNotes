@@ -25,6 +25,8 @@
 \newcommand{\lims}[1]{\underset{\longleftarrow}{\text{lim}}~#1}
 \newcommand{\mbf}{\mathbf}
 
+\newcommand{\inconsist}{\mathrel{\substack{\smile \\ \frown}}}
+\newcommand{\consist}{\mathrel{\substack{\frown \\ \smile}}}
 
 \newcommand{\vrt}[2]{
 \pile{
@@ -77,6 +79,27 @@
 
 \maketitle
 
+\section*{Coherence Spaces}
+
+\begin{lemma}
+Let $\mbf{CohL}$ be the category of coherence spaces and linear maps. We define $- \otimes- : \mbf{CohL} \times \mbf{CohL} \to \mbf{CohL}$ for coherence spaces $A$ and $B$ such that $|A \otimes B| \doteq \{ (a,b) \mid a \in |A|, b \in |B| \}$ and $(a,b) \consist (a',b')~\dot{\Leftrightarrow}~(a \consist a') \wedge (b \consist b')$. For linear maps $f : A \to_L C$ and $g : B \to_L D$ we define 
+$f \otimes g : A \otimes B \to_L C \otimes D \doteq \{ (a,b) \mapsto (c,d) \mid (a,c) \in f, (b,d) \in g \}$. 
+Then $- \otimes - : \mbf{CohL} \times \mbf{CohL} \to \mbf{CohL}$ is a functor.
+\end{lemma}
+
+\begin{proof}
+First, for coherence spaces $A$ and $B$ we have 
+$$\mathit{id}_A \otimes \mathit{id}_B = \{ (a,b) \mid a \in |A|, b \in |B| \} = \{ (a,b) \mid (a,b) \in |A \otimes B| \} = \mathit{id}_{A \otimes B}$$ 
+Second, for $(f,g) : (A,B) \to (C,D)$ and $(h,k) : (C,D) \to (X,Y)$ we have \\~\\
+\begin{tabular}{ll}
+$(f;h \otimes g;k)$ & $= \{ (a,b) \mapsto (x,y) \mid (a,x) \in f;h \wedge (b,y) \in g;k \} $ \\
+~ & $= \{ (a,b) \mapsto (x,y) \mid (\exists c \in C. (a \mapsto c) \in f \wedge (c \mapsto x) \in h) \wedge (\exists d \in D. (b \mapsto d) \in g \wedge (d \mapsto y) \in k) \}$ \\ 
+~ & $= \{ (a,b) \mapsto (x,y) \mid \exists (c,d) \in C \times D.~(a,b) \mapsto (c,d) \in (f \otimes g) \wedge 
+  (c,d) \mapsto (x,y) \in (h \otimes k)\} $ \\
+~ & $= (f \otimes g);(h \otimes k)$
+\end{tabular}
+
+\end{proof}
 
 \section*{Appendix A: Categorical Details}
 
@@ -146,6 +169,42 @@ For all coherence spaces $A$, $\mathit{dup}_A;\mathit{read}_{\dagger A} = \mathi
 \begin{proof}
 The only partition of $\langle a_1, \ldots, a_k \rangle$ in the domain of the point $\mathit{read}_{\dagger A}$ is trivial ``non-partition'' with $n=1$: $\langle \langle a_1, \ldots, a_k \rangle \rangle$. 
 \end{proof}
+
+\begin{lemma}
+For all coherence spaces $A$, $\mathit{dup}_A;\mathit{dup}_{\dagger A} = \mathit{dup}_A;\dagger(\mathit{dup}_A)$.
+\end{lemma}
+
+\begin{proof}
+Intuitively, this says that any token of $\dagger \dagger A$ obtained by partitioning an element $s \in \dagger A$
+twice can also be obtained by paritioning $s$ and then partitioning each element of the resulting list. This 
+seems obvious enough to warrant eliding the proof.
+\end{proof}
+
+We now show that our friends $\mathit{merge}_{A,B}$ are natural transformations.\\~\\
+Recall that for coherence spaces $A$ and $B$, $\mathit{merge}_{A,B}$ is defined as the following point of $\dagger A \otimes \dagger B \multimap \dagger(A \otimes B)$:
+ 
+$$\mathit{merge}_{A,B} \doteq \{ (\langle a_1, \ldots, a_n \rangle, \langle b_1, \ldots, b_n \rangle) \mapsto 
+ \langle (a_1, b_1),\ldots,(a_n,b_n) \rangle \mid a_1, \ldots, a_n \in |A| \text{ and } b_1, \ldots, b_n \in |B|  \}$$
+
+\begin{lemma}
+$\mathit{merge}_{A,B} : (\dagger - \otimes \dagger -) \to \dagger(- \otimes -)$ is a natural transformation. (Between functors of type $\mbf{CohL} \times \mbf{CohL} \to \mbf{CohL}$.)
+\end{lemma}
+
+\begin{proof}
+We must show that it is natural in each component separately, i.e. that for $\alpha : A \to C$ and $\beta : B \to D$ we have $$\dagger A \otimes \dagger \beta;\mathit{merge} = \mathit{merge};\dagger(A \otimes \beta)$$
+and $$\dagger \alpha \otimes \dagger B;\mathit{merge} = \mathit{merge};\dagger(\alpha \otimes B)$$
+for then by the bifunctor lemma (see MiscStudy pg 2817) we have~\\
+
+\begin{tabular}{ll}
+$(\dagger \alpha \otimes \dagger \beta);\mathit{merge}$ & $= (\dagger \alpha \otimes \dagger B);(\dagger A \otimes \dagger \beta);\mathit{merge}$ \\
+ ~ & $= (\dagger \alpha \otimes \dagger B);\mathit{merge};\dagger(A \otimes \beta)$ \\
+ ~ & $= \mathit{merge};\dagger(\alpha \otimes B);\dagger(A \otimes \beta)$ \\
+ ~ & $= \mathit{merge};\dagger(\alpha \otimes \beta)$
+\end{tabular}
+
+a
+\end{proof}
+
 
 \end{document}
 
