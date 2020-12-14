@@ -19,6 +19,7 @@
 \usetikzlibrary{cd}
  
 \newtheorem{lemma}{Lemma}
+\newtheorem{definition}{Definition}
 
 %example: \limit{j \in J}{F_j}
 \newcommand{\limit}[2]{\underset{\overset{\longleftarrow}{#1}}{\text{lim}}~#2}
@@ -99,6 +100,22 @@ $(f;h \otimes g;k)$ & $= \{ (a,b) \mapsto (x,y) \mid (a,x) \in f;h \wedge (b,y) 
 ~ & $= (f \otimes g);(h \otimes k)$
 \end{tabular}
 
+\begin{definition}
+Let $A$, $B$, and $C$ be coherence spaces. 
+We define $l_A : \mbf{1} \otimes A \to_L A$ as the following set of tokens
+$$l_A \doteq \{ (\ast,a) \mapsto a \mid a \in |A| \}$$
+We define $r_A : A \otimes \mbf{1} \to_L A$ as the following set of tokens
+$$r_A \doteq \{ (a,\ast) \mapsto a \mid a \in |A| \}$$
+We define $s_{A,B} : A \otimes B \to_L B \otimes A$ as the following set of tokens
+$$s_{A,B} \doteq \{ (a,b) \mapsto (b,a) \mid a \in |A|, b \in |B| \} $$  
+We define $a_{A,B,C} : A \otimes (B \otimes C) \to (A \otimes B) \otimes C$ as the following set of tokens
+$$a_{A,B,C} \doteq \{ (a,(b,c)) \mapsto ((a,b),c) \mid a \in |A|, b \in |B|, c \in |C| \}$$
+\end{definition}
+
+\begin{lemma}
+Yo
+\end{lemma}
+
 \end{proof}
 
 \section*{Appendix A: Categorical Details}
@@ -178,22 +195,20 @@ For all coherence spaces $A$, $\mathit{dup}_A;\mathit{dup}_{\dagger A} = \mathit
 Intuitively, this says that any token of $\dagger \dagger A$ obtained by partitioning an element $s \in \dagger A$
 twice can also be obtained by paritioning $s$ and then partitioning each element of the resulting list. This 
 seems obvious enough to warrant eliding the proof.
-\end{proof}
-
-We now show that our friends $\mathit{merge}_{A,B}$ are natural transformations.\\~\\
+\end{proof}~\\
+We now show that our friends $\mathit{merge}_{A,B}$ form a natural transformation.\\~\\
 Recall that for coherence spaces $A$ and $B$, $\mathit{merge}_{A,B}$ is defined as the following point of $\dagger A \otimes \dagger B \multimap \dagger(A \otimes B)$:
- 
 $$\mathit{merge}_{A,B} \doteq \{ (\langle a_1, \ldots, a_n \rangle, \langle b_1, \ldots, b_n \rangle) \mapsto 
  \langle (a_1, b_1),\ldots,(a_n,b_n) \rangle \mid a_1, \ldots, a_n \in |A| \text{ and } b_1, \ldots, b_n \in |B|  \}$$
 
 \begin{lemma}
-$\mathit{merge}_{A,B} : (\dagger - \otimes \dagger -) \to \dagger(- \otimes -)$ is a natural transformation. (Between functors of type $\mbf{CohL} \times \mbf{CohL} \to \mbf{CohL}$.)
+$\mathit{merge} : (\dagger - \otimes \dagger -) \to \dagger(- \otimes -)$ is a natural transformation. (Between functors of type $\mbf{CohL} \times \mbf{CohL} \to \mbf{CohL}$.)
 \end{lemma}
 
 \begin{proof}
 We must show that it is natural in each component separately, i.e. that for $\alpha : A \to C$ and $\beta : B \to D$ we have $$\dagger A \otimes \dagger \beta;\mathit{merge} = \mathit{merge};\dagger(A \otimes \beta)$$
 and $$\dagger \alpha \otimes \dagger B;\mathit{merge} = \mathit{merge};\dagger(\alpha \otimes B)$$
-for then by the bifunctor lemma (see MiscStudy pg 2817) we have~\\
+Then by the bifunctor lemma (see MiscStudy pg 2817) we have~\\
 
 \begin{tabular}{ll}
 $(\dagger \alpha \otimes \dagger \beta);\mathit{merge}$ & $= (\dagger \alpha \otimes \dagger B);(\dagger A \otimes \dagger \beta);\mathit{merge}$ \\
@@ -202,9 +217,136 @@ $(\dagger \alpha \otimes \dagger \beta);\mathit{merge}$ & $= (\dagger \alpha \ot
  ~ & $= \mathit{merge};\dagger(\alpha \otimes \beta)$
 \end{tabular}
 
-a
+\begin{description}
+
+\item[Proof of $\dagger A \otimes \dagger \beta;\mathit{merge}_{A, D} = \mathit{merge}_{A, B};\dagger(A \otimes \beta)$:]~\\
+
+\begin{tabular}{ll}
+$(\langle a_1, \ldots, a_n \rangle, \langle b_1, \ldots, b_m \rangle) \mapsto \langle (a_1', d_1), \ldots, (a_k',d_k) \rangle \in \dagger A \otimes \dagger \beta;\mathit{merge}_{A, D}$ & iff \\
+$(\langle a_1', \ldots, a_k' \rangle,\langle d_1, \ldots, d_k \rangle) \in \dagger A \otimes \dagger \beta.~$  & iff \\
+$(n = m = k) \wedge (a_1 = a_1' \ldots a_k = a_k') \wedge (b_1,d_1),\ldots,(b_n,d_n) \in \beta$ & iff \\
+$(\langle a_1, \ldots, a_n \rangle, \langle b_1, \ldots, b_m \rangle) \mapsto \langle (a_1', d_1), \ldots, (a_k',d_k) \rangle \in \mathit{merge}_{A, B};\dagger(A \otimes \beta)$ & ~
+   
+\end{tabular}
+
+\item[Proof of $\dagger \alpha \otimes \dagger B;\mathit{merge}_{C,B} = \mathit{merge}_{A,B};\dagger(\alpha \otimes B)$:]~\\
+
+Symmetric to the above.
+
+\end{description}
+
+\end{proof}~\\
+Let's not forget our friend $\mathit{merge}_{\mbf{1}} : \mbf{1} \to_L \dagger \mbf{1}$, 
+which is defined as the following token set
+$$\mathit{merge}_{\mbf{1}} \doteq \{ \ast \mapsto \langle \ast \rangle^n \mid n \in \mathbb N \} $$
+We now need to show that $\dagger - : \mbf{CohL} \to \mbf{CohL}$ is symmetric monoidal. 
+
+\begin{lemma}
+Let $A$ be a coherence space. Then 
+$$\dagger A \otimes \mbf{1} \overset{\dagger A \otimes \mathit{merge_\mbf{1}}}{\longrightarrow} \dagger A \otimes \dagger \mbf{1} \overset{\mathit{merge}_{A,\mbf{1}}}{\longrightarrow} \dagger(A \otimes \mbf{1}) \overset{\dagger r}{\longrightarrow} \dagger A$$
+is equal to
+$$\dagger A \otimes \mbf{1} \overset{r}{\longrightarrow} \dagger A$$
+\end{lemma}
+
+\begin{proof}~\\
+
+\begin{tabular}{ll}
+$(\langle a_1, \ldots, a_n \rangle, \ast) \mapsto \langle a_1', \ldots, a_k' \rangle \in 
+(\dagger A \otimes \mathit{merge}_{\mbf{1}};\mathit{merge}_{A,\mbf{1}};\dagger r)$ & iff \\
+$\exists m \in \mathbb N.~(\langle a_1, \ldots, a_n \rangle, \langle \ast \rangle^m) \mapsto \langle a_1', \ldots, a_k' \rangle \in 
+(\mathit{merge}_{A,\mbf{1}};\dagger r)$ & iff \\
+$(\langle a_1,\ldots,a_n\rangle,\langle \ast \rangle^n) \mapsto \langle a_1', \ldots, a_k' \rangle \in (\mathit{merge}_{A,\mbf{1}};\dagger r)$ & iff \\
+$\langle (a_1,\ast),\ldots,(a_n,\ast) \rangle \mapsto \langle a_1', \ldots, a_k' \rangle \in \dagger r$ & iff \\
+$(k = n) \wedge (a_1 = a_1') \wedge \cdots \wedge (a_n = a_n')$ & iff \\
+$(\langle a_1, \ldots, a_n \rangle, \ast) \mapsto \langle a_1', \ldots, a_k' \rangle \in r$ & ~
+\end{tabular}
+ 
 \end{proof}
 
+
+\begin{lemma}
+Let $A$,$B$, and $C$ be coherence spaces. Then 
+$$\dagger A \otimes (\dagger B \otimes \dagger C) \overset{\dagger A \otimes \mathit{merge}_{B,C}}{\longrightarrow} \dagger A \otimes \dagger(B \otimes C) \overset{\mathit{merge}_{A,B \otimes C}}{\longrightarrow} \dagger(A \otimes (B \otimes C)) \overset{\dagger a_{A,B,C}}{\longrightarrow} \dagger((A \otimes B) \otimes C)$$
+$$\text{is equal to}$$ 
+$$\dagger A \otimes (\dagger B \otimes \dagger C) \overset{a_{\dagger A, \dagger B, \dagger C}}{\longrightarrow} (\dagger A \otimes \dagger B) \otimes \dagger C \overset{\mathit{merge_{A,B} \otimes \dagger C}}{\longrightarrow} \dagger (A \otimes B) \otimes \dagger C \overset{\mathit{merge}_{A \otimes B,C}}{\longrightarrow} \dagger((A \otimes B) \otimes C)$$
+\end{lemma}
+
+\begin{proof}~\\~\\
+$(\langle a_1, \ldots, a_n \rangle, (\langle b_1,\ldots,b_m\rangle,\langle c_1,\ldots,c_k\rangle)) 
+\mapsto \langle ((a_1',b_1'),c_1') \ldots ((a_l',b_l'),c_l') \rangle$ \\
+$\in (\dagger A \otimes \mathit{merge}_{B,C});\mathit{merge}_{A,B \otimes C};\dagger a_{A,B,C}$\\~\\
+iff\\~\\
+$m=k \wedge (\langle a_1, \ldots, a_n \rangle,\langle (b_1,c_1),\ldots,(b_m,c_m) \rangle) \mapsto
+\langle ((a_1',b_1'),c_1'),\ldots,((a_l',b_l'),c_l') \rangle$\\
+$\in \mathit{merge}_{A,B \otimes C};\dagger a_{A,B,C}$\\~\\
+iff\\~\\
+$m=k=n \wedge \langle (a_1,(b_1,c_1)) \ldots (a_n,(b_n,c_n)) \rangle \mapsto \langle ((a_1',b_1'),c_1'),\ldots,((a_l',b_l'),c_l') \rangle$\\
+$\in \dagger a_{A,B,C}$\\~\\
+iff\\~\\
+$m=k=n=l \wedge (a_1 = a_1'),\ldots,(a_n = a_n'),(b_1 = b_1'),\ldots,(b_n = b_n'),(c_1 = c_1'),\ldots,(c_n = c_n')$\\~\\
+iff... TODO
+
+\end{proof}
+
+\begin{lemma}
+Let $A$ and $B$ be coherence spaces. THen
+$$\dagger A \otimes \dagger B \overset{\mathit{merge}_{A,B}}{\longrightarrow} \dagger(A \otimes B) \overset{\dagger s_{A,B}}{\longrightarrow} \dagger (B \otimes A)$$
+is equal to 
+$$\dagger A \otimes \dagger B \overset{s_{\dagger A,\dagger B}}{\longrightarrow} \dagger B \otimes \dagger A 
+\overset{\mathit{merge}_{B,A}}{\longrightarrow} \dagger (B \otimes A)$$
+\end{lemma}
+
+\begin{proof}
+TODO
+\end{proof}
+
+\subsection*{$\dagger$-coalgebras}
+
+We now consider $\dagger$-coalgebra $\alpha : A \to \dagger A$. As objects of $\mathcal {EM}(\dagger)$,
+they must make the following diagrams commute:
+
+\begin{mathpar}
+\begin{tikzcd}
+\dagger A \ar[r, "\mathit{read}_A"] & A \\
+A \ar[ur,double,equal] \ar[u,"\alpha"] & 
+\end{tikzcd}
+\and
+\begin{tikzcd}
+\dagger A \ar[r,"\mathit{dup}_A"] & \dagger \dagger A \\
+A \ar[r,"\alpha" below] \ar[u,"\alpha"] & \dagger A \ar[u,"\dagger \alpha" right]
+\end{tikzcd}
+\end{mathpar}
+
+Intuitively, such a coalgebra $\alpha$ maps a state $x \in A$ to the active point $\alpha(a) \in \dagger A$ representing all traces with starting state $x$. The left diagram says $\alpha;\mathit{read}_A = id_A$. This means that whenever $(a, \langle a' \rangle) \in \alpha$ we have $a = a'$, which fits perfectly with our intuition.
+
+The right diagram says that $\alpha;\mathit{dup}_A = \alpha;\dagger \alpha$. This means that a token mapping
+$$a_1 \overset{\alpha}{\mapsto} \langle a_1, \ldots, a_n \rangle \overset{\dagger \alpha}{\mapsto} 
+\langle \langle a_1 = a_{11},\ldots,a_{1m_1} \rangle \ldots, \langle a_n = a_{n1},\ldots,a_{nm_n}\rangle \rangle$$
+can be obtained ``directly'' as 
+$$a_1 \overset{\alpha}{\mapsto} \langle a_1 = a_{11},a_{12},\ldots,a_{1m_1},\ldots,a_{n1},\ldots,a_{nm_n} \rangle$$
+
+Reddy is not speaking of arbitrary objects of this EM category, but instead limiting his focus to 
+``free coalgebras'' whose carriers have the form $\dagger A$ and whose structure maps are comultiplication arrows.
+(Comultiplication being a coalgebra of its own comonad is not specific to our category; 
+it's a general phenomenon.) 
+It's clear coalgebra morphisms between these free coalgebras correspond to regular maps.
+\begin{center}
+\begin{tikzcd}
+\dagger \dagger A \ar[r,"\dagger f"] & \dagger \dagger B \\
+\dagger A \ar[u,"\mathit{dup}_A"] \ar[r,"f" below] & \dagger B \ar[u,"\mathit{dup}_B" right] 
+\end{tikzcd}
+\end{center}
+
+Now let's consider the natural isomorphism $\mbf{C}^\dagger(C,\dagger A) \cong \mbf{C}(UC,A)$. Note that
+$\dagger A$ here is being used as shorthand for the coalgebra 
+$\dagger A \overset{\mathit{dup}_A}{\longrightarrow} \dagger \dagger A$ and $C$ is shorthand for some $C \overset{h_C}{\longrightarrow} \dagger C \in \mathbf{C}^\dagger$. Given $f \in \mbf{C}(UC,A)$ we obtain a coalgebra morphism
+$h_c;\dagger f : C \to \dagger A$. To show that the coalgebra morphism square commutes we have\\~\\
+\begin{tabular}{ll}
+$(h_c;\dagger f);\mathit{dup}_A$ & ~ \\
+$= h_c;\mathit{dup}_A;\dagger \dagger f$ & (naturality)  \\
+$= h_c;\dagger(h_c);\dagger \dagger f$ & (Eilenberg-Moore square $\alpha;\delta = \alpha;\dagger\alpha$) \\
+$= h_c;\dagger(h_c;\dagger f)$ & (functoriality)
+\end{tabular}
 
 \end{document}
 
