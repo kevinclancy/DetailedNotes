@@ -344,9 +344,11 @@ $h_c;\dagger f : C \to \dagger A$. To show that the coalgebra morphism square co
 \begin{tabular}{ll}
 $(h_c;\dagger f);\mathit{dup}_A$ & ~ \\
 $= h_c;\mathit{dup}_A;\dagger \dagger f$ & (naturality)  \\
-$= h_c;\dagger(h_c);\dagger \dagger f$ & (Eilenberg-Moore square $\alpha;\delta = \alpha;\dagger\alpha$) \\
+$= h_c;\dagger h_c;\dagger \dagger f$ & (Eilenberg-Moore square $\alpha;\delta = \alpha;\dagger\alpha$) \\
 $= h_c;\dagger(h_c;\dagger f)$ & (functoriality)
 \end{tabular}
+
+While the above works for any comonad coalgebra $C \overset{h_C}{\longrightarrow} \dagger C$, it only matches with the description of regular extensions in Section 4 if $C$ is actually a free coalgebra.
 
 \end{document}
 
