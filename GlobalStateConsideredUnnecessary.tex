@@ -25,7 +25,11 @@
 \newcommand{\limit}[2]{\underset{\overset{\longleftarrow}{#1}}{\text{lim}}~#2}
 \newcommand{\lims}[1]{\underset{\longleftarrow}{\text{lim}}~#1}
 \newcommand{\mbf}{\mathbf}
-
+\newcommand{\sem}[1]{\llbracket #1 \rrbracket}
+\newcommand{\bimpl}[2]{
+\mprset{fraction={===}}
+\inferrule{#1}{#2 }
+}
 \newcommand{\inconsist}{\mathrel{\substack{\smile \\ \frown}}}
 \newcommand{\consist}{\mathrel{\substack{\frown \\ \smile}}}
 
@@ -349,6 +353,68 @@ $= h_c;\dagger(h_c;\dagger f)$ & (functoriality)
 \end{tabular}
 
 While the above works for any comonad coalgebra $C \overset{h_C}{\longrightarrow} \dagger C$, it only matches with the description of regular extensions in Section 4 if $C$ is actually a free coalgebra.
+
+Again, mapping through the adjunction in the other direction only corresponds to taking a regular function's linear pattern when the domain is a free coalgebra. It's not hard to see that 
+we can take a regular map, i.e. a map of the form 
+$\dagger C \overset{g}{\to} \dagger A$ in $\mathbf{C}^{\dagger}_1$ to 
+its linear pattern $$\check{g} \doteq U \! \dagger \! C \overset{Ug}{\longrightarrow} U \! \dagger \! A \overset{\mathit{read}_A}{\longrightarrow} A \in \mbf{C}_1$$ This 
+transformation explains why regular maps are defined entirely by their restrictions to singletons 
+(which are essentially their pattern maps.) 
+
+I think the transformation $\mathit{discard}_C$ is used by (Id) rule in the following way. Since $- \otimes -$ is
+a bifunctor, we can apply it to a vector of arrows which are all components of the $\mathit{discard}$ natural transformation, except in the position of the variable being used, where we use the $\mathit{id}$ arrow:\\~\\
+$\sem{x_1:\theta_1,\ldots,x_n:\theta_n \mid x_{n+1} : \theta_{n+1},\ldots,x_{n+m} : \theta_{n+m},y : \theta \vdash y : \theta} \doteq$\\
+$\mathit{disc}_{\dagger \sem{\theta_1}} \otimes \ldots \otimes \mathit{disc}_{\dagger \sem{\theta_{n + m}}} \otimes \mathit{id}_{\dagger \sem{\theta}};l;\ldots;l
+: \dagger \sem{\theta_1} \otimes \ldots \otimes \dagger \sem{\theta_{n+m}} \otimes \dagger \sem{\theta} \to \dagger \sem{\theta}$
+
+\subsection*{Kleisli Multicategory}
+
+Arrows of the form $\dagger A_1 \otimes \cdots \otimes \dagger A_n \to B$ of our SMCC $\mbf{C}$ form a multicategory, what Reddy calls a ``Kleisli multicategory''. Figure \ref{fig:multicomp} concretely demonstrates the composition of arrows $\dagger A_{11} \otimes \cdots \otimes A_{1n} \overset{f_1}{\to} B_1$ and $\dagger A_{21} \otimes \cdots \otimes \dagger A_{2m} \overset{f_2}{\to} B_2$ into $\dagger B_1 \otimes \dagger B_2 \overset{g}{\to} C$.
+
+\begin{figure}
+\begin{tikzcd}
+\dagger A_{11} \otimes \cdots \otimes \dagger A_{1n} \otimes \dagger A_{21} \otimes \cdots \dagger A_{2m} 
+\ar[d,"\mathit{dup} \otimes \cdots \otimes \mathit{dup}"] \\
+\dagger \dagger A_{11} \otimes \cdots \otimes \dagger \dagger A_{1n} \otimes \dagger \dagger A_{21} \otimes \cdots \dagger \dagger A_{2m} \ar[d,"a"] \\
+(\dagger \dagger A_{11} \otimes \cdots \otimes \dagger \dagger A_{1n}) \otimes (\dagger \dagger A_{21} \otimes \cdots \dagger \dagger A_{2m}) \ar[d,"\mathit{merge} \otimes \mathit{merge}"]  \\
+\dagger (\dagger A_{11} \otimes \cdots \otimes \dagger A_{1n}) \otimes \dagger (\dagger A_{21} \otimes \cdots \dagger A_{2m}) \ar[d,"(\dagger f_1) \otimes (\dagger f_2)"] \\
+\dagger B_1 \otimes \dagger B_2 \ar[d,"g"] \\
+C  
+\end{tikzcd}
+\caption{Semi-formal demonstration of Kleisli multicategory composition}
+\label{fig:multicomp}
+\end{figure}
+
+\subsection*{Passivity}
+
+The codomain of $\wp$ and $\mathcal P$ was written incorrectly: it should be $\wp, \mathcal P : \mbf{C} \to \mbf{P}$. $\wp$ converts an arbitrary
+active-passive space to a passive space by throwing away the active tokens and restricting linear functions to active points. $\mathcal P$ pretends that an active-passive space's active tokens are actually passive, and leaves linear functions unchanged.
+
+For a discussion of reflections, see MiscStudy pg 6822. For $\wp$ we have the following situation:
+
+\begin{center}
+\begin{tikzcd}
+\wp \ar[r,"f^{\flat}"] A & P \\
+A \ar[u,"\mathit{pas}_A"] \ar[ur,"f" below] & ~ \\
+\end{tikzcd}
+\\
+\begin{tikzcd}
+\wp A \ar[r,"f^{\flat}"] \ar[dr,"\wp f~~~~~" below] & P \\
+ ~ & \wp P \ar[u,equal,double]
+\end{tikzcd}
+\end{center}
+
+The linear function $\mathit{pas}_A : A \to_L \wp A$ maps each point to its subset of passive tokens.
+Equivalently, we can define it as a set of tokens:
+$$\mathit{pas}_A \doteq \{ (a,a) \mid a \in |A|_{\wp} \}$$
+
+\begin{lemma}
+Let $A$ be an active-passive space, $P$ a passive space, and $f : A \to_L P$ a passivity preserving linear function. Then $\mathit{pas}_A;\wp f = f$. 
+\end{lemma}
+
+\begin{proof}
+Obvious.
+\end{proof}
 
 \end{document}
 
