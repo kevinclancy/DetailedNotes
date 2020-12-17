@@ -33,6 +33,8 @@
 \newcommand{\inconsist}{\mathrel{\substack{\smile \\ \frown}}}
 \newcommand{\consist}{\mathrel{\substack{\frown \\ \smile}}}
 
+\newcommand{\smc}[1]{#1}
+
 \newcommand{\vrt}[2]{
 \pile{
 #1 \\
@@ -79,6 +81,7 @@
 }
 
 \title{Notes for: \emph{Global State Considered Unnecessary} by Uday Reddy}
+\author{Kevin Clancy}
 
 \begin{document}
 
@@ -357,7 +360,7 @@ While the above works for any comonad coalgebra $C \overset{h_C}{\longrightarrow
 Again, mapping through the adjunction in the other direction only corresponds to taking a regular function's linear pattern when the domain is a free coalgebra. It's not hard to see that 
 we can take a regular map, i.e. a map of the form 
 $\dagger C \overset{g}{\to} \dagger A$ in $\mathbf{C}^{\dagger}_1$ to 
-its linear pattern $$\check{g} \doteq U \! \dagger \! C \overset{Ug}{\longrightarrow} U \! \dagger \! A \overset{\mathit{read}_A}{\longrightarrow} A \in \mbf{C}_1$$ This 
+its linear pattern $$\check{g} \doteq U \! \dagger \! C \overset{Ug}{\longrightarrow} U \! \dagger \! A \overset{\mathit{read}_A}{\longrightarrow} A \in \mbf{C}_1$$ The existence of this 
 transformation explains why regular maps are defined entirely by their restrictions to singletons 
 (which are essentially their pattern maps.) 
 
@@ -385,7 +388,7 @@ C
 \label{fig:multicomp}
 \end{figure}
 
-\subsection*{Passivity}
+\subsection*{Passivity reflection}
 
 The codomain of $\wp$ and $\mathcal P$ was written incorrectly: it should be $\wp, \mathcal P : \mbf{C} \to \mbf{P}$. $\wp$ converts an arbitrary
 active-passive space to a passive space by throwing away the active tokens and restricting linear functions to active points. $\mathcal P$ pretends that an active-passive space's active tokens are actually passive, and leaves linear functions unchanged.
@@ -406,7 +409,7 @@ A \ar[u,"\mathit{pas}_A"] \ar[ur,"f" below] & ~ \\
 
 The linear function $\mathit{pas}_A : A \to_L \wp A$ maps each point to its subset of passive tokens.
 Equivalently, we can define it as a set of tokens:
-$$\mathit{pas}_A \doteq \{ (a,a) \mid a \in |A|_{\wp} \}$$
+$$\mathit{pas}_A \doteq \{ a \mapsto a \mid a \in |A|_{\wp} \}$$
 
 \begin{lemma}
 Let $A$ be an active-passive space, $P$ a passive space, and $f : A \to_L P$ a passivity preserving linear function. Then $\mathit{pas}_A;\wp f = f$. 
@@ -415,6 +418,73 @@ Let $A$ be an active-passive space, $P$ a passive space, and $f : A \to_L P$ a p
 \begin{proof}
 Obvious.
 \end{proof}
+
+Now let's examine the $\mathit{Activate}$ and $\mathit{Passify}$ typing rules.
+
+\begin{mathpar}
+\inferrule[Activate]
+  {\Pi,x:\theta \mid \Gamma \vdash P : \theta'}
+  {\Pi \mid \Gamma,x:\theta \vdash P : \theta'}
+\and
+\inferrule[Passify]
+  {\Pi \mid \Gamma,x:\theta \vdash P : \phi}
+  {\Pi,x:\theta \mid \Gamma \vdash P : \phi}
+\end{mathpar}
+
+In the \begin{sc} Activate \end{sc} rule, we interpret the hypothesis as a multi-arrow
+$$\dagger \wp \sem{\theta_1} \otimes \cdots \otimes \dagger \wp \sem{\theta_n} \otimes \dagger \wp \sem{\theta} \otimes \dagger \sem{\theta_{n+1}} \otimes \cdots \otimes \dagger \sem{\theta_{n+m}} \overset{\sem{\Pi \mid \Gamma, x:\theta \vdash P : \theta'}}{\longrightarrow} \sem{\theta'}$$
+To obntain our conclusion, we must precompose this arrow with another arrow:
+\begin{center}
+\begin{tikzcd}
+\dagger \wp \sem{\theta_1} \otimes \cdots \otimes \dagger \wp \sem{\theta_n} \otimes \dagger \sem{\theta_{n+1}} \otimes \cdots \otimes \dagger \sem{\theta_{n+m}} \otimes \dagger \sem{\theta}  \ar [d] \\  
+\dagger \wp \sem{\theta_1} \otimes \cdots \otimes \dagger \wp \sem{\theta_n} \otimes \dagger \wp \sem{\theta} \otimes \dagger \sem{\theta_{n+1}} \otimes \cdots \otimes \dagger \sem{\theta_{n+m}}
+\end{tikzcd}
+\end{center}
+Sans some SMCC-fu, this essentially boils down to an arrow $\dagger \sem{\theta} \to \dagger \wp \sem{\theta}$,
+for which we use $\dagger \mathit{pas}_{\sem{\theta}}$.
+
+The key to understanding the \begin{sc} Passify \end{sc} rule is that the $\wp$ functor distributes over
+tensor product and commutes with $\dagger -$. So given an interpretation of the hypothesis $$\dagger \wp \sem{\theta_1} \otimes \cdots \otimes \dagger \wp \sem{\theta_n} \otimes \dagger \sem{\theta_{n+1}} \otimes \cdots \otimes \dagger \sem{\theta_{n+m}} \otimes \dagger \sem{\theta} \to \sem{\phi}$$
+we apply $\wp$ to obtain
+$$\dagger \wp \sem{\theta_1} \otimes \cdots \otimes \dagger \wp \sem{\theta_n} \otimes \dagger \wp \sem{\theta_{n+1}} \otimes \cdots \otimes \dagger \wp \sem{\theta_{n+m}} \otimes \dagger \wp \sem{\theta} \to \wp \sem{\phi} = \sem{\phi}$$
+
+Then, along with some additional SMCC-fu, we can use the $\mathit{pas}$ transformation to activate the incidentally-pasified components $\theta_{n+1} \ldots, \theta_{n+m}$, obtaining the interpretation of the conclusion of 
+\begin{sc} Passify \end{sc}. 
+
+\subsection*{Passivity coreflection}
+
+Let $P$ be a passive space, $B$ an active-passive space, and $f : P \to_L B$ a passivity reflecting linear function. The coreflection for $\mathcal P$ is depicted as follows
+\begin{center}
+\begin{tikzcd}
+\mathcal P P \ar[r,"\mathcal P f"] & \mathcal B \\
+P \ar[ur,"~f^{\flat}" below] \ar[u,double,equal] & ~ \\
+~ & ~
+\end{tikzcd}~\\
+\begin{tikzcd}
+P \ar[r,"f" above] \ar[dr, "\mathcal P f~~~" below] & B \\
+ ~ & \mathcal P B \ar[u, "\mathit{der}_B" right]  
+\end{tikzcd}~\\
+\end{center}
+Reddy defines $\mathit{der}_B$ as the set of tokens $\{ b \mapsto b \mid b \in |B| \}$.
+\begin{lemma}
+Let $P$ be a passive space, $B$ an active-passive space, and $f : P \to_L B$ a passivity reflecting linear map. 
+Then $\mathcal Pf;\mathit{der}_B = f$.
+\end{lemma}
+
+\begin{proof}
+Obvious.
+\end{proof}~\\
+Now let's examine the \smc{(Promote)} and \smc{(Derelict)} rules.
+
+\begin{mathpar}
+\inferrule[Promote]
+  {\Pi \mid ~ \vdash P : \theta_1 \to \theta_2}
+  {\Pi \mid ~ \vdash P : \theta_1 \to_p \theta_2}
+\and
+\inferrule[Derelict]
+  {\Pi \mid \Gamma \vdash P : \theta_1 \to_P \theta_2}
+  {\Pi \mid \Gamma \vdash P : \theta_1 \to \theta_2}
+\end{mathpar}
 
 \end{document}
 
