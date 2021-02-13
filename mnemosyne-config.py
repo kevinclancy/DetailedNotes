@@ -51,6 +51,7 @@ latex_preamble = r"""
 \usepackage{mathtools}
 \usepackage{bussproofs}
 \usepackage{tikz}
+\usepackage{stackengine}
 \usepackage{diagrams}
 \usepackage{multicol}
 \usepackage{listings}% http://ctan.org/pkg/listings
@@ -60,6 +61,9 @@ latex_preamble = r"""
   numbers=left
 }
 \usetikzlibrary{cd}
+
+\newcommand{\inconsist}{\mathrel{\substack{\smile \\ \frown}}}
+\newcommand{\consist}{\mathrel{\substack{\frown \\ \smile}}}
 
 \newcommand{\boxto}{~\fbox{\to}~}
 \newcommand{\lpar}{~\raisebox{1.2ex}{\rotatebox{180}{\&}}~}
@@ -72,6 +76,14 @@ latex_preamble = r"""
 \mprset{fraction={===}}
 \inferrule{#1}{#2 }
 }
+
+\newcommand{\slangle}{\scalebox{0.5}{$\langle~$}}
+\newcommand{\srangle}{\scalebox{0.5}{$~\rangle$}}
+\newcommand{\chan}{~\stackinset{l}{.5ex}{c}{}{\scalebox{0.6}{$\circ$}}{$\to$}~}
+\newcommand{\dotto}{~\stackinset{l}{}{c}{}{$\bullet$}{$\to$}~}
+\newcommand{\antiphi}{~\stackinset{l}{}{c}{}{$\backslash$}{$o$}~}
+\newcommand{\absepi}{~\stackinset{r}{}{c}{}{\scalebox{0.5}{$\triangleright$}}{$-$}~}
+\newcommand{\absmono}{\mapsto}
 
 \newcommand{\vrt}[2]{
 \pile{
@@ -129,5 +141,13 @@ latex_postamble = r"""\end{document}"""
 latex = "pdflatex --shell-escape -interaction=nonstopmode"
 
 # Latex dvipng command.
-dvipng = "convert -trim -density 136 tmp.pdf tmp1.png"
+dvipng = "mnemosyne.bat"
+#dvipng = "convert -trim -density 136 -colorspace rgb tmp.pdf tmp1.png"
 
+# Latex command.
+#latex = "pdflatex --shell-escape -interaction=nonstopmode"
+#latex = "latex -interaction=nonstopmode"
+
+# Latex dvipng command.
+#dvipng = "mnemosyne.bat"
+#dvipng = "dvipng -D 136 -T tight tmp.dvi" #& convert tmp1.png -transparent white tmp2.png & del tmp1.png & rename tmp2.png tmp1.png" #maybe use a batch which calls convert to change white to transparent
