@@ -1,0 +1,115 @@
+
+\documentclass{article}
+
+\usepackage{amscd}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{stmaryrd}
+\usepackage{mathpartir}
+\usepackage{multicol}
+\usepackage{enumitem}
+\usepackage[section]{placeins} % float barriers
+\usepackage{natbib}
+\usepackage{xcolor} 
+\usepackage{bussproofs} 
+\usepackage{diagrams}
+\usepackage{tikz}
+\usepackage{quiver}
+
+\usetikzlibrary{cd}
+
+\tikzset{
+absepi to/.tip={Glyph[glyph math command=triangleright]},
+}
+
+\newtheorem{lemma}{Lemma}
+
+%example: \limit{j \in J}{F_j}
+\newcommand{\limit}[2]{\underset{\overset{\longleftarrow}{#1}}{\text{lim}}~#2}
+\newcommand{\lims}[1]{\underset{\longleftarrow}{\text{lim}}~#1}
+\newcommand{\mbf}{\mathbf}
+\newcommand{\absepi}{~\stackinset{r}{}{c}{}{\scalebox{0.5}{$\triangleright$}}{$-$}~}
+\newcommand{\absmono}{\mapsto}
+
+\newcommand{\inconsist}{\mathrel{\substack{\smile \\ \frown}}}
+\newcommand{\consist}{\mathrel{\substack{\frown \\ \smile}}}
+
+\newcommand{\vrt}[2]{
+\pile{
+#1 \\
+\downarrow \\
+#2
+}
+}
+
+\newcommand{\ddisp}[3]{
+\left(
+\scriptsize
+\begin{tikzcd}
+#1 \ar[d, "\footnotesize{#2}"] \\
+#3
+\end{tikzcd}
+\normalsize
+\right)
+}
+
+\newcommand{\disp}[3]{
+\left(
+\tiny
+\begin{array}{c}
+#1 \\
+\downarrow\\
+#3
+\end{array}
+\begin{array}{l}
+~ \\
+#2 \\
+~
+\end{array}
+\normalsize
+\right)
+}
+
+\newcommand{\dispp}[3]{
+\tiny
+\begin{tikzcd}
+#1 \ar[d, "#2"] \\
+#3
+\end{tikzcd}
+\normalsize
+}
+
+\title{Notes: The Formal Theory of Monads}
+\author{Kevin Clancy} 
+
+\begin{document}
+
+\maketitle
+
+\section*{Monads with Respect to a 2-category}
+
+\subsection*{Theorem 1}
+
+Because I am still a 2-category novice, the proof of this theorem initially seemed a bit foreign to me.
+In 1-categories, an adjunction $F \vdash U : \mathbf{C} \leftrightarrows \mathbf{D}$ is a natural isomorphism
+$\mathbf{C}(FX,Y) \cong \mathbf{D}(X,UY)$, i.e. it is a natural isomorphism between the functors $\mbf{C}(F-,-)$ and $\mbf{D}(-,U-)$, which both have type $\mbf{D}^{\mathit{op}} \times \mbf{C} \to \mbf{Sets}$.\\~\\
+In contrast, in the setting of 2-categories $\mathbf{C}(FX,Y)$ is a hom-category rather than a hom-set; its objects are $\mbf{C}$-1-cells from $FX$ to $Y$, and its arrows are $\mbf{C}$-2-cells. Thus, the 2-functor $\mbf{C}(FX,-)$ maps a 0-cell to a category, a 1-cell to a functor, and a 2-cell to a natural transformation. E.g., visualize arrows in the hom-category $\mbf{C}(FX,Y)$ in the below diagram.\\~\\ 
+
+\[\begin{tikzcd}
+	&& Y \\
+	\\
+	FX &&& {} \\
+	\\
+	&& Z
+	\arrow[from=3-1, to=1-3]
+	\arrow[from=3-1, to=5-3]
+	\arrow[""{name=0, anchor=center, inner sep=0}, "f"', curve={height=18pt}, from=1-3, to=5-3]
+	\arrow[""{name=1, anchor=center, inner sep=0}, "g", curve={height=-18pt}, from=1-3, to=5-3]
+	\arrow["\alpha", shorten <=7pt, shorten >=7pt, Rightarrow, from=0, to=1]
+\end{tikzcd}\]
+
+Post-composition (via horizontal composition)) of these arrows (viewed as 2-cells of $\mbf{C}$) with $f : X \to Z$ is an ordinary functor between hom-categories $\mbf{C}(FX,f) : \mbf{C}(FX,Y) \to \mbf{C}(FX,Z)$.
+
+\end{document}
