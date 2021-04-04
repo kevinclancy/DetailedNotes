@@ -1,0 +1,306 @@
+
+\documentclass{article}
+
+\usepackage[a4paper, total={7.2in,8in}]{geometry}
+
+\usepackage{amscd}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{stmaryrd}
+\usepackage{mathpartir}
+\usepackage{multicol}
+\usepackage{enumitem}
+\usepackage[section]{placeins} % float barriers
+\usepackage{natbib}
+\usepackage{xcolor} 
+\usepackage{bussproofs} 
+\usepackage{diagrams}
+\usepackage{tikz}
+\usepackage{quiver}
+
+\usetikzlibrary{cd}
+
+\tikzset{
+absepi to/.tip={Glyph[glyph math command=triangleright]},
+}
+
+\newtheorem{lemma}{Lemma}
+
+%example: \limit{j \in J}{F_j}
+\newcommand{\limit}[2]{\underset{\overset{\longleftarrow}{#1}}{\text{lim}}~#2}
+\newcommand{\lims}[1]{\underset{\longleftarrow}{\text{lim}}~#1}
+\newcommand{\mbf}{\mathbf}
+\newcommand{\absepi}{~\stackinset{r}{}{c}{}{\scalebox{0.5}{$\triangleright$}}{$-$}~}
+\newcommand{\absmono}{\mapsto}
+
+\newcommand{\inconsist}{\mathrel{\substack{\smile \\ \frown}}}
+\newcommand{\consist}{\mathrel{\substack{\frown \\ \smile}}}
+
+\newcommand{\vrt}[2]{
+\pile{
+#1 \\
+\downarrow \\
+#2
+}
+}
+
+\newcommand{\ddisp}[3]{
+\left(
+\scriptsize
+\begin{tikzcd}
+#1 \ar[d, "\footnotesize{#2}"] \\
+#3
+\end{tikzcd}
+\normalsize
+\right)
+}
+
+\newcommand{\disp}[3]{
+\left(
+\tiny
+\begin{array}{c}
+#1 \\
+\downarrow\\
+#3
+\end{array}
+\begin{array}{l}
+~ \\
+#2 \\
+~
+\end{array}
+\normalsize
+\right)
+}
+
+\newcommand{\dispp}[3]{
+\tiny
+\begin{tikzcd}
+#1 \ar[d, "#2"] \\
+#3
+\end{tikzcd}
+\normalsize
+}
+
+\title{Notes: The Formal Theory of Monads}
+\author{Kevin Clancy} 
+
+\begin{document}
+
+\maketitle
+
+\section*{Monads with Respect to a 2-category}
+
+\subsection*{Theorem 1}
+
+Because I am still a 2-category novice, the proof of this theorem initially seemed a bit foreign to me.
+In 1-categories, an adjunction $F \vdash U : \mathbf{C} \leftrightarrows \mathbf{D}$ is a natural isomorphism
+$\mathbf{C}(FX,Y) \cong \mathbf{D}(X,UY)$, i.e. it is a natural isomorphism between the functors $\mbf{C}(F-,-)$ and $\mbf{D}(-,U-)$, which both have type $\mbf{D}^{\mathit{op}} \times \mbf{C} \to \mbf{Sets}$.\\~\\
+In contrast, in the setting of 2-categories $\mathbf{C}(FX,Y)$ is a hom-category rather than a hom-set; its objects are $\mbf{C}$-1-cells from $FX$ to $Y$, and its arrows are $\mbf{C}$-2-cells. Thus, the 2-functor $\mbf{C}(FX,-)$ maps a 0-cell to a category, a 1-cell to a functor, and a 2-cell to a natural transformation. E.g., visualize arrows in the hom-category $\mbf{C}(FX,Y)$ in the below diagram.\\~\\ 
+
+\[\begin{tikzcd}
+	&& Y \\
+	\\
+	FX &&& {} \\
+	\\
+	&& Z
+	\arrow[from=3-1, to=1-3]
+	\arrow[from=3-1, to=5-3]
+	\arrow[""{name=0, anchor=center, inner sep=0}, "f"', curve={height=18pt}, from=1-3, to=5-3]
+	\arrow[""{name=1, anchor=center, inner sep=0}, "g", curve={height=-18pt}, from=1-3, to=5-3]
+	\arrow["\alpha", shorten <=7pt, shorten >=7pt, Rightarrow, from=0, to=1]
+\end{tikzcd}\]
+
+Post-composition (via horizontal composition) of these arrows (viewed as 2-cells of $\mbf{C}$) with $f : X \to Z$ is an ordinary functor between hom-categories $\mbf{C}(FX,f) : \mbf{C}(FX,Y) \to \mbf{C}(FX,Z)$. Given a $\alpha : f \to g \in \mbf{C}_2$ we obtain a natural transformation $\mbf{C}(FX,\alpha)$ from the ordinary functor $\mbf{C}(FX,f)$ to the ordinary functor $\mbf{C}(FX,g)$ such that for all $h : FX \to Y$, 
+$$\mbf{C}(FX,\alpha)_{h} \doteq \alpha h$$
+\\~\\
+Let $\psi$ be the isomorphism described in theorem 1. For ordinary naturality of $\psi$ in the codomain position,
+we must have for all $f : X \to Z$ that $\mbf{C}(Y,f);\psi = \psi;\text{Mnd}(\mbf C)((Y,T),(f,1))$.   
+Let $h : X \to Z \in \mbf{C}_1$. We have
+
+$$(h : X \to Z) \overset{\mbf{C}(Y,f)}{~~\mapsto~~} (h , h\eta_T) \overset{\psi}{\mapsto} (fh , fh \eta_T)$$ 
+
+On the other hand, we have
+
+$$(h : X \to Z) \overset{\psi}{~~\mapsto~~} (h , h \eta_T) \overset{\text{Mnd}(\mbf C)((Y,T),(f,1))}{\mapsto} (fh,fh\eta_T \cdot fh) = (fh,fh\eta_T) $$
+
+Where $Mnd(\mbf{C})((Y,T),(f,1))$ is post-compostion with the monad morphism $(f,1)$, and $fh \eta_T \cdot fh$ is 
+shown in the following pasting diagram.
+ 
+\[\begin{tikzcd}[column sep=large]
+	Y & X & Z \\
+	Y & X & Z
+	\arrow["T"', from=1-1, to=2-1]
+	\arrow[equals, from=1-3, to=2-3]
+	\arrow[equals, from=1-2, to=2-2]
+	\arrow["h"', from=2-1, to=2-2]
+	\arrow["f"', from=2-2, to=2-3]
+	\arrow["h", from=1-1, to=1-2]
+	\arrow["f", from=1-2, to=1-3]
+	\arrow["{h \eta_T}", shorten <=4pt, Rightarrow, from=1-2, to=2-1]
+	\arrow["f", shorten <=4pt, shorten >=4pt, Rightarrow, from=1-3, to=2-2]
+\end{tikzcd}\]
+
+In addition, we must show 2-naturality, i.e. that the following two natural transformations are equal.
+
+\[\begin{tikzcd}
+	{\mathbf{C}(Y,X)} &&& {\mathbf{C}(Y,Z)} &&&& {\text{Mnd}(\mathbf{C})((Y,T),(Z,1))} \\
+	\\
+	\\
+	{\mathbf{C}(Y,X)} &&& {\text{Mnd}(\mathbf{C})((Y,T),(X,1))} &&&&& {\text{Mnd}(\mathbf{C})((Y,T),(Z,1))}
+	\arrow[""{name=0, anchor=center, inner sep=0}, "{\mathbf{C}(Y,f)}", curve={height=-24pt}, from=1-1, to=1-4]
+	\arrow[""{name=1, anchor=center, inner sep=0}, "{\mathbf{C}(Y,g)}"', curve={height=24pt}, from=1-1, to=1-4]
+	\arrow["{(U :Y \to Z) \mapsto (U, U \eta) \atop \sigma \mapsto \sigma}"', from=1-4, to=1-8]
+	\arrow["{(U : Y \to X) \mapsto (U, U \eta) \atop \sigma \mapsto \sigma}"', from=4-1, to=4-4]
+	\arrow[""{name=2, anchor=center, inner sep=0}, "{\text{Mnd}(\mathbf{C})((Y,T),\text{Inc}_{\mathbf C}(f))}", curve={height=-24pt}, from=4-4, to=4-9]
+	\arrow[""{name=3, anchor=center, inner sep=0}, "{\text{Mnd}(\mathbf{C})((Y,T),\text{Inc}_{\mathbf C}(g))}"', curve={height=24pt}, from=4-4, to=4-9]
+	\arrow["{\mathbf{C}(Y,\alpha)}", shorten <=6pt, shorten >=6pt, Rightarrow, from=0, to=1]
+	\arrow["{\text{Mnd}(\mathbf{C})((Y,T),\text{Inc}_{\mathbf C}(\alpha))}", shorten <=6pt, shorten >=6pt, Rightarrow, from=2, to=3]
+\end{tikzcd}\]
+
+Given a 2-cell $\beta : a \to b \in \mbf{C}(Y,X)_1$, we will transform $\beta$ through both the top and bottom diagrams, showing that the results are the same. For the top digram, we get $\beta \alpha$ and then mapping through ``$\sigma \mapsto \sigma$'' gives $\beta \alpha$. For the bottom diagram, we get
+
+$$\beta \mapsto \beta \mapsto \beta \alpha$$
+
+Recall the universal counit property, instantiated with the counit $(E^S,\chi)$ for the adjunction $\text{Inc}_{\mbf C} \dashv \text{Alg}_{\mbf C}$:
+
+\[\begin{tikzcd}
+	Y && {X^S} \\
+	{(Y,1)} && {(X,S)} \\
+	\\
+	&& {(X^S,1)}
+	\arrow["f", from=1-1, to=1-3]
+	\arrow["{(E^S,\chi)}"', from=4-3, to=2-3]
+	\arrow["{(f,1)}"', from=2-1, to=4-3]
+	\arrow["{f^\flat}", dotted, from=2-1, to=2-3]
+\end{tikzcd}\]
+
+For the 2-natural transformation $\mbf{C}(Y,X^S) \cong \text{Mnd}(\mbf C)((Y,1),(X,S))$, we must show that $E^S \sigma$ is a monad functor transformation, i.e. the following diagram must commute
+
+\[\begin{tikzcd}
+	{S E^S U} && {S E^S U'} \\
+	\\
+	{E^S U} && {E^S U'}
+	\arrow["{\chi U}"', from=1-1, to=3-1]
+	\arrow["{S E^S \sigma}", from=1-1, to=1-3]
+	\arrow["{\chi U'}", from=1-3, to=3-3]
+	\arrow["{E^S \sigma}"', from=3-1, to=3-3]
+\end{tikzcd}\]
+
+It does, because both corners are equal to $\chi \sigma$ by the commutativity of vertical and horizontal composition.
+
+\[\begin{tikzcd}
+	{S E^S U} && {S E^S U'} \\
+	\\
+	{E^SU} && {E^SU}
+	\arrow["{S E^S \sigma}", from=1-1, to=1-3]
+	\arrow["{\chi U}"', from=1-1, to=3-1]
+	\arrow["{\chi U'}", from=1-3, to=3-3]
+	\arrow["{E^S \sigma}"', from=3-1, to=3-3]
+	\arrow["{\chi \sigma}"{description}, from=1-1, to=3-3]
+\end{tikzcd}\]
+
+Now we prove that $(S,\mu) : (X,1) \to (X,S)$ is a monad functor. First, the $\eta$ law follows from the $\eta$ law of $S$:
+
+\[\begin{tikzcd}
+	&& SS \\
+	S \\
+	&& S
+	\arrow["{\eta_S S}", from=2-1, to=1-3]
+	\arrow["{S \eta_1}"', from=2-1, to=3-3]
+	\arrow["{\mu_S}", from=1-3, to=3-3]
+\end{tikzcd}\]
+
+Second, the $\mu$ law follows from the $\mu$ law of $S$:
+
+\[\begin{tikzcd}
+	&& SS && S \\
+	SSS \\
+	&& SS && S
+	\arrow["{\mu_S S}"', from=2-1, to=3-3]
+	\arrow["{S \mu_S}", from=2-1, to=1-3]
+	\arrow["{\mu_S}", from=1-3, to=1-5]
+	\arrow["{S \mu_1}", from=1-5, to=3-5]
+	\arrow["{\mu_S}"', from=3-3, to=3-5]
+\end{tikzcd}\]
+
+\underline{Explanation of $J^S$:} it's the adjoint complement of $(S,\mu)$:
+
+\[\begin{tikzcd}
+	X && {X^S} \\
+	{(X,1)} && {(X,S)} \\
+	&& {(X^S,1)}
+	\arrow["{J^S}", dashed, from=1-1, to=1-3]
+	\arrow["{(S,\mu)}", from=2-1, to=2-3]
+	\arrow["{(J^S,1)}"', from=2-1, to=3-3]
+	\arrow["{(E^S,\chi)}"', from=3-3, to=2-3]
+\end{tikzcd}\]
+
+We have that 
+
+\[\begin{tikzcd}
+	{(X^S,1)} &&& {(X,S)}
+	\arrow[""{name=0, anchor=center, inner sep=0}, "{(E^SJ^SE^S, \mu E^S)}", curve={height=-12pt}, from=1-1, to=1-4]
+	\arrow[""{name=1, anchor=center, inner sep=0}, "{(E^S,\chi)}"', curve={height=12pt}, from=1-1, to=1-4]
+	\arrow["\chi", shorten <=3pt, shorten >=3pt, Rightarrow, from=0, to=1]
+\end{tikzcd}\]
+
+is a monad functor transformation, because the following diagram commutes:
+
+\[\begin{tikzcd}
+	{E^SJ^SE^SJ^SE^S} &&& {E^SJ^SE^S} \\
+	\\
+	{E^S J^S E^S} &&& {E^S}
+	\arrow["{E^SJ^S \chi}", from=1-1, to=1-4]
+	\arrow["{\chi J^SE^S}"', from=1-1, to=3-1]
+	\arrow["\chi"', from=3-1, to=3-4]
+	\arrow["\chi", from=1-4, to=3-4]
+\end{tikzcd}\]
+
+The two corners are equal by the multiplication law for the monad functor $(E^S, \chi)$.
+
+\subsubsection*{Theorem 3}
+
+Let's examine the monad functor laws to see that $(E,E \epsilon) : (A, 1) \to (X,S)$ is a monad functor.
+First, we have the $\eta$ law, which commutes due to one of the adjunction ``triangle laws'':
+
+\[\begin{tikzcd}
+	&&& {} \\
+	&& {SE = EJE} \\
+	E \\
+	&& E
+	\arrow["{\eta_S E}", from=3-1, to=2-3]
+	\arrow[equals, from=3-1, to=4-3]
+	\arrow["{E \epsilon}", from=2-3, to=4-3]
+\end{tikzcd}\]
+
+Next, we have the multiplication law:
+
+\[\begin{tikzcd}
+	&& SE && E \\
+	SSE \\
+	&& SE && E
+	\arrow["{SE \epsilon}", from=2-1, to=1-3]
+	\arrow["{\mu E}"', from=2-1, to=3-3]
+	\arrow["{E \epsilon}"', from=3-3, to=3-5]
+	\arrow["{E \epsilon}", from=1-3, to=1-5]
+	\arrow[equals, from=1-5, to=3-5]
+\end{tikzcd}\]
+ 
+which can be restated as:
+
+\[\begin{tikzcd}
+	&& EJE && E \\
+	EJEJE \\
+	&& EJE && E
+	\arrow["{EJE \epsilon}", from=2-1, to=1-3]
+	\arrow["{E \epsilon J E}"', from=2-1, to=3-3]
+	\arrow["{E \epsilon}"', from=3-3, to=3-5]
+	\arrow["{E \epsilon}", from=1-3, to=1-5]
+	\arrow[equals, from=1-5, to=3-5]
+\end{tikzcd}\]
+
+the commutativity of which follows from the commutativity of vertical and horizontal composition.
+
+\end{document}
