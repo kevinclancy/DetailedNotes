@@ -82,41 +82,105 @@
 \section*{Syntax}
 
 \begin{tabular}{llll}
+$\mathit{Chars}$ & $=$ & the set of all characters \\
+$\mathit{Vars}$ & $=$ & the set of all variables \\
+$\alpha$ & $\in$ & $\mathit{Vars}$ & ~ \\
 $c$ & $\in$ & $\mathit{Chars}$ & (the finite set of all characters) \\
 $\phi$ & $\in$ & $\mathcal P(\mathit{Chars})$ & (a subset of the set of characters) \\
-$s,t \in S$ & $=$ & $\mathit{Chars}^{\star}$ & (strings) \\~\\
+$s,t$ & $\in$ & $\mathit{Strings}$ & (where $\mathit{Strings} = \mathit{Chars}^{\star}$) \\~\\
+$S$ (string index) & $::=$ & $s$ & (literal string) \\
+                   & $\mid$ & $\zeta$ & (string variable) \\~\\
 $d$ (discriminator) & $::=$  & $\mathit{Prefix}~s$ & (values begin with $s$) \\
     & $\mid$ & $\mathit{Literal}~s$ & (values are equal to $s$) \\
  & & \\
-$m$ (multiplicity) & $::=$ & $1,\mathit{set},\mathit{opt}$\\~\\
+$m$ (multiplicity) & $::=$ & $1 \mid \mathit{set} \mid \mathit{opt}$\\~\\
 $\tau,\sigma$ (type) & $::=$ & $\mathit{tuple} \{ s_i : \tau_i : c_i^{~i \in 1..n} \}$ & (pieced string) \\
-       & $\mid$ & $s$ & (string literal type) \\
+       & $\mid$ & $S$ & (string index) \\
+       & $\mid$ & $(S_1,\ldots,S_n).[\tau]$ & (path type) \\
        & $\mid$ & $\biguplus \tau_i^{~i \in 1..n}$ & (union of disjoint types) \\ 
        & $\mid$ & $\tau.\{[\sigma_i] :^{m_i} \tau_i ^{~i \in 1..n}\}$ & (record type - $\mathit{root}.\{ fields \}$) \\ 
-       & $\mid$ & $\forall (x :: \kappa). \tau$ & (type abstraction) \\~\\
-$\kappa$ (kind) & $::=$ & $\mathit{KString}(d,\phi)$ & (Kind of string types, chars in vals drawn from $\phi$) \\
-                         & $\mid$ & $\mathit{KStringLit}$ & (Kind of string literal types) \\
+       & $\mid$ & $\forall (\alpha :: \kappa). \tau$ & (type abstraction) \\
+       & $\mid$ & $\forall \zeta. \tau$ & (string abstraction) \\
+       & $\mid$ & $\tau~[S]$ & (index application) \\
+       & $\mid$ & $\tau~\tau$ & (type application) \\
+       & $\mid$ & $\alpha$ & (type variable) \\~\\
+$\kappa, \iota$ (kind) & $::=$ & $\mathit{KString}(d,\phi)$ & (Kind of string types, chars in vals drawn from $\phi$) \\
                          & $\mid$ & $\mathit{KTree}(d)$ & (Kind of tree types w/ root discriminator $d$) \\
-                         & $\mid$ & $\kappa \Rightarrow \kappa$ & (Kind of type abstractions) \\
+                         & $\mid$ & $\kappa \overset{A}{\Rightarrow} \kappa$ & (Kind of type abstractions) \\
+                         & $\mid$ & $\zeta \Rightarrow \kappa$ & (Kind of string abstractions) \\~\\
+$\Sigma$ (index context) & $::=$ & $\Sigma,\zeta$ & (context extension) \\
+                         & $\mid$ & $\emptyset$ & (empty context) \\~\\
+$\Gamma$ (kind context) & $::=$ & $\Gamma,x :: \kappa$ & (context extension) \\
+                           & $\mid$ & $\emptyset$ & (empty context) \\~\\
+
 \end{tabular}\\~\\~\\
 \begin{tabular}{llll}
 
 \end{tabular}
+
+\section*{Index well-formedness}
+
+\begin{mathpar}
+\inferrule
+  {\zeta \in \Sigma}
+  {\Sigma \vdash \zeta}
+\and
+\inferrule
+  {~}
+  {\Sigma \vdash s}
+\end{mathpar}
+The interpretation $\sem{\Sigma}$ of an index context $\Sigma = \zeta_1, \ldots, \zeta_n$ is the set of all functions from $\{ \zeta_1, \ldots, \zeta_n \}$ to strings. The interpretation $\sem{\Sigma \vdash S}$ of a well-formed index judgment a function from $\sem{\Sigma}$ to the set of all strings: $\sem{\Gamma \vdash S} : \sem{\Gamma} \to \mathit{Strings}$, defined inductively as follows:
+
+\begin{mathpar}
+\sem{\Sigma \vdash \zeta} \doteq \sem{\Sigma} \overset{\pi_{\zeta}}{\longrightarrow} \mathit{Strings}
+\and
+\sem{\Sigma \vdash s} \doteq \sem{\Sigma} \overset{!}{\longrightarrow} 1 \overset{s}{\longrightarrow} \mathit{Strings}
+\end{mathpar}
+
+\section*{Discriminator well-formedness}
+
+\begin{mathpar}
+\inferrule
+  {\Sigma \vdash S}
+  {\Sigma \vdash \mathit{Prefix}~S}
+\and
+\inferrule
+  {\Sigma \vdash S}
+  {\Sigma \vdash \mathit{Literal}~S}
+\end{mathpar}
+
+The interpretation $\sem{\Sigma \vdash d}$ of a discriminator well-formedness judgment is a function from $\sem{\Sigma}$ into $\mathcal P(\mathit{Strings})$. Defining $\mathit{pref},\mathit{lit} : \mathit{Strings} \to \mathcal P(\mathit{Strings})$ such that
+\begin{mathpar}
+\mathit{pref}(s) \doteq \{ t \mid t~\text{is a prefix of}~s \}
+\and
+\mathit{lit}(s) \doteq \{ s \}
+\end{mathpar}
+we have
+\begin{mathpar}
+\inferrule 
+  {\sem{\Sigma \vdash S} = f}
+  {\sem{\Sigma \vdash \mathit{Prefix}~S} \doteq f;\mathit{pref}}
+\and
+\inferrule
+  {\sem{\Sigma \vdash S} = f}
+  {\sem{\Sigma \vdash \mathit{Prefix}~S} \doteq f;\mathit{lit}}
+\end{mathpar}
 
 \section*{Discriminator subsumption}
 
 \begin{mathpar}
 \inferrule
   {s' \sqsubseteq s}
-  {\mathit{Prefix}~s \leq \mathit{Prefix}~s'}
+  {\Sigma \vdash \mathit{Prefix}~s \leq \mathit{Prefix}~s'}
+\and
+\inferrule
+  {\Sigma \vdash S}
+  {\Sigma \vdash \mathit{Literal}~S \leq \mathit{Literal}~S}
 \and
 \inferrule
   {s' \sqsubseteq s}
-  {\mathit{Literal}~s \leq \mathit{Literal}~s'}
+  {\Sigma \vdash \mathit{Literal}~s \leq \mathit{Prefix}~s'}
 \and
-\inferrule
-  {s' \sqsubseteq s}
-  {\mathit{Literal}~s \leq \mathit{Prefix}~s'}
 \end{mathpar}
 
 Above, $s' \sqsubseteq s$ means ``$s'$ is a prefix of $s$''.
@@ -143,23 +207,52 @@ Above, $s' \sqsubseteq s$ means ``$s'$ is a prefix of $s$''.
 
 \section*{Kinding}
 
+In what follows, we define $\ast \doteq \mathit{KTree}(\mathit{Prefix}~\epsilon)$, where $\epsilon$ is the empty string, so that all proper types have kind $\ast$. We define $\star \doteq \mathit{KString}(\mathit{Prefix}~\epsilon, \mathit{Chars})$, so that all string types have kind $\star$.
+
 \begin{mathpar}
 \inferrule
-  {\Gamma \vdash \tau_i :: \kappa_i^{~i \in 1..n} \\ 
+  {\Sigma \mid \Gamma@A_i \vdash \tau_i :: \kappa_i^{~i \in 1..n} \\ 
    \kappa_i <:: \mathit{KString}(d_i,\phi_i)^{~i \in 1..n} \\
    c_i \not \in \phi_i^{~i \in 1..n} }
-  {\Gamma \vdash \mathit{tuple} \{ s_i : \tau_i : c_i^{~i \in 1..n}\} :: \mathit{KString}(d_1, (\bigcup_{i \in 1..n} \phi_i) \cup \{ c_1, \ldots, c_n \})}
+  {\Sigma \mid \Gamma@(\bigcup_{i \in 1..n} A_i) \vdash \mathit{tuple} \{ s_i : \tau_i : c_i^{~i \in 1..n}\} :: \mathit{KString}(d_1, (\bigcup_{i \in 1..n} \phi_i) \cup \{ c_1, \ldots, c_n \})}
 \and
 \inferrule
-  {~}
-  {\Gamma \vdash s : \mathit{KStringLit}(s)}
+  {\Sigma \vdash S}
+  {\Sigma \mid \Gamma@\emptyset \vdash S : \mathit{KString}(\mathit{Literal~S,\mbf{chars}(s)})}
 \and
 \inferrule
-  {\Gamma \vdash \tau_i :: \mathit{KTree}(d_i)^{~i \in 1..n} \\ \mathit{disjoint} \{ d_i^{~i \in 1..n} \} }
-  {\Gamma \vdash \biguplus_{i \in 1..n} \tau_i :: \mathit{KTree}(\mathit{merge}~\{ d_i^{~i \in 1..n} \})}
-\end{mathpar}
+  {\Sigma \mid \Gamma@A_i \vdash \tau_i :: \mathit{KTree}(d_i)^{~i \in 1..n} \\ \mathit{disjoint} \{ d_i^{~i \in 1..n} \} }
+  {\Sigma \mid \Gamma@(\bigcup_{i \in 1..n} A_i) \vdash \biguplus_{i \in 1..n} \tau_i :: \mathit{KTree}(\mathit{merge}~\{ d_i^{~i \in 1..n} \})}
+\and
+\inferrule
+  {\Sigma \mid \Gamma@A \vdash \tau :: \mathit{KString}(d,\phi) \\ 
+    \Sigma \mid \Gamma@B_i \vdash \sigma_i :: \iota_i^{~i \in 1..n} \\ \iota_i <:: \star^{~i \in 1..n} \\ 
+    \Sigma \mid \Gamma@A_i \vdash \tau_i :: \kappa_i^{~i \in 1..n} \\ \kappa_i <:: \ast^{~i \in 1..n}}
+  {\Sigma \mid \Gamma@(A \cup \bigcup_{i \in 1..n} A_i \cup B_i) \vdash \tau.\{[\sigma_i] :^{m_i} \tau_i ^{~i \in 1..n}\} :: \mathit{KTree}(d)}
+\and
+\inferrule
+  {\Sigma \vdash S_i^{~i \in 1..n} \\ 
+   \Sigma \mid \Gamma@A \vdash \tau :: \kappa \\ \kappa <:: \star}
+  {\Sigma \mid \Gamma@(\{ (S_1,\ldots,S_n).[\tau] \} \cup A) \vdash (S_1,\ldots,S_n).[\tau] :: \kappa}
+\and
+\inferrule
+  {\Sigma, \zeta \mid \Gamma @ \emptyset \vdash \tau :: \kappa}
+  {\Sigma \mid \Gamma @ \emptyset \vdash \forall \zeta. \tau :: \zeta \Rightarrow \kappa}
+\and
+\inferrule
+  {\Sigma \mid \Gamma,\alpha :: \kappa @ A \vdash \tau :: \kappa'}
+  {\Sigma \mid \Gamma @ \emptyset \vdash \forall (\alpha :: \kappa).\tau :: \kappa \overset{A}{\Rightarrow} \kappa'}
+\and
+\inferrule
+  {\Sigma \mid \Gamma @ A \vdash \tau :: \kappa \overset{C}{\Rightarrow} \iota \\ 
+   \Sigma \mid \Gamma @ B \vdash \sigma :: \kappa}
+  {\Sigma \mid \Gamma @ (A \cup B \cup C) \vdash \tau~\sigma :: \iota}
+\and
+\inferrule
+  {\Sigma \mid \Gamma @ A \vdash \tau :: \zeta \Rightarrow \tau \\ \Sigma \vdash S}
+  {\Sigma \mid \Gamma @ A \vdash \tau~[S] :: \iota[S/\zeta]}
 
-We define $\ast \doteq \mathit{KTree}(\mathit{Prefix}~\epsilon)$, where $\epsilon$ is the empty string, so that all proper types have kind $\ast$.
+\end{mathpar}
 
 \end{document}
   
