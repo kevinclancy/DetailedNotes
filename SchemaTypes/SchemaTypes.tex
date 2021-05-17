@@ -129,7 +129,7 @@ $\Gamma$ (kind context) & $::=$ & $\Gamma,x :: \kappa$ & (context extension) \\
   {~}
   {\Sigma \vdash s}
 \end{mathpar}
-The interpretation $\sem{\Sigma}$ of an index context $\Sigma = \zeta_1, \ldots, \zeta_n$ is the set of all functions from $\{ \zeta_1, \ldots, \zeta_n \}$ to strings. The interpretation $\sem{\Sigma \vdash S}$ of a well-formed index judgment a function from $\sem{\Sigma}$ to the set of all strings: $\sem{\Gamma \vdash S} : \sem{\Gamma} \to \mathit{Strings}$, defined inductively as follows:
+The interpretation $\sem{\Sigma}$ of an index context $\Sigma = \zeta_1, \ldots, \zeta_n$ is the set of all functions from $\{ \zeta_1, \ldots, \zeta_n \}$ to strings. The interpretation $\sem{\Sigma \vdash S}$ of a well-formed index judgment is a function from $\sem{\Sigma}$ to the set of all strings, i.e. $\sem{\Gamma \vdash S} : \sem{\Gamma} \to \mathit{Strings}$, defined as follows:
 
 \begin{mathpar}
 \sem{\Sigma \vdash \zeta} \doteq \sem{\Sigma} \overset{\pi_{\zeta}}{\longrightarrow} \mathit{Strings}
@@ -163,7 +163,7 @@ we have
 \and
 \inferrule
   {\sem{\Sigma \vdash S} = f}
-  {\sem{\Sigma \vdash \mathit{Prefix}~S} \doteq f;\mathit{lit}}
+  {\sem{\Sigma \vdash \mathit{Literal}~S} \doteq f;\mathit{lit}}
 \end{mathpar}
 
 \section*{Discriminator subsumption}
@@ -184,25 +184,52 @@ we have
 \end{mathpar}
 
 Above, $s' \sqsubseteq s$ means ``$s'$ is a prefix of $s$''.
+Ordering $\mathcal P(\mathit{Strings})$ by inclusion and the function space $\sem{\Sigma} \to \mathcal P(\mathit{Strings})$ pointwise, 
+The interpretation $\sem{\Sigma \vdash d \leq d'}$ of a subsumption judgment is a proof that that $\sem{\Sigma \vdash d} \leq \sem{\Sigma \vdash d'}$.
+
+\section*{Kind well-formedness}
+
+\begin{mathpar}
+\inferrule
+  {\Sigma \vdash d}
+  {\Sigma \vdash \mathit{KString(d,\phi)}}
+\and
+\inferrule
+  {\Sigma \vdash d}
+  {\Sigma \vdash \mathit{KTree(d)}}
+\and
+\inferrule
+  {\Sigma \vdash \kappa \\ \Sigma \vdash \kappa' \\ \Sigma \vdash A}
+  {\Sigma \vdash \kappa \overset{A}{\Rightarrow} \kappa'}
+\and
+\inferrule
+  {\Sigma,\zeta \vdash \kappa}
+  {\Sigma \vdash \zeta \Rightarrow \kappa}
+\end{mathpar}
+
+The interpretation $\sem{\Sigma \vdash \kappa}$ of a kind well-formedness judgment is an object of the total 
+category $\mathit{Fam(\mbf{Posets})}$ in the fibre over $\sem{\Sigma}$, i.e. it is a $\sem{\Sigma}$-indexed family of posets, defined as follows.
+
+\begin{mathpar}
+\inferrule
+  {\sem{\Sigma \vdash d} = f}
+  {\sem{\Sigma \vdash \mathit{KString}(d,\phi)} \doteq UHHH}
+\end{mathpar}
 
 \section*{Subkinding}
 
 \begin{mathpar}
 \inferrule
-  {d \leq d'}
-  {\mathit{KString}(d,\phi) <:: \mathit{KTree}(d)}
+  {\Sigma \vdash d \leq d'}
+  {\Sigma \vdash \mathit{KString}(d,\phi) <:: \mathit{KTree}(d)}
 \and
 \inferrule
-  {~}
-  {\mathit{KString}(\mathit{Literal}~s,\phi) <:: \mathit{KStringLit}}
+  {\Sigma \vdash d \leq d' \\ \Sigma \vdash \phi \subseteq \phi'}
+  {\Sigma \vdash \mathit{KString}(d,\phi) <:: \mathit{KString}(d',\phi')}
 \and
 \inferrule
-  {d \leq d' \\ \phi \subseteq \phi'}
-  {\mathit{KString}(d,\phi) <:: \mathit{KString}(d',\phi')}
-\and
-\inferrule
-  {d \leq d'}
-  {\mathit{KTree}(d) <:: \mathit{KTree}(d')}
+  {\Sigma \vdash d \leq d'}
+  {\Sigma \vdash \mathit{KTree}(d) <:: \mathit{KTree}(d')}
 \end{mathpar}
 
 \section*{Kinding}
@@ -215,10 +242,6 @@ In what follows, we define $\ast \doteq \mathit{KTree}(\mathit{Prefix}~\epsilon)
    \kappa_i <:: \mathit{KString}(d_i,\phi_i)^{~i \in 1..n} \\
    c_i \not \in \phi_i^{~i \in 1..n} }
   {\Sigma \mid \Gamma@(\bigcup_{i \in 1..n} A_i) \vdash \mathit{tuple} \{ s_i : \tau_i : c_i^{~i \in 1..n}\} :: \mathit{KString}(d_1, (\bigcup_{i \in 1..n} \phi_i) \cup \{ c_1, \ldots, c_n \})}
-\and
-\inferrule
-  {\Sigma \vdash S}
-  {\Sigma \mid \Gamma@\emptyset \vdash S : \mathit{KString}(\mathit{Literal~S,\mbf{chars}(s)})}
 \and
 \inferrule
   {\Sigma \mid \Gamma@A_i \vdash \tau_i :: \mathit{KTree}(d_i)^{~i \in 1..n} \\ \mathit{disjoint} \{ d_i^{~i \in 1..n} \} }
