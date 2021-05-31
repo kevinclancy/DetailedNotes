@@ -85,7 +85,7 @@
 $\mathit{Chars}$ & $=$ & the set of all characters \\
 $\mathit{Vars}$ & $=$ & the set of all variables \\
 $\alpha$ & $\in$ & $\mathit{Vars}$ & ~ \\
-$c$ & $\in$ & $\mathit{Chars}$ & (the finite set of all characters) \\
+$c$ & $\in$ & $\mathit{Chars}$ & (character) \\
 $\phi$ & $\in$ & $\mathcal P(\mathit{Chars})$ & (a subset of the set of characters) \\
 $s,t$ & $\in$ & $\mathit{Strings}$ & (where $\mathit{Strings} = \mathit{Chars}^{\star}$) \\~\\
 $S$ (string index) & $::=$ & $s$ & (literal string) \\
@@ -94,17 +94,17 @@ $d$ (discriminator) & $::=$  & $\mathit{Prefix}~s$ & (values begin with $s$) \\
     & $\mid$ & $\mathit{Literal}~s$ & (values are equal to $s$) \\
  & & \\
 $m$ (multiplicity) & $::=$ & $1 \mid \mathit{set} \mid \mathit{opt}$\\~\\
-$\tau,\sigma$ (type) & $::=$ & $\mathit{tuple} \{ s_i : \tau_i : c_i^{~i \in 1..n} \}$ & (pieced string) \\
+$\tau$ (type) & $::=$ & $\mathit{tuple} \{ s_i : \tau_i : c_i^{~i \in 1..n} \}$ & (pieced string) \\
        & $\mid$ & $S$ & (string index) \\
-       & $\mid$ & $(S_1,\ldots,S_n).[\tau]$ & (path type) \\
+       & $\mid$ & $(S_1,\ldots,S_n).[\kappa]$ & (path type) \\
        & $\mid$ & $\biguplus \tau_i^{~i \in 1..n}$ & (union of disjoint types) \\ 
-       & $\mid$ & $\tau.\{[\sigma_i] :^{m_i} \tau_i ^{~i \in 1..n}\}$ & (record type - $\mathit{root}.\{ fields \}$) \\ 
+       & $\mid$ & $\tau.\{[\tau_i] :^{m_i} \tau_i ^{~i \in 1..n}\}$ & (record type - $\mathit{root}.\{ fields \}$) \\ 
        & $\mid$ & $\forall (\alpha :: \kappa). \tau$ & (type abstraction) \\
        & $\mid$ & $\forall \zeta. \tau$ & (string abstraction) \\
        & $\mid$ & $\tau~[S]$ & (index application) \\
        & $\mid$ & $\tau~\tau$ & (type application) \\
        & $\mid$ & $\alpha$ & (type variable) \\~\\
-$\kappa, \iota$ (kind) & $::=$ & $\mathit{KString}(d,\phi)$ & (Kind of string types, chars in vals drawn from $\phi$) \\
+$\kappa, \iota$ (kind) & $::=$ & $\mathit{KString}(d,\phi)$ & (Kind of string types, chars drawn from $\phi$) \\
                          & $\mid$ & $\mathit{KTree}(d)$ & (Kind of tree types w/ root discriminator $d$) \\
                          & $\mid$ & $\kappa \overset{A}{\Rightarrow} \kappa$ & (Kind of type abstractions) \\
                          & $\mid$ & $\zeta \Rightarrow \kappa$ & (Kind of string abstractions) \\~\\
@@ -129,12 +129,11 @@ $\Gamma$ (kind context) & $::=$ & $\Gamma,x :: \kappa$ & (context extension) \\
   {~}
   {\Sigma \vdash s}
 \end{mathpar}
-The interpretation $\sem{\Sigma}$ of an index context $\Sigma = \zeta_1, \ldots, \zeta_n$ is the set of all functions from $\{ \zeta_1, \ldots, \zeta_n \}$ to strings. The interpretation $\sem{\Sigma \vdash S}$ of a well-formed index judgment is a function from $\sem{\Sigma}$ to the set of all strings, i.e. $\sem{\Gamma \vdash S} : \sem{\Gamma} \to \mathit{Strings}$, defined as follows:
-
+The interpretation $\sem{\Sigma}$ of an index context $\Sigma = \zeta_1, \ldots, \zeta_n$ is the set of all functions from $\{ \zeta_1, \ldots, \zeta_n \}$ to the set of strings. The interpretation $\sem{\Sigma \vdash S}$ of a well-formed index judgment is a function from $\sem{\Sigma}$ to the set of all strings, i.e. $\sem{\Gamma \vdash S} : \sem{\Gamma} \to \mathit{Strings}$, defined as follows:
 \begin{mathpar}
-\sem{\Sigma \vdash \zeta} \doteq \sem{\Sigma} \overset{\pi_{\zeta}}{\longrightarrow} \mathit{Strings}
+\sem{\Sigma \vdash \zeta} \sigma \doteq \sigma(\zeta)
 \and
-\sem{\Sigma \vdash s} \doteq \sem{\Sigma} \overset{!}{\longrightarrow} 1 \overset{s}{\longrightarrow} \mathit{Strings}
+\sem{\Sigma \vdash s} \sigma \doteq s
 \end{mathpar}
 
 \section*{Discriminator well-formedness}
@@ -149,21 +148,11 @@ The interpretation $\sem{\Sigma}$ of an index context $\Sigma = \zeta_1, \ldots,
   {\Sigma \vdash \mathit{Literal}~S}
 \end{mathpar}
 
-The interpretation $\sem{\Sigma \vdash d}$ of a discriminator well-formedness judgment is a function from $\sem{\Sigma}$ into $\mathcal P(\mathit{Strings})$. Defining $\mathit{pref},\mathit{lit} : \mathit{Strings} \to \mathcal P(\mathit{Strings})$ such that
+The interpretation $\sem{\Sigma \vdash d}$ of a discriminator well-formedness judgment is a function from $\sem{\Sigma}$ into $\mathcal P(\mathit{Strings})$. 
 \begin{mathpar}
-\mathit{pref}(s) \doteq \{ t \mid t~\text{is a prefix of}~s \}
+\sem{\Sigma \vdash \mathit{Prefix}~S}\sigma \doteq \{ t \mid \sem{\Sigma \vdash S} \sigma \text{ is a prefix of } t \}
 \and
-\mathit{lit}(s) \doteq \{ s \}
-\end{mathpar}
-we have
-\begin{mathpar}
-\inferrule 
-  {\sem{\Sigma \vdash S} = f}
-  {\sem{\Sigma \vdash \mathit{Prefix}~S} \doteq f;\mathit{pref}}
-\and
-\inferrule
-  {\sem{\Sigma \vdash S} = f}
-  {\sem{\Sigma \vdash \mathit{Literal}~S} \doteq f;\mathit{lit}}
+\sem{\Sigma \vdash \mathit{Literal}~S} \sigma \doteq \{ \sem{\Sigma \vdash S}\sigma \}
 \end{mathpar}
 
 \section*{Discriminator subsumption}
@@ -207,16 +196,13 @@ The interpretation $\sem{\Sigma \vdash d \leq d'}$ of a subsumption judgment is 
   {\Sigma \vdash \zeta \Rightarrow \kappa}
 \end{mathpar}
 
-The interpretation $\sem{\Sigma \vdash \kappa}$ of a kind well-formedness judgment is an object of the total 
-category $\mathit{Fam(\mbf{Posets})}$ in the fibre over $\sem{\Sigma}$, i.e. it is a $\sem{\Sigma}$-indexed family of posets, defined as follows.
+The interpretation $\sem{\Sigma \vdash \kappa}$ of a kind well-formedness judgment is a $\sem{\Sigma}$-indexed family of posets, defined, for $\sigma \in \sem{\Sigma}$ as follows.
 
-\begin{mathpar}
-\inferrule
-  {\sem{\Sigma \vdash d} = f}
-  {\sem{\Sigma \vdash \mathit{KString}(d,\phi)} \doteq UHHH}
-\end{mathpar}
+$$\sem{\Sigma \vdash \mathit{KString}(d,\phi)} \sigma \doteq (\mathcal P(X), \subseteq),~~\text{where } X \doteq \{ x \in \sem{\Sigma \vdash d} \sigma \mid \mathit{chars}(x) \subseteq \phi \}$$
 
 \section*{Subkinding}
+
+The interpretation $\sem{\Sigma \vdash \kappa <:: \kappa'}$ is a mono in the fibre $\mathit{Fam}(\mbf{Posets})_{\sem{\Sigma}}$ from $\sem{\Sigma \vdash \kappa}$ to $\sem{\Sigma \vdash \kappa'}$.
 
 \begin{mathpar}
 \inferrule
@@ -231,6 +217,20 @@ category $\mathit{Fam(\mbf{Posets})}$ in the fibre over $\sem{\Sigma}$, i.e. it 
   {\Sigma \vdash d \leq d'}
   {\Sigma \vdash \mathit{KTree}(d) <:: \mathit{KTree}(d')}
 \end{mathpar}
+
+\section*{Database instances}
+
+Given lists $\rho$ and $\theta$ of strings, we write $\rho \cdot \theta$ for the list obtained by concatenating $\theta$ to the right of $\rho$.
+A \emph{database instance} is a partial function $f : \mathit{Strings}^{\star} \rightharpoonup \mathit{Strings}$ from lists of strings to strings. We write $\mathit{Inst}$ for the set of database instances. For a database instance $f$ and a list of strings $\rho$, we write $f \! \mid_\rho$ for the database instance defined such that for all lists of strings $\theta$ we have $$f \! \mid_\rho \! (\theta) \doteq f(\rho \cdot \theta)$$
+Furthermore, we define $\mathit{keys}(f) \doteq \{ s \mid f(s) \text{ is defined } \}$.
+
+\section*{Coeffect Well-formedness}
+
+The judgment $\Sigma \vdash A$ means that the coeffect $A$ is well-formed under index context $\Sigma$,
+in the sense that for each $(S_1,\ldots,S_n).[\kappa] \in A$ we have $\Sigma \vdash S_i^{~i \in 1..n}$ and $\Sigma \vdash \kappa$.
+
+The interpretation $\sem{\Sigma \vdash A}$ is a function of type $\sem{\Sigma} \to \mathcal{P}(\mathit{Inst})$, defined as $$\sem{\Sigma \vdash A}\sigma \doteq \bigcap_{(S_1,\ldots,S_n).[\kappa] \in A} \{ f \in \mathit{Inst} \mid \mathit{keys}(f \! \mid_{\sigma S_1, \ldots, \sigma S_n}) \subseteq \sem{\Sigma \vdash \kappa} \sigma \}$$
+
 
 \section*{Kinding}
 
@@ -249,9 +249,9 @@ In what follows, we define $\ast \doteq \mathit{KTree}(\mathit{Prefix}~\epsilon)
 \and
 \inferrule
   {\Sigma \mid \Gamma@A \vdash \tau :: \mathit{KString}(d,\phi) \\ 
-    \Sigma \mid \Gamma@B_i \vdash \sigma_i :: \iota_i^{~i \in 1..n} \\ \iota_i <:: \star^{~i \in 1..n} \\ 
-    \Sigma \mid \Gamma@A_i \vdash \tau_i :: \kappa_i^{~i \in 1..n} \\ \kappa_i <:: \ast^{~i \in 1..n}}
-  {\Sigma \mid \Gamma@(A \cup \bigcup_{i \in 1..n} A_i \cup B_i) \vdash \tau.\{[\sigma_i] :^{m_i} \tau_i ^{~i \in 1..n}\} :: \mathit{KTree}(d)}
+    \Sigma \mid \Gamma@B_i \vdash \tau_i :: \iota_i^{~i \in 1..n} \\ \iota_i <:: \star^{~i \in 1..n} \\ 
+    \Sigma \mid \Gamma@A_i \vdash \tau_i' :: \kappa_i^{~i \in 1..n} \\ \kappa_i <:: \ast^{~i \in 1..n}}
+  {\Sigma \mid \Gamma@(A \cup \bigcup_{i \in 1..n} A_i \cup B_i) \vdash \tau.\{[\tau_i] :^{m_i} \tau_i'^{~i \in 1..n}\} :: \mathit{KTree}(d)}
 \and
 \inferrule
   {\Sigma \vdash S_i^{~i \in 1..n} \\ 
@@ -268,14 +268,17 @@ In what follows, we define $\ast \doteq \mathit{KTree}(\mathit{Prefix}~\epsilon)
 \and
 \inferrule
   {\Sigma \mid \Gamma @ A \vdash \tau :: \kappa \overset{C}{\Rightarrow} \iota \\ 
-   \Sigma \mid \Gamma @ B \vdash \sigma :: \kappa}
-  {\Sigma \mid \Gamma @ (A \cup B \cup C) \vdash \tau~\sigma :: \iota}
+   \Sigma \mid \Gamma @ B \vdash \tau' :: \kappa}
+  {\Sigma \mid \Gamma @ (A \cup B \cup C) \vdash \tau~\tau' :: \iota}
 \and
 \inferrule
   {\Sigma \mid \Gamma @ A \vdash \tau :: \zeta \Rightarrow \tau \\ \Sigma \vdash S}
   {\Sigma \mid \Gamma @ A \vdash \tau~[S] :: \iota[S/\zeta]}
 
 \end{mathpar}
+We write $\Sigma \vdash \Gamma$ to mean that $\Sigma \vdash \kappa$ for all $(x : \kappa) \in \Gamma$.
+When $\Gamma = x_1 : \kappa_1, \ldots, x_n : \kappa_n$, we define the interpretation $\sem{\Sigma \vdash \Gamma} \doteq \sem{\Sigma \vdash \kappa_1} \times \cdots \times \sem{\Sigma \vdash \kappa_n}$.
+We will prove that $\Sigma \mid \Gamma @ A \vdash \tau :: \kappa$ implies that $\Sigma \vdash \Gamma$, $\Sigma \vdash \kappa$, and $\Sigma \vdash A$. The interpretation $$\sem{\Sigma \mid \Gamma @ A \vdash \tau :: \kappa}$$ of a kinding judgment is a morphism of the fibre category $\mathit{Fam}(\mbf{Posets})_{\sem{\Sigma}}$ from $\sem{\Sigma \vdash \Gamma}$ to $\sem{\Sigma \vdash \kappa}$.
 
 \end{document}
   
