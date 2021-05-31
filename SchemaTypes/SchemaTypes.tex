@@ -231,6 +231,15 @@ in the sense that for each $(S_1,\ldots,S_n).[\kappa] \in A$ we have $\Sigma \vd
 
 The interpretation $\sem{\Sigma \vdash A}$ is a function of type $\sem{\Sigma} \to \mathcal{P}(\mathit{Inst})$, defined as $$\sem{\Sigma \vdash A}\sigma \doteq \bigcap_{(S_1,\ldots,S_n).[\kappa] \in A} \{ f \in \mathit{Inst} \mid \mathit{keys}(f \! \mid_{\sigma S_1, \ldots, \sigma S_n}) \subseteq \sem{\Sigma \vdash \kappa} \sigma \}$$
 
+\section*{Fibred graded comonads}
+
+For each $\Sigma$, we define a graded comonad $D_{\Sigma}$ on the category $\mathit{Fam}(\mbf{Posets})_{\sem{\Sigma}}$ of
+$\sem{\Sigma}$-indexed families of posets. The scalar coeffect structure is 
+$$( \{ A \mid \Sigma \vdash A \}, \cup, \cup, \emptyset, \emptyset, \subseteq)$$
+For objects $(X_\sigma)_{\sigma \in \sem{\Sigma}}$ of the fibre $\mathit{Fam}(\mbf{Posets})_{\sem{\Sigma}}$, we define $$D_{\Sigma} A(~(X_\sigma)_{\sigma \in \sem{\Sigma}}~) \doteq (X_\sigma \times \sem{\Sigma \vdash A}\sigma)_{\sigma \in \sem{\Sigma}}$$.
+For arrows $(f_\sigma : X_\sigma \to Y_\sigma)_{\sigma \in \sem{\Sigma}}$ of the fibre $\mathit{Fam}(\mbf{Posets})_{\sem{\Sigma}}$ we define $$D_{\Sigma} A(~(f_\sigma)_{\sigma \in \sem{\Sigma}}~) \doteq (~(x_\sigma, a_\sigma) \mapsto (f_\sigma(x_\sigma),a_\sigma)~)_{\sigma \in \sem{\Sigma}}$$
+Its counit $\epsilon$ is defined as $$\epsilon_X(x) \doteq (x,\mathit{Inst})$$
+For coeffect scalars $A$ and $B$, its comultiplication $\delta$ is defined as $$\delta_{A,B}(x,a,b) \doteq (x, a \cap b)$$ 
 
 \section*{Kinding}
 
