@@ -15,6 +15,7 @@
 \usepackage{bussproofs} 
 \usepackage{diagrams}
 \usepackage{tikz}
+\usepackage{tabu}
  
 \usetikzlibrary{cd}
  
@@ -73,6 +74,9 @@
 \normalsize
 }
 
+% give tables some extra space between rows and columns
+\renewcommand{\arraystretch}{1.4}
+
 \title{Schema Type Calculus}
 
 \begin{document}
@@ -82,9 +86,11 @@
 \section*{Syntax}
 
 \begin{tabular}{llll}
-$\mathit{Chars}$ & $=$ & the set of all characters \\
-$\mathit{Vars}$ & $=$ & the set of all variables \\
-$\alpha$ & $\in$ & $\mathit{Vars}$ & ~ \\
+$\mathit{Chars}$ & $\doteq$ & the set of all characters \\
+$\mathit{TypeVars}$ & $\doteq$ & the set of all type variables \\
+$\mathit{StringVars}$ & $\doteq$ & the set of all string variables \\
+$\alpha$ & $\in$ & $\mathit{TypeVars}$ & ~ \\
+$\zeta$ & $\in$ & $\mathit{StringVars}$ & ~ \\
 $c$ & $\in$ & $\mathit{Chars}$ & (character) \\
 $\phi$ & $\in$ & $\mathcal P(\mathit{Chars})$ & (a subset of the set of characters) \\
 $s,t$ & $\in$ & $\mathit{Strings}$ & (where $\mathit{Strings} = \mathit{Chars}^{\star}$) \\~\\
@@ -99,15 +105,15 @@ $\tau$ (type) & $::=$ & $\mathit{tuple} \{ s_i : \tau_i : c_i^{~i \in 1..n} \}$ 
        & $\mid$ & $(S_1,\ldots,S_n).[\kappa]$ & (path type) \\
        & $\mid$ & $\biguplus \tau_i^{~i \in 1..n}$ & (union of disjoint types) \\ 
        & $\mid$ & $\tau.\{[\tau_i] :^{m_i} \tau_i ^{~i \in 1..n}\}$ & (record type - $\mathit{root}.\{ fields \}$) \\ 
-       & $\mid$ & $\forall (\alpha :: \kappa). \tau$ & (type abstraction) \\
-       & $\mid$ & $\forall \zeta. \tau$ & (string abstraction) \\
+       & $\mid$ & $\lambda (\alpha :: \kappa). \tau$ & (type abstraction) \\
+       & $\mid$ & $\lambda \zeta. \tau$ & (string abstraction) \\
        & $\mid$ & $\tau~[S]$ & (index application) \\
        & $\mid$ & $\tau~\tau$ & (type application) \\
        & $\mid$ & $\alpha$ & (type variable) \\~\\
 $\kappa, \iota$ (kind) & $::=$ & $\mathit{KString}(d,\phi)$ & (Kind of string types, chars drawn from $\phi$) \\
                          & $\mid$ & $\mathit{KTree}(d)$ & (Kind of tree types w/ root discriminator $d$) \\
                          & $\mid$ & $\kappa \overset{A}{\Rightarrow} \kappa$ & (Kind of type abstractions) \\
-                         & $\mid$ & $\zeta \Rightarrow \kappa$ & (Kind of string abstractions) \\~\\
+                         & $\mid$ & $\forall \zeta. \kappa$ & (Kind of string abstractions) \\~\\
 $\Sigma$ (index context) & $::=$ & $\Sigma,\zeta$ & (context extension) \\
                          & $\mid$ & $\emptyset$ & (empty context) \\~\\
 $\Gamma$ (kind context) & $::=$ & $\Gamma,x :: \kappa$ & (context extension) \\
@@ -193,7 +199,7 @@ The interpretation $\sem{\Sigma \vdash d \leq d'}$ of a subsumption judgment is 
 \and
 \inferrule
   {\Sigma,\zeta \vdash \kappa}
-  {\Sigma \vdash \zeta \Rightarrow \kappa}
+  {\Sigma \vdash \forall \zeta. \kappa}
 \end{mathpar}
 
 The interpretation $\sem{\Sigma \vdash \kappa}$ of a kind well-formedness judgment is a $\sem{\Sigma}$-indexed family of posets, defined, for $\sigma \in \sem{\Sigma}$ as follows.
@@ -239,55 +245,146 @@ $$( \{ A \mid \Sigma \vdash A \}, \cup, \cup, \emptyset, \emptyset, \subseteq)$$
 For objects $(X_\sigma)_{\sigma \in \sem{\Sigma}}$ of the fibre $\mathit{Fam}(\mbf{Posets})_{\sem{\Sigma}}$, we define $$D_{\Sigma} A(~(X_\sigma)_{\sigma \in \sem{\Sigma}}~) \doteq (X_\sigma \times \sem{\Sigma \vdash A}\sigma)_{\sigma \in \sem{\Sigma}}$$.
 For arrows $(f_\sigma : X_\sigma \to Y_\sigma)_{\sigma \in \sem{\Sigma}}$ of the fibre $\mathit{Fam}(\mbf{Posets})_{\sem{\Sigma}}$ we define $$D_{\Sigma} A(~(f_\sigma)_{\sigma \in \sem{\Sigma}}~) \doteq (~(x_\sigma, a_\sigma) \mapsto (f_\sigma(x_\sigma),a_\sigma)~)_{\sigma \in \sem{\Sigma}}$$
 Its counit $\epsilon$ is defined as $$\epsilon_X(x) \doteq (x,\mathit{Inst})$$
-For coeffect scalars $A$ and $B$, its comultiplication $\delta$ is defined as $$\delta_{A,B}(x,a,b) \doteq (x, a \cap b)$$ 
-
+Its comultiplication $\delta$, for coeffect scalars $A$ and $B$, is defined as $$\delta_{A,B}((x,a),b) \doteq (x, a \cap b)$$
+For all string contexts $\Sigma$ and coeffect scalars $\Sigma \vdash A$ and $\Sigma \vdash B$ with $A \subseteq B$ we have a natural transformation $\mathit{sub}_{A,B} : D_{\Sigma} B \to D_{\Sigma } A$. Since for posets $X$, $\sem{\Sigma \vdash B} \subseteq \sem{\Sigma \vdash A}$, we have that $\mathit{sub}_{A,B}$ is the identity function.\\~\\
+For all coeffect scalars $\Sigma \vdash A$ and kinding contexts $\Sigma \vdash \Gamma,x :: \kappa$, we have a natural isomorphism $$m_{\Sigma,A,\Gamma,\kappa} : D_{\Sigma} \emptyset(\sem{\Sigma \vdash \Gamma}) \times D_{\Sigma} A( \sem{\Sigma \vdash \kappa} ) \overset{\sim}{\to} D_{\Sigma} A \sem{\Sigma \vdash \Gamma,x :: \kappa}$$ defined to discard the copy of $\sem{\Sigma \vdash \emptyset}$ produced by applying $D_{\Sigma} \emptyset$, and to reassociate.
 \section*{Kinding}
 
 In what follows, we define $\ast \doteq \mathit{KTree}(\mathit{Prefix}~\epsilon)$, where $\epsilon$ is the empty string, so that all proper types have kind $\ast$. We define $\star \doteq \mathit{KString}(\mathit{Prefix}~\epsilon, \mathit{Chars})$, so that all string types have kind $\star$.
 
 \begin{mathpar}
-\inferrule
+\inferrule[Tuple]
   {\Sigma \mid \Gamma@A_i \vdash \tau_i :: \kappa_i^{~i \in 1..n} \\ 
-   \kappa_i <:: \mathit{KString}(d_i,\phi_i)^{~i \in 1..n} \\
+   \Sigma \vdash \kappa_i <:: \mathit{KString}(d_i,\phi_i)^{~i \in 1..n} \\
    c_i \not \in \phi_i^{~i \in 1..n} }
   {\Sigma \mid \Gamma@(\bigcup_{i \in 1..n} A_i) \vdash \mathit{tuple} \{ s_i : \tau_i : c_i^{~i \in 1..n}\} :: \mathit{KString}(d_1, (\bigcup_{i \in 1..n} \phi_i) \cup \{ c_1, \ldots, c_n \})}
 \and
-\inferrule
+\inferrule[DisjUnion]
   {\Sigma \mid \Gamma@A_i \vdash \tau_i :: \mathit{KTree}(d_i)^{~i \in 1..n} \\ \mathit{disjoint} \{ d_i^{~i \in 1..n} \} }
   {\Sigma \mid \Gamma@(\bigcup_{i \in 1..n} A_i) \vdash \biguplus_{i \in 1..n} \tau_i :: \mathit{KTree}(\mathit{merge}~\{ d_i^{~i \in 1..n} \})}
 \and
-\inferrule
+\inferrule[Record]
   {\Sigma \mid \Gamma@A \vdash \tau :: \mathit{KString}(d,\phi) \\ 
-    \Sigma \mid \Gamma@B_i \vdash \tau_i :: \iota_i^{~i \in 1..n} \\ \iota_i <:: \star^{~i \in 1..n} \\ 
-    \Sigma \mid \Gamma@A_i \vdash \tau_i' :: \kappa_i^{~i \in 1..n} \\ \kappa_i <:: \ast^{~i \in 1..n}}
+    \Sigma \mid \Gamma@B_i \vdash \tau_i :: \iota_i^{~i \in 1..n} \\ \Sigma \vdash \iota_i <:: \star^{~i \in 1..n} \\ 
+    \Sigma \mid \Gamma@A_i \vdash \tau_i' :: \kappa_i^{~i \in 1..n} \\ \Sigma \vdash \kappa_i <:: \ast^{~i \in 1..n}}
   {\Sigma \mid \Gamma@(A \cup \bigcup_{i \in 1..n} A_i \cup B_i) \vdash \tau.\{[\tau_i] :^{m_i} \tau_i'^{~i \in 1..n}\} :: \mathit{KTree}(d)}
 \and
-\inferrule
+\inferrule[Path]
   {\Sigma \vdash S_i^{~i \in 1..n} \\ 
-   \Sigma \mid \Gamma@A \vdash \tau :: \kappa \\ \kappa <:: \star}
+   \Sigma \mid \Gamma@A \vdash \tau :: \kappa \\ \Sigma \vdash \kappa <:: \star}
   {\Sigma \mid \Gamma@(\{ (S_1,\ldots,S_n).[\tau] \} \cup A) \vdash (S_1,\ldots,S_n).[\tau] :: \kappa}
 \and
-\inferrule
+\inferrule[StrAbs]
   {\Sigma, \zeta \mid \Gamma @ \emptyset \vdash \tau :: \kappa}
-  {\Sigma \mid \Gamma @ \emptyset \vdash \forall \zeta. \tau :: \zeta \Rightarrow \kappa}
+  {\Sigma \mid \Gamma @ \emptyset \vdash \lambda \zeta. \tau :: \forall \zeta. \kappa}
 \and
-\inferrule
+\inferrule[TyAbs]
   {\Sigma \mid \Gamma,\alpha :: \kappa @ A \vdash \tau :: \kappa'}
-  {\Sigma \mid \Gamma @ \emptyset \vdash \forall (\alpha :: \kappa).\tau :: \kappa \overset{A}{\Rightarrow} \kappa'}
+  {\Sigma \mid \Gamma @ \emptyset \vdash \lambda (\alpha :: \kappa).\tau :: \kappa \overset{A}{\Rightarrow} \kappa'}
 \and
-\inferrule
+\inferrule[TyApp]
   {\Sigma \mid \Gamma @ A \vdash \tau :: \kappa \overset{C}{\Rightarrow} \iota \\ 
    \Sigma \mid \Gamma @ B \vdash \tau' :: \kappa}
   {\Sigma \mid \Gamma @ (A \cup B \cup C) \vdash \tau~\tau' :: \iota}
 \and
-\inferrule
-  {\Sigma \mid \Gamma @ A \vdash \tau :: \zeta \Rightarrow \tau \\ \Sigma \vdash S}
-  {\Sigma \mid \Gamma @ A \vdash \tau~[S] :: \iota[S/\zeta]}
+\inferrule[StrApp]
+  {\Sigma \mid \Gamma @ A \vdash \tau :: \forall \zeta. \kappa \\ \Sigma \vdash S}
+  {\Sigma \mid \Gamma @ A \vdash \tau~[S] :: \kappa[S/\zeta]}
 
 \end{mathpar}
 We write $\Sigma \vdash \Gamma$ to mean that $\Sigma \vdash \kappa$ for all $(x : \kappa) \in \Gamma$.
-When $\Gamma = x_1 : \kappa_1, \ldots, x_n : \kappa_n$, we define the interpretation $\sem{\Sigma \vdash \Gamma} \doteq \sem{\Sigma \vdash \kappa_1} \times \cdots \times \sem{\Sigma \vdash \kappa_n}$.
-We will prove that $\Sigma \mid \Gamma @ A \vdash \tau :: \kappa$ implies that $\Sigma \vdash \Gamma$, $\Sigma \vdash \kappa$, and $\Sigma \vdash A$. The interpretation $$\sem{\Sigma \mid \Gamma @ A \vdash \tau :: \kappa}$$ of a kinding judgment is a morphism of the fibre category $\mathit{Fam}(\mbf{Posets})_{\sem{\Sigma}}$ from $\sem{\Sigma \vdash \Gamma}$ to $\sem{\Sigma \vdash \kappa}$.
+When $\Gamma = x_1 : \kappa_1, \ldots, x_n : \kappa_n$, we define the interpretation $\sem{\Sigma \vdash \Gamma} \doteq \sem{\Sigma \vdash \kappa_1} \times \cdots \times \sem{\Sigma \vdash \kappa_n}$, where products in $\mathit{Fam}(\mbf{Posets})$ are taken pointwise.
+We will prove that $\Sigma \mid \Gamma @ A \vdash \tau :: \kappa$ implies that $\Sigma \vdash \Gamma$, $\Sigma \vdash \kappa$, and $\Sigma \vdash A$. The interpretation $$\sem{\Sigma \mid \Gamma @ A \vdash \tau :: \kappa}$$ of a kinding judgment is a morphism of the fibre category $\mathit{Fam}(\mbf{Posets})_{\sem{\Sigma}}$ from $D_{\Sigma} A(\sem{\Sigma \vdash \Gamma})$ to $\sem{\Sigma \vdash \kappa}$.
 
+\begin{mathpar}
+\inferrule[Tuple]
+  {\sem{\Sigma \mid \Gamma@A_i \vdash \tau_i :: \kappa_i} = f_i : D_{\Sigma} A_i(\sem{\Sigma \vdash \Gamma}) \to \sem{\Sigma \vdash \kappa_i}^{~i \in 1..n} \\ 
+   \sem{\Sigma \vdash \kappa_i <:: \mathit{KString}(d_i,\phi_i)} = g_i : \sem{\Sigma \vdash \kappa_i} \to \sem{\Sigma \vdash \mathit{KString}(d_i,\phi_i)}^{~i \in 1..n} \\
+   c_i \not \in \phi_i^{~i \in 1..n} }
+  {\Sigma \mid \Gamma@(\bigcup_{i \in 1..n} A_i) \vdash \mathit{tuple} \{ s_i : \tau_i : c_i^{~i \in 1..n}\} :: \mathit{KString}(d_1, (\bigcup_{i \in 1..n} \phi_i) \cup \{ c_1, \ldots, c_n \})}
+\and
+\inferrule[DisjUnion]
+  {\Sigma \mid \Gamma@A_i \vdash \tau_i :: \mathit{KTree}(d_i)^{~i \in 1..n} \\ \mathit{disjoint} \{ d_i^{~i \in 1..n} \} }
+  {\Sigma \mid \Gamma@(\bigcup_{i \in 1..n} A_i) \vdash \biguplus_{i \in 1..n} \tau_i :: \mathit{KTree}(\mathit{merge}~\{ d_i^{~i \in 1..n} \})}
+\and
+\inferrule[Record]
+  {\Sigma \mid \Gamma@A \vdash \tau :: \mathit{KString}(d,\phi) \\ 
+    \Sigma \mid \Gamma@B_i \vdash \tau_i :: \iota_i^{~i \in 1..n} \\ \Sigma \vdash \iota_i <:: \star^{~i \in 1..n} \\ 
+    \Sigma \mid \Gamma@A_i \vdash \tau_i' :: \kappa_i^{~i \in 1..n} \\ \Sigma \vdash \kappa_i <:: \ast^{~i \in 1..n}}
+  {\Sigma \mid \Gamma@(A \cup \bigcup_{i \in 1..n} A_i \cup B_i) \vdash \tau.\{[\tau_i] :^{m_i} \tau_i'^{~i \in 1..n}\} :: \mathit{KTree}(d)}
+\and
+\inferrule[Path]
+  {\Sigma \vdash S_i^{~i \in 1..n} \\ 
+   \Sigma \mid \Gamma@A \vdash \tau :: \kappa \\ \Sigma \vdash \kappa <:: \star}
+  {\Sigma \mid \Gamma@(\{ (S_1,\ldots,S_n).[\tau] \} \cup A) \vdash (S_1,\ldots,S_n).[\tau] :: \kappa}
+\and
+\inferrule[StrAbs]
+  {\sem{\Sigma, \zeta \mid \Gamma @ \emptyset \vdash \tau :: \kappa} = f : D_{\Sigma,\zeta}\emptyset(\sem{\Sigma,\zeta \vdash \Gamma}) \to \sem{\Sigma,\zeta \vdash \kappa}}
+  {\sem{\Sigma \mid \Gamma @ \emptyset \vdash \lambda \zeta. \tau :: \forall \zeta. \kappa} \doteq f^\flat : D_{\Sigma} \emptyset(\sem{\Sigma \vdash \Gamma}) \to \sem{\Sigma \vdash \forall \zeta. \kappa)}}
+\and
+\inferrule[TyAbs]
+  {\sem{\Sigma \mid \Gamma,\alpha :: \kappa @ A \vdash \tau :: \kappa'} = f : D_{\Sigma} A(\sem{\Sigma \vdash \Gamma,\alpha :: \kappa}) \to \sem{\Sigma \vdash \kappa'}}
+  {\sem{\Sigma \mid \Gamma @ \emptyset \vdash \lambda (\alpha :: \kappa).\tau :: \kappa \overset{A}{\Rightarrow} \kappa'} \doteq \Lambda(m_{\Sigma,A,\Gamma,\kappa};f) : D_{\Sigma} \emptyset(\sem{\Sigma \vdash \Gamma}) \to \sem{\Sigma \vdash \kappa \overset{A}{\Rightarrow} \kappa'}}
+\and
+\inferrule[TyApp]
+  {\Sigma \mid \Gamma @ A \vdash \tau :: \kappa \overset{C}{\Rightarrow} \iota \\ 
+   \Sigma \mid \Gamma @ B \vdash \tau' :: \kappa}
+  {\Sigma \mid \Gamma @ (A \cup B \cup C) \vdash \tau~\tau' :: \iota}
+\and
+\inferrule[StrApp]
+  {\sem{\Sigma \mid \Gamma @ A \vdash \tau :: \forall \zeta. \kappa} = f : D_{\Sigma}A(\sem{\Sigma \vdash \Gamma}) \to \sem{\Sigma \vdash \forall \zeta. \kappa} \\ \sem{\Sigma \vdash S} = g : \sem{\Sigma} \to \mathit{Strings}}
+  {\sem{\Sigma \mid \Gamma @ A \vdash \tau~[S] :: \kappa[S/\zeta]} \doteq \langle id_{\sem{\Sigma}}, g \rangle^*(f^\sharp) : D_{\Sigma} A(\sem{\Sigma \vdash \Gamma}) \to \langle id_{\Sigma}, g \rangle^* \sem{\Sigma,\zeta \vdash \kappa}}
+
+\end{mathpar}
+
+\subsection*{Explanation}
+
+\subsubsection*{\sc{StrAbs}}
+For the string abstraction rule (second-to-last) is essentially mapping across an adjunction, but we need the following lemma to see this.
+\begin{lemma}
+$\pi^*_{\Sigma,\zeta}(D_{\Sigma} \emptyset(\sem{\Sigma \vdash \Gamma})) = D_{\Sigma,\zeta} \emptyset(\sem{\Sigma,\zeta \vdash \Gamma})$
+\end{lemma}
+
+\subsubsection*{\sc{StrApp}}
+
+The domain of the conclusion should be $D_{\Sigma}A(\sem{\Sigma \vdash \Gamma})$. The domain of $\langle \mathit{id}_{\Sigma}, g \rangle^*(f^\sharp)$ is $\langle \mathit{id}_{\sem{\Sigma}}, g \rangle^* \pi_{\Sigma,\zeta}^*(D_{\Sigma} A \sem{\Sigma \vdash \Gamma})$, which is equal to $D_{\Sigma}A(\sem{\Sigma \vdash \Gamma})$ due to the following calculation.\\~\\
+\begin{tabu}{l}
+$\langle \mathit{id}_{\sem{\Sigma}}, g \rangle^* \pi_{\Sigma,\zeta}^* D_{\Sigma} A (\sem{\Sigma \vdash \Gamma})$ \\
+$= (\langle \mathit{id}_{\sem{\Sigma}}, g \rangle; \pi_{\Sigma,\zeta})^* D_{\Sigma} A (\sem{\Sigma \vdash \Gamma})$ \\
+$= id_{\sem{\Sigma}}^* D_{\Sigma} A (\sem{\Sigma \vdash \Gamma})$ \\
+$= D_{\Sigma} A (\sem{\Sigma \vdash \Gamma})$
+\end{tabu}
+
+\subsection*{Index Substitution Lemma}
+
+\begin{lemma}
+If $$\Sigma,\zeta \mid \Gamma @ A \vdash \tau :: \kappa$$ and $$\Sigma \vdash S$$ then
+$$\Sigma \mid \Gamma @ A[S/\zeta] \vdash \tau[S/\zeta ] :: \kappa [S/\zeta ]$$
+\end{lemma}
+
+\begin{proof}
+By induction on the proof $\Sigma,\zeta \mid \Gamma @ A \vdash \tau :: \kappa$.
+
+\begin{description}
+\item[Case \sc{Record}]:~\\
+The inductive hypothesis gives $$\Sigma \mid \Gamma @ A[S/\zeta] \vdash \tau[S/\zeta] :: \mathit{KString}(d,\phi)$$
+and
+$$\Sigma \mid \Gamma @ B_i[S/\zeta] \vdash \tau_i[S/\zeta] :: \iota_i[S/\zeta]^{~i \in 1..n}$$
+and
+$$\Sigma \mid \Gamma@ A_i[S/\zeta] \vdash \tau_i'[S/\zeta] :: \kappa_i[S/\zeta]^{~i \in 1..n}$$
+
+\end{description}
+
+\end{proof}
+
+\subsection*{Soundness}
+
+\subsubsection*{String abstraction applications}
+
+We must prove that $\Sigma \mid \Gamma @ A \vdash (\lambda \zeta.\tau)~[S] :: \kappa[S/\zeta]$ implies 
+$$\Sigma \mid \Gamma @ A \vdash \tau[S/\zeta] :: \kappa[S/\zeta]$$
+We must further prove that $$\sem{\Sigma \mid \Gamma @ A \vdash (\lambda \zeta.\tau)~[S] :: \kappa[S/\zeta]}$$
+is equal to $$\sem{\Sigma \mid \Gamma @ A \vdash \tau[S/\zeta] :: \kappa[S/\zeta]}$$
+We do so by induction on the structure of $\tau$.
 \end{document}
   
