@@ -127,11 +127,11 @@ $\Gamma$ (kind context) & $::=$ & $\Gamma,x :: \kappa$ & (context extension) \\
 \section*{Index well-formedness}
 
 \begin{mathpar}
-\inferrule
+\inferrule[IWF-Var]
   {\zeta \in \Sigma}
   {\Sigma \vdash \zeta}
 \and
-\inferrule
+\inferrule[IWF-Lit]
   {~}
   {\Sigma \vdash s}
 \end{mathpar}
@@ -145,11 +145,11 @@ The interpretation $\sem{\Sigma}$ of an index context $\Sigma = \zeta_1, \ldots,
 \section*{Discriminator well-formedness}
 
 \begin{mathpar}
-\inferrule
+\inferrule[DWF-Prefix]
   {\Sigma \vdash S}
   {\Sigma \vdash \mathit{Prefix}~S}
 \and
-\inferrule
+\inferrule[DWF-Lit]
   {\Sigma \vdash S}
   {\Sigma \vdash \mathit{Literal}~S}
 \end{mathpar}
@@ -185,19 +185,19 @@ The interpretation $\sem{\Sigma \vdash d \leq d'}$ of a subsumption judgment is 
 \section*{Kind well-formedness}
 
 \begin{mathpar}
-\inferrule
+\inferrule[KWF-Str]
   {\Sigma \vdash d}
   {\Sigma \vdash \mathit{KString(d,\phi)}}
 \and
-\inferrule
+\inferrule[KWF-Tree]
   {\Sigma \vdash d}
   {\Sigma \vdash \mathit{KTree(d)}}
 \and
-\inferrule
+\inferrule[KWF-TyFun]
   {\Sigma \vdash \kappa \\ \Sigma \vdash \kappa' \\ \Sigma \vdash A}
   {\Sigma \vdash \kappa \overset{A}{\Rightarrow} \kappa'}
 \and
-\inferrule
+\inferrule[KWF-StrFun]
   {\Sigma,\zeta \vdash \kappa}
   {\Sigma \vdash \forall \zeta. \kappa}
 \end{mathpar}
@@ -211,15 +211,15 @@ $$\sem{\Sigma \vdash \mathit{KString}(d,\phi)} \sigma \doteq (\mathcal P(X), \su
 The interpretation $\sem{\Sigma \vdash \kappa <:: \kappa'}$ is a mono in the fibre $\mathit{Fam}(\mbf{Posets})_{\sem{\Sigma}}$ from $\sem{\Sigma \vdash \kappa}$ to $\sem{\Sigma \vdash \kappa'}$.
 
 \begin{mathpar}
-\inferrule
+\inferrule[SK-StrTree]
   {\Sigma \vdash d \leq d'}
   {\Sigma \vdash \mathit{KString}(d,\phi) <:: \mathit{KTree}(d)}
 \and
-\inferrule
+\inferrule[SK-StrStr]
   {\Sigma \vdash d \leq d' \\ \Sigma \vdash \phi \subseteq \phi'}
   {\Sigma \vdash \mathit{KString}(d,\phi) <:: \mathit{KString}(d',\phi')}
 \and
-\inferrule
+\inferrule[SK-TreeTree]
   {\Sigma \vdash d \leq d'}
   {\Sigma \vdash \mathit{KTree}(d) <:: \mathit{KTree}(d')}
 \end{mathpar}
@@ -355,7 +355,92 @@ $= id_{\sem{\Sigma}}^* D_{\Sigma} A (\sem{\Sigma \vdash \Gamma})$ \\
 $= D_{\Sigma} A (\sem{\Sigma \vdash \Gamma})$
 \end{tabu}
 
-\subsection*{Index Substitution Lemma}
+\subsection*{Index substitution lemmas}
+
+\begin{lemma}
+If $\Sigma,\zeta \vdash S$ and $\Sigma \vdash S'$ then $\Sigma \vdash S[S'/\zeta]$.
+\label{SWF-Subst}
+\end{lemma}
+
+\begin{proof}
+By cases on $S$.
+
+\begin{description}
+\item[Case $S = s$]:\\
+We have $S[S'/\zeta] = s[S'/\zeta] = s$. By \begin{sc}IWF-Lit\end{sc}, $s$ is a well-formed index term in 
+any index environment,
+so in particular we have $\Sigma \vdash s$ i.e. $\Sigma \vdash s[S'/\zeta]$.
+
+\item[Case ]$S = \zeta'$:\\
+We have $\Sigma,\zeta \vdash \zeta'$. So either $\zeta' \in \Sigma$ or $\zeta' = \zeta$.
+
+\begin{description}
+\item[Case $\zeta' \in \Sigma$]:\\
+We have $S[S'/\zeta] = \zeta'$, and since $\zeta' \in \Sigma$, \begin{sc}IWF-Var\end{sc} gives $\Sigma \vdash \zeta'$, i.e.
+$\Sigma \vdash S[S'/\zeta]$.
+\item[Case $\zeta' = \zeta$]:\\
+We have $S[S'/\zeta] = S'$. By assumption, $\Sigma \vdash S'$, i.e. $\Sigma \vdash S[S'/\zeta]$.
+%By \begin{sc}IWF-Lit\end{sc} we have $\Sigma \vdash s$, i.e. $\Sigma \vdash S[S'/\zeta]$.
+
+\end{description}
+
+\end{description}
+
+\end{proof}
+
+\begin{lemma}
+If $\Sigma,\zeta \vdash d$ and $\Sigma \vdash S$ then $\Sigma \vdash d[S/\zeta]$
+\label{DWF-Subst}
+\end{lemma}
+
+\begin{proof}
+By cases on $d$
+
+\item[Case $d = \mathit{Prefix}~S'$]:\\
+Since $\Sigma,\zeta \vdash \mathit{Prefix}~S'$ we get $\Sigma,\zeta \vdash S'$ from the premise of 
+\begin{sc}DWF-Prefix\end{sc}. By Lemma \ref{SWF-Subst} we get $\Sigma \vdash S'[S/\zeta]$. Applying
+\begin{sc}DWF-Prefix\end{sc} using the premise $\Sigma \vdash S'[S/\zeta]$ then gives $\Sigma \vdash \mathit{Prefix}~S'[S/\zeta]$, i.e. $\Sigma \vdash d[S/\zeta]$.
+
+\item[Case $d = \mathit{Literal}~S'$]:\\
+Similar to the previous case.
+
+\end{proof}
+
+\begin{lemma}
+If $\Sigma,\zeta \vdash \kappa$ and $\Sigma \vdash S$ then $\Sigma \vdash \kappa[S/\zeta]$.
+\end{lemma}
+
+\begin{proof}
+\item[Case \sc{KWF-Str}]:~\\
+We apply Lemma \ref{DWF-Subst} to the premise to get $\Sigma \vdash d[S/\zeta]$. Then applying 
+\begin{sc}KWF-Str\end{sc} using $\Sigma \vdash d[S/\zeta]$ as the premise gives 
+$\Sigma \vdash \mathit{KString}(d[S/\zeta],\phi)$, i.e. $\Sigma \vdash \kappa[S/\zeta]$.
+
+\item[Case \sc{KWF-Tree}]:~\\
+Similar to the above case.
+
+\item[Case \sc{KWF-TyFun}]:~\\
+Our inductive hypothesis gives $\Sigma \vdash \kappa[S/\zeta]$, $\Sigma \vdash \kappa'[S/\zeta]$, and
+$\Sigma \vdash A[S/\zeta]$.
+
+\end{proof}
+
+\begin{lemma}
+If $\Sigma,\zeta \vdash \kappa <:: \star$ and $\Sigma \vdash S$ then
+$\Sigma \vdash \kappa[S/\zeta] <:: \star$.
+\end{lemma}
+
+\begin{proof}
+By induction on the structure of $\Sigma \vdash \kappa$.
+
+\begin{description}
+\item[Case a]~\\
+hi
+\end{description}
+
+\end{proof}
+
+\subsection*{Kinding index substitution Lemma}
 
 \begin{lemma}
 If $$\Sigma,\zeta \mid \Gamma @ A \vdash \tau :: \kappa$$ and $$\Sigma \vdash S$$ then
@@ -367,7 +452,7 @@ By induction on the proof $\Sigma,\zeta \mid \Gamma @ A \vdash \tau :: \kappa$.
 
 \begin{description}
 \item[Case \sc{Record}]:~\\
-The inductive hypothesis gives $$\Sigma \mid \Gamma @ A[S/\zeta] \vdash \tau[S/\zeta] :: \mathit{KString}(d,\phi)$$
+The inductive hypothesis gives $$\Sigma \mid \Gamma @ A[S/\zeta] \vdash \tau[S/\zeta] :: \mathit{KString}([S/\zeta]d,\phi)$$
 and
 $$\Sigma \mid \Gamma @ B_i[S/\zeta] \vdash \tau_i[S/\zeta] :: \iota_i[S/\zeta]^{~i \in 1..n}$$
 and
@@ -386,5 +471,11 @@ $$\Sigma \mid \Gamma @ A \vdash \tau[S/\zeta] :: \kappa[S/\zeta]$$
 We must further prove that $$\sem{\Sigma \mid \Gamma @ A \vdash (\lambda \zeta.\tau)~[S] :: \kappa[S/\zeta]}$$
 is equal to $$\sem{\Sigma \mid \Gamma @ A \vdash \tau[S/\zeta] :: \kappa[S/\zeta]}$$
 We do so by induction on the structure of $\tau$.
+
+\section*{Additional ideas}
+
+Rather than just using a list of variables for the string index context, we should classify each
+string index variable by the set of possible characters that may occur in the string. 
+
 \end{document}
   
