@@ -164,15 +164,15 @@ The interpretation $\sem{\Sigma \vdash d}$ of a discriminator well-formedness ju
 \section*{Discriminator subsumption}
 
 \begin{mathpar}
-\inferrule
+\inferrule[SD-PrefPref]
   {s' \sqsubseteq s}
   {\Sigma \vdash \mathit{Prefix}~s \leq \mathit{Prefix}~s'}
 \and
-\inferrule
+\inferrule[SD-LitLit]
   {\Sigma \vdash S}
   {\Sigma \vdash \mathit{Literal}~S \leq \mathit{Literal}~S}
 \and
-\inferrule
+\inferrule[SD-LitPref]
   {s' \sqsubseteq s}
   {\Sigma \vdash \mathit{Literal}~s \leq \mathit{Prefix}~s'}
 \and
@@ -213,7 +213,7 @@ The interpretation $\sem{\Sigma \vdash \kappa <:: \kappa'}$ is a mono in the fib
 \begin{mathpar}
 \inferrule[SK-StrTree]
   {\Sigma \vdash d \leq d'}
-  {\Sigma \vdash \mathit{KString}(d,\phi) <:: \mathit{KTree}(d)}
+  {\Sigma \vdash \mathit{KString}(d,\phi) <:: \mathit{KTree}(d')}
 \and
 \inferrule[SK-StrStr]
   {\Sigma \vdash d \leq d' \\ \Sigma \vdash \phi \subseteq \phi'}
@@ -408,9 +408,18 @@ Similar to the previous case.
 
 \begin{lemma}
 If $\Sigma,\zeta \vdash \kappa$ and $\Sigma \vdash S$ then $\Sigma \vdash \kappa[S/\zeta]$.
+Furthermore, if $\Sigma,\zeta \vdash A$ and $\Sigma \vdash S$ then $\Sigma \vdash A[S/\zeta]$.
 \end{lemma}
 
 \begin{proof}
+By simultaneous induction on the proofs of $\Sigma,\zeta \vdash \kappa$ and $\Sigma,\zeta \vdash A$. 
+
+\begin{description}
+\item[Case $\Sigma,\zeta \vdash A$]:~\\
+If $\Sigma,\zeta \vdash A$ then for each $(S_1,\ldots,S_n).[\kappa] \in A$ we 
+have $\Sigma,\zeta \vdash S_i^{~i \in 1..n}$ and $\Sigma,\zeta \vdash \kappa$. By Lemma \ref{SWF-Subst} we have
+$\Sigma \vdash S_i[S/\zeta]$. By the inductive hypothesis, we have $\Sigma \vdash \kappa[S/\zeta]$. From this,
+we deduce that $\Sigma \vdash (S_1[S/\zeta],\ldots,S_n[S/\zeta]).[\kappa[S/\zeta]]$; hence $\Sigma \vdash A[S/\zeta]$. (TODO: should we name the ``rule'' for concluding coeffect well-formedness judgments?)
 \item[Case \sc{KWF-Str}]:~\\
 We apply Lemma \ref{DWF-Subst} to the premise to get $\Sigma \vdash d[S/\zeta]$. Then applying 
 \begin{sc}KWF-Str\end{sc} using $\Sigma \vdash d[S/\zeta]$ as the premise gives 
@@ -421,8 +430,42 @@ Similar to the above case.
 
 \item[Case \sc{KWF-TyFun}]:~\\
 Our inductive hypothesis gives $\Sigma \vdash \kappa[S/\zeta]$, $\Sigma \vdash \kappa'[S/\zeta]$, and
-$\Sigma \vdash A[S/\zeta]$.
+$\Sigma \vdash A[S/\zeta]$. Applying \begin{sc}KWF-TyFun\end{sc} gives $\Sigma \vdash \kappa[S/\zeta] \overset{A[S/\zeta]}{\Rightarrow} \kappa'[S/\zeta]$ i.e. $$\Sigma \vdash (\kappa \overset{A}{\Rightarrow} \kappa')[S/\zeta]$$
 
+\item[Case \sc{KWF-StrFun}]:~\\
+The premise for proving $\Sigma,\zeta \vdash \forall \zeta'.\kappa$ is $\Sigma,\zeta,\zeta' \vdash \kappa$. Exchanging $\zeta$ and $\zeta'$ gives $\Sigma,\zeta',\zeta \vdash \kappa$. (The proof should be of the same height.) Applying the IH gives $\Sigma,\zeta' \vdash \kappa[S/\zeta]$. Applying \begin{sc}KWF-StrFun\end{sc} gives $\Sigma \vdash \forall \zeta'. \kappa[S/\zeta]$ i.e.
+$$\Sigma \vdash (\forall \zeta'. \kappa)[S/\zeta]$$.
+\end{description}
+\end{proof}
+
+\begin{lemma}
+If $\Sigma,\zeta \vdash \kappa <:: \kappa'$ and $\Sigma \vdash S$ then $\Sigma \vdash \kappa[S/\zeta] <:: \kappa'[S/\zeta]$.
+\end{lemma}
+
+\begin{proof}
+By induction on $\Sigma,\zeta \vdash \kappa <:: \kappa'$.
+
+\begin{description}
+\item[Case \begin{sc}SK-StrTree\end{sc}]:~\\
+The premise $\Sigma,\zeta \vdash d \leq d'$ means that either 
+\begin{enumerate}
+\item Both $d$ and $d'$ are closed, or
+\item $d = d' = \mathit{Literal}~\zeta'$ where $\zeta' \in \Sigma$, or
+\item $d = d' = \mathit{Literal}~\zeta$
+\end{enumerate}
+
+If 1 or 2 then $d[S/\zeta] = d$, $d'[S/\zeta] = d'$, and $\Sigma \vdash d \leq d'$, from which we conclude 
+$$\Sigma \vdash d[S/\zeta] \leq d'[S/\zeta]$$
+
+If 3 holds then $d[S/\zeta] = d'[S/\zeta] = \mathit{Literal}~S$. Applying \begin{sc}SD-LitLit\end{sc} gives
+$\Sigma \vdash d[S/\zeta] \leq d'[S/\zeta]$. 
+
+TODO: The above discriminator substitution should be moved to a different lemma.
+
+Applying \begin{sc}SK-StrTree\end{sc} gives 
+$$\Sigma \vdash \mathit{KString(d[S/\zeta],\phi) <:: \mathit{KTree}(d'[S/\zeta])}$$
+
+\end{description}
 \end{proof}
 
 \begin{lemma}
