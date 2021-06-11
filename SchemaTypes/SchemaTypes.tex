@@ -37,6 +37,10 @@
 }
 }
 
+\newcommand{\sdisp}[1]{
+\left( #1 \right)
+}
+
 \newcommand{\ddisp}[3]{
 \left(
 \scriptsize
@@ -141,6 +145,7 @@ The interpretation $\sem{\Sigma}$ of an index context $\Sigma = \zeta_1, \ldots,
 \and
 \sem{\Sigma \vdash s} \sigma \doteq s
 \end{mathpar}
+We choose to view $\mathit{Strings}$ as a discretely ordered poset rather than a set. We view $\sem{\Sigma \vdash S}$ as a $\sem{\Sigma}$-indexed family 
 
 \section*{Discriminator well-formedness}
 
@@ -216,7 +221,7 @@ The interpretation $\sem{\Sigma \vdash \kappa <:: \kappa'}$ is a mono in the fib
   {\Sigma \vdash \mathit{KString}(d,\phi) <:: \mathit{KTree}(d')}
 \and
 \inferrule[SK-StrStr]
-  {\Sigma \vdash d \leq d' \\ \Sigma \vdash \phi \subseteq \phi'}
+  {\Sigma \vdash d \leq d' \\ \phi \subseteq \phi'}
   {\Sigma \vdash \mathit{KString}(d,\phi) <:: \mathit{KString}(d',\phi')}
 \and
 \inferrule[SK-TreeTree]
@@ -272,7 +277,7 @@ In what follows, we define $\ast \doteq \mathit{KTree}(\mathit{Prefix}~\epsilon)
 \inferrule[Path]
   {\Sigma \vdash S_i^{~i \in 1..n} \\ 
    \Sigma \mid \Gamma@A \vdash \tau :: \kappa \\ \Sigma \vdash \kappa <:: \star}
-  {\Sigma \mid \Gamma@(\{ (S_1,\ldots,S_n).[\tau] \} \cup A) \vdash (S_1,\ldots,S_n).[\tau] :: \kappa}
+  {\Sigma \mid \Gamma@(\{ (S_1,\ldots,S_n).[\kappa] \} \cup A) \vdash (S_1,\ldots,S_n).[\kappa] :: \kappa}
 \and
 \inferrule[StrAbs]
   {\Sigma, \zeta \mid \Gamma @ \emptyset \vdash \tau :: \kappa}
@@ -358,7 +363,7 @@ $= D_{\Sigma} A (\sem{\Sigma \vdash \Gamma})$
 \subsection*{Index substitution lemmas}
 
 \begin{lemma}
-If $\Sigma,\zeta \vdash S$ and $\Sigma \vdash S'$ then $\Sigma \vdash S[S'/\zeta]$.
+If $\Sigma,\zeta \vdash S$ and $\Sigma \vdash S'$ then $\Sigma \vdash S[S'/\zeta]$. Furthermore, $$\sem{\Sigma \vdash S[S'/\zeta]} = \langle \mathit{id}, \sem{\Sigma \vdash S'} \rangle^* \sem{\Sigma,\zeta \vdash S}$$
 \label{SWF-Subst}
 \end{lemma}
 
@@ -367,21 +372,27 @@ By cases on $S$.
 
 \begin{description}
 \item[Case $S = s$]:\\
-We have $S[S'/\zeta] = s[S'/\zeta] = s$. By \begin{sc}IWF-Lit\end{sc}, $s$ is a well-formed index term in 
-any index environment,
-so in particular we have $\Sigma \vdash s$ i.e. $\Sigma \vdash s[S'/\zeta]$.
+We have $S[S'/\zeta] = s[S'/\zeta] = s$. By \begin{sc}IWF-Lit\end{sc}, $s$ is a well-formed index term in any index environment, so in particular we have $\Sigma \vdash s$ i.e. $\Sigma \vdash s[S'/\zeta]$.
+
+Semantically, we have $\sem{\Sigma \vdash s} = \langle \mathit{id}, \sem{\Sigma \vdash S'} \rangle^* \sem{\Sigma,\zeta \vdash s}$, since the left-hand side is defined as $$( s )_{\sigma \in \sem{\Sigma}}$$ and the right-hand side is $$\langle \mathit{id}, \sem{\Sigma \vdash S'} \rangle^* ( s )_{\sigma \in \sem{\Sigma,\zeta}}$$ which simplifies to $$ ( s )_{\sigma \in \sem{\Sigma}}$$
 
 \item[Case ]$S = \zeta'$:\\
 We have $\Sigma,\zeta \vdash \zeta'$. So either $\zeta' \in \Sigma$ or $\zeta' = \zeta$.
 
 \begin{description}
 \item[Case $\zeta' \in \Sigma$]:\\
-We have $S[S'/\zeta] = \zeta'$, and since $\zeta' \in \Sigma$, \begin{sc}IWF-Var\end{sc} gives $\Sigma \vdash \zeta'$, i.e.
-$\Sigma \vdash S[S'/\zeta]$.
+We have $S[S'/\zeta] = \zeta'$, and since $\zeta' \in \Sigma$, \begin{sc}IWF-Var\end{sc} gives $\Sigma \vdash \zeta'$, i.e. $\Sigma \vdash S[S'/\zeta]$.
+
+Semantically, we have $\sem{\Sigma \vdash \zeta'} = \langle \mathit{id}, \sem{\Sigma \vdash S'} \rangle^* \sem{\Sigma,\zeta \vdash S}$, because the left-hand side is defined as $$\sdisp{\sigma(\zeta')}_{\sigma \in \sem{\Sigma}}$$ while the right-hand side is equal to $$\langle \mathit{id}, \sem{\Sigma \vdash \zeta'} \rangle^* (\sigma(\zeta'))_{\sigma \in \sem{\Sigma,\zeta}}$$ which simplifies to $$(\sigma(\zeta'))_{\sigma \in \sem{\Sigma}}$$
+ 
 \item[Case $\zeta' = \zeta$]:\\
 We have $S[S'/\zeta] = S'$. By assumption, $\Sigma \vdash S'$, i.e. $\Sigma \vdash S[S'/\zeta]$.
-%By \begin{sc}IWF-Lit\end{sc} we have $\Sigma \vdash s$, i.e. $\Sigma \vdash S[S'/\zeta]$.
 
+Semantically, we have $\sem{\Sigma \vdash S'} = \langle \mathit{id}, \sem{\Sigma \vdash S'} \rangle^* \sem{\Sigma,\zeta \vdash \zeta}$ since the right-hand is equal to $$\langle \mathit{id}, \sem{\Sigma \vdash S'} \rangle^* (\sigma(\zeta))_{\sigma \in \sem{\Sigma,\zeta}}$$
+which is equal to
+$$( \sem{\Sigma,\zeta \vdash \zeta}_{\langle \mathit{id}, \sem{\Sigma \vdash S'} \rangle(\sigma)} )_{\sigma \in \sem{\Sigma}}$$
+which is equal to
+$$ $$
 \end{description}
 
 \end{description}
@@ -439,15 +450,12 @@ $$\Sigma \vdash (\forall \zeta'. \kappa)[S/\zeta]$$.
 \end{proof}
 
 \begin{lemma}
-If $\Sigma,\zeta \vdash \kappa <:: \kappa'$ and $\Sigma \vdash S$ then $\Sigma \vdash \kappa[S/\zeta] <:: \kappa'[S/\zeta]$.
+If $\Sigma,\zeta \vdash d \leq d'$ and $\Sigma \vdash S$ then $\Sigma \vdash d[S/\zeta] \leq d[S/\zeta']$.
+\label{SD-Subst}
 \end{lemma}
 
 \begin{proof}
-By induction on $\Sigma,\zeta \vdash \kappa <:: \kappa'$.
-
-\begin{description}
-\item[Case \begin{sc}SK-StrTree\end{sc}]:~\\
-The premise $\Sigma,\zeta \vdash d \leq d'$ means that either 
+One of the following conditions holds. 
 \begin{enumerate}
 \item Both $d$ and $d'$ are closed, or
 \item $d = d' = \mathit{Literal}~\zeta'$ where $\zeta' \in \Sigma$, or
@@ -459,35 +467,52 @@ $$\Sigma \vdash d[S/\zeta] \leq d'[S/\zeta]$$
 
 If 3 holds then $d[S/\zeta] = d'[S/\zeta] = \mathit{Literal}~S$. Applying \begin{sc}SD-LitLit\end{sc} gives
 $\Sigma \vdash d[S/\zeta] \leq d'[S/\zeta]$. 
+\end{proof}
 
-TODO: The above discriminator substitution should be moved to a different lemma.
+\begin{lemma}
+If $\Sigma,\zeta \vdash \kappa <:: \kappa'$ and $\Sigma \vdash S$ then $\Sigma \vdash \kappa[S/\zeta] <:: \kappa'[S/\zeta]$.
+\label{SK-Subst}
+\end{lemma}
 
-Applying \begin{sc}SK-StrTree\end{sc} gives 
-$$\Sigma \vdash \mathit{KString(d[S/\zeta],\phi) <:: \mathit{KTree}(d'[S/\zeta])}$$
+\begin{proof}
+By induction on $\Sigma,\zeta \vdash \kappa <:: \kappa'$.
 
+\begin{description}
+\item[Case \begin{sc}SK-StrTree\end{sc}]:~\\
+Applying lemma \ref{SD-Subst} to the premise $\Sigma,\zeta \vdash d \leq d'$ gives $$\Sigma \vdash d[S/\zeta] \leq d'[S/\zeta]$$ Applying \begin{sc}SK-StrTree\end{sc} gives $$\Sigma \vdash \mathit{KString(d[S/\zeta],\phi) <:: \mathit{KTree}(d'[S/\zeta])}$$
+\item[Case \begin{sc}SK-StrStr\end{sc}]:~\\
+Applying lemma \ref{SD-Subst} to the premise $\Sigma,\zeta \vdash d \leq d'$ gives $$\Sigma \vdash d[S/\zeta] \leq d'[S/\zeta]$$ Applying \begin{sc}SK-StrStr\end{sc} gives $$\Sigma \vdash \mathit{KString}(d[S/\zeta],\phi) <:: \mathit{KString}(d'[S/\zeta], \phi')$$
+\item[Case \begin{sc}SK-TreeTree\end{sc}]:~\\
+Applying lemma \ref{SD-Subst} to the premise $\Sigma,\zeta \vdash d \leq d'$ gives $$\Sigma \vdash d[S/\zeta] \leq d'[S/\zeta]$$ Applying \begin{sc}SK-TreeTree\end{sc} gives $$\Sigma \vdash \mathit{KTree}(d[S/\zeta]) <:: \mathit{KTree}(d'[S/\zeta])$$
 \end{description}
 \end{proof}
 
 \begin{lemma}
 If $\Sigma,\zeta \vdash \kappa <:: \star$ and $\Sigma \vdash S$ then
 $\Sigma \vdash \kappa[S/\zeta] <:: \star$.
+\label{SK-Subst2}
 \end{lemma}
 
 \begin{proof}
-By induction on the structure of $\Sigma \vdash \kappa$.
+This lemma is a simple corollary of lemma \ref{SK-Subst}.
+\end{proof}
 
-\begin{description}
-\item[Case a]~\\
-hi
-\end{description}
 
+\begin{lemma}
+If $\Sigma,\zeta \vdash \kappa <:: \ast$ and $\Sigma \vdash S$ then
+$\Sigma \vdash \kappa[S/\zeta] <:: \ast^{~i \in 1..n}$.
+\label{SK-Subst3}
+\end{lemma}
+
+\begin{proof}
+Another simple corollary of lemma \ref{SK-Subst}.
 \end{proof}
 
 \subsection*{Kinding index substitution Lemma}
 
 \begin{lemma}
 If $$\Sigma,\zeta \mid \Gamma @ A \vdash \tau :: \kappa$$ and $$\Sigma \vdash S$$ then
-$$\Sigma \mid \Gamma @ A[S/\zeta] \vdash \tau[S/\zeta ] :: \kappa [S/\zeta ]$$
+$$\Sigma \mid \Gamma[S/\zeta] @ A[S/\zeta] \vdash \tau[S/\zeta ] :: \kappa [S/\zeta ]$$
 \end{lemma}
 
 \begin{proof}
@@ -495,12 +520,87 @@ By induction on the proof $\Sigma,\zeta \mid \Gamma @ A \vdash \tau :: \kappa$.
 
 \begin{description}
 \item[Case \sc{Record}]:~\\
-The inductive hypothesis gives $$\Sigma \mid \Gamma @ A[S/\zeta] \vdash \tau[S/\zeta] :: \mathit{KString}([S/\zeta]d,\phi)$$
+The inductive hypothesis gives $$\Sigma \mid \Gamma[S/\zeta] @ A[S/\zeta] \vdash \tau[S/\zeta] :: \mathit{KString}([S/\zeta]d,\phi)$$
 and
-$$\Sigma \mid \Gamma @ B_i[S/\zeta] \vdash \tau_i[S/\zeta] :: \iota_i[S/\zeta]^{~i \in 1..n}$$
+$$\Sigma \mid \Gamma[S/\zeta] @ B_i[S/\zeta] \vdash \tau_i[S/\zeta] :: \iota_i[S/\zeta]^{~i \in 1..n}$$
 and
-$$\Sigma \mid \Gamma@ A_i[S/\zeta] \vdash \tau_i'[S/\zeta] :: \kappa_i[S/\zeta]^{~i \in 1..n}$$
+$$\Sigma \mid \Gamma[S/\zeta ]@ A_i[S/\zeta] \vdash \tau_i'[S/\zeta] :: \kappa_i[S/\zeta]^{~i \in 1..n}$$
+Applying Lemma \ref{SK-Subst2} gives
+$$\Sigma \vdash \iota_i[S/\zeta] <:: \star^{~i \in 1..n}$$
+Applying Lemma \ref{SK-Subst3} gives
+$$\Sigma \vdash \kappa_i[S/\zeta] <:: \ast^{~i \in 1..n}$$ 
+Applying \begin{sc}Record\end{sc} then gives 
+$$\Sigma \mid \Gamma[S/\zeta] @ (A[S/\zeta] \cup \bigcup_{i \in 1.. n} A_i[S/\zeta] \cup B_i[S/\zeta]) \vdash \tau[S/\zeta].\{ [\tau_i[S/\zeta] :^{m_i} \tau_i'[S/\zeta]^{~i \in 1..n} \} :: \mathit{KTree}(d[S/\zeta])$$
+that is,
+$$\Sigma \mid \Gamma[S/\zeta] @ (A \cup \bigcup_{i \in 1..n} A_i \cup B_i)[S/\zeta] \vdash (\tau.\{ [\tau_i] :^{m_i} \tau'_i \})[S/\zeta] :: (\mathit{KTree}(d))[S/\zeta]$$
 
+\item[Case \sc{Path}]:~\\
+Applying lemma \ref{SWF-Subst} to $\Sigma,\zeta \vdash S_i^{~i \in 1..n}$ gives $\Sigma \vdash S_i[S/\zeta]^{~i \in 1..n}$. The IH gives $\Sigma \mid \Gamma[S/\zeta] @ A[S/\zeta] \vdash \tau[S/\zeta] :: \kappa[S/\zeta]$. Applying lemma \ref{SK-Subst2} gives $\Sigma \vdash \kappa[S/\zeta] <:: \star$.
+
+\item[Case \begin{sc}StrAbs\end{sc}]:~\\
+
+TODO.
+
+\item[Case \sc{TyAbs}]:~\\
+
+TODO.
+
+\item[Case \sc{TyApp}]:~\\
+
+TODO.
+
+\item[Case \sc{StrApp}]:~\\
+
+TODO.
+
+\end{description}
+
+\end{proof}
+
+\subsection*{Semantic Substitution}
+
+\subsubsection*{Notation}
+
+Given sets $I$ and $I$ and a function $u : I \to J$, we write $u^* : \mathit{Fam}(\mbf{Posets})_J \to \mathit{Fam}(\mbf{Posets})_I$ for the substitution functor induced by $u$, e.g. for an $J$-indexed family of posets $\sdisp{P_j}_{j \in J}$ we have $u^* \sdisp{P_j}_{j \in J} = \sdisp{ P_{u(i)} }_{i \in I}$.
+
+We overload the notation $u^*$ to other set-indexed families. For example, we can also use $u^* : \mathit{Fam}(\mathit{Strings})_J \to \mathit{Fam}(\mathit{Strings})_I$ to reindex $J$-indexed families of strings, considering the set $\mathit{Strings}$ as a discrete category. 
+
+\subsubsection*{Index substitution}
+
+\begin{lemma}
+If $\Sigma,\zeta \vdash S$ and $\Sigma \vdash S'$ then $\Sigma \vdash S[S'/\zeta]$ and $$\sem{\Sigma \vdash S[S'/\zeta]} = \langle \mathit{id}, \sem{\Sigma \vdash S'} \rangle^* \sem{\Sigma,\zeta \vdash S}$$
+\end{lemma}
+
+\begin{proof}
+
+\end{proof}
+
+\subsubsection*{Kind well-formedness semantic substitution}
+
+\begin{lemma}
+Let $\Sigma,\zeta \vdash \kappa$ and $\Sigma \vdash S$. Then $$\sem{\Sigma \vdash \kappa[S/\zeta]} = \langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^* \sem{\Sigma,\zeta \vdash \kappa}$$
+\end{lemma}
+
+\begin{proof}
+By induction on the proof of $\Sigma \vdash \kappa$.
+\begin{description}
+\item[Case \begin{sc}KWF-Str\end{sc}]:~\\
+Hello
+\end{description}
+\end{proof}
+
+\subsubsection*{Kinding semantic substitution}
+
+\begin{lemma}
+Let $g \doteq \sem{\Sigma \vdash S}$. Then $\sem{\Sigma \mid \Gamma[S/\zeta] @ A[S/\zeta] \vdash \tau[S/\zeta] :: \kappa[S/\zeta]} = \langle \mathit{id}, g \rangle^* \sem{\Sigma,\zeta \mid \Gamma @ A \vdash \tau :: \kappa}$. 
+\end{lemma}
+
+\begin{proof}
+By induction on the proof of $\Sigma,\zeta \mid \Gamma @ A \vdash \tau :: \kappa$.
+
+\begin{description}
+\item[\sc{Record}]:~\\
+The IH gives $$\sem{\Sigma \mid \Gamma[S/\zeta] @ A[S/\zeta] \vdash \tau[S/\zeta] :: \kappa[S/\zeta]} = \langle \mathit{id}, g \rangle^* \sem{\Sigma,\zeta \mid \Gamma @ A \vdash \tau :: \kappa}$$ and $$\sem{\Sigma \mid \Gamma[S/\zeta] @ B_i[S/\zeta] \vdash \tau_i[S/\zeta] :: \kappa_i[S/\zeta]} = \langle \mathit{id}, g \rangle^* \sem{\Sigma,\zeta \mid \Gamma @ B_i \vdash \tau_i :: \iota_i}^{~i \in 1..n}$$ and $$\sem{\Sigma \mid \Gamma[S/\zeta] @ A_i[S/\zeta] \vdash \tau_i'[S/\zeta] :: \kappa_i[S/\zeta]} = \langle \mathit{id}, g \rangle^* \sem{\Sigma,\zeta \mid \Gamma @ A_i \vdash \tau_i' :: \kappa_i}^{~i \in 1..n}$$
 \end{description}
 
 \end{proof}
@@ -519,6 +619,6 @@ We do so by induction on the structure of $\tau$.
 
 Rather than just using a list of variables for the string index context, we should classify each
 string index variable by the set of possible characters that may occur in the string. 
-
+ 
 \end{document}
   
