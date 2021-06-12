@@ -95,8 +95,8 @@ $\mathit{TypeVars}$ & $\doteq$ & the set of all type variables \\
 $\mathit{StringVars}$ & $\doteq$ & the set of all string variables \\
 $\alpha$ & $\in$ & $\mathit{TypeVars}$ & ~ \\
 $\zeta$ & $\in$ & $\mathit{StringVars}$ & ~ \\
-$c$ & $\in$ & $\mathit{Chars}$ & (character) \\
-$\phi$ & $\in$ & $\mathcal P(\mathit{Chars})$ & (a subset of the set of characters) \\
+$c$ & $\in$ & $\mathit{Chars}$ & (characters) \\
+$\phi$ & $\in$ & $\mathcal P(\mathit{Chars})$ & (subsets of the set of characters) \\
 $s,t$ & $\in$ & $\mathit{Strings}$ & (where $\mathit{Strings} = \mathit{Chars}^{\star}$) \\~\\
 $S$ (string index) & $::=$ & $s$ & (literal string) \\
                    & $\mid$ & $\zeta$ & (string variable) \\~\\
@@ -106,7 +106,7 @@ $d$ (discriminator) & $::=$  & $\mathit{Prefix}~s$ & (values begin with $s$) \\
 $m$ (multiplicity) & $::=$ & $1 \mid \mathit{set} \mid \mathit{opt}$\\~\\
 $\tau$ (type) & $::=$ & $\mathit{tuple} \{ s_i : \tau_i : c_i^{~i \in 1..n} \}$ & (pieced string) \\
        & $\mid$ & $S$ & (string index) \\
-       & $\mid$ & $(S_1,\ldots,S_n).[\kappa]$ & (path type) \\
+       & $\mid$ & $(S_1,\ldots,S_n).[\phi]$ & (path type) \\
        & $\mid$ & $\biguplus \tau_i^{~i \in 1..n}$ & (union of disjoint types) \\ 
        & $\mid$ & $\tau.\{[\tau_i] :^{m_i} \tau_i ^{~i \in 1..n}\}$ & (record type - $\mathit{root}.\{ fields \}$) \\ 
        & $\mid$ & $\lambda (\alpha :: \kappa). \tau$ & (type abstraction) \\
@@ -139,13 +139,12 @@ $\Gamma$ (kind context) & $::=$ & $\Gamma,x :: \kappa$ & (context extension) \\
   {~}
   {\Sigma \vdash s}
 \end{mathpar}
-The interpretation $\sem{\Sigma}$ of an index context $\Sigma = \zeta_1, \ldots, \zeta_n$ is the set of all functions from $\{ \zeta_1, \ldots, \zeta_n \}$ to the set of strings. The interpretation $\sem{\Sigma \vdash S}$ of a well-formed index judgment is a function from $\sem{\Sigma}$ to the set of all strings, i.e. $\sem{\Gamma \vdash S} : \sem{\Gamma} \to \mathit{Strings}$, defined as follows:
+The interpretation $\sem{\Sigma}$ of an index context $\Sigma = \zeta_1, \ldots, \zeta_n$ is the set of all functions from $\{ \zeta_1, \ldots, \zeta_n \}$ to the set of strings. The interpretation $\sem{\Sigma \vdash S}$ of a well-formed index judgment is a $\sem{\Sigma}$-indexed family of strings, i.e., viewing the set $\mathit{Strings}$ as a discrete category, it is an object of $\mathit{Fam}(\mathit{Strings})_{\sem{\Sigma}}$ defined as follows:
 \begin{mathpar}
-\sem{\Sigma \vdash \zeta} \sigma \doteq \sigma(\zeta)
+\sem{\Sigma \vdash \zeta} \doteq (\sigma(\zeta))_{\sigma \in \sem{\Sigma}}
 \and
-\sem{\Sigma \vdash s} \sigma \doteq s
+\sem{\Sigma \vdash s} \doteq (s)_{\sigma \in \sem{\Sigma}}
 \end{mathpar}
-We choose to view $\mathit{Strings}$ as a discretely ordered poset rather than a set. We view $\sem{\Sigma \vdash S}$ as a $\sem{\Sigma}$-indexed family 
 
 \section*{Discriminator well-formedness}
 
@@ -159,11 +158,11 @@ We choose to view $\mathit{Strings}$ as a discretely ordered poset rather than a
   {\Sigma \vdash \mathit{Literal}~S}
 \end{mathpar}
 
-The interpretation $\sem{\Sigma \vdash d}$ of a discriminator well-formedness judgment is a function from $\sem{\Sigma}$ into $\mathcal P(\mathit{Strings})$. 
+The interpretation $\sem{\Sigma \vdash d}$ of a discriminator well-formedness judgment is a $\sem{\Sigma}$-indexed family of sets of strings, i.e., viewing $\mathcal P(\mathit{Strings})$ as a thin category ordered by set inclusion, an object of $\mathit{Fam}(\mathcal P(\mathit{Strings}))_{\sem{\Sigma}}$. 
 \begin{mathpar}
-\sem{\Sigma \vdash \mathit{Prefix}~S}\sigma \doteq \{ t \mid \sem{\Sigma \vdash S} \sigma \text{ is a prefix of } t \}
+\sem{\Sigma \vdash \mathit{Prefix}~S} \doteq (\{ t \mid \sem{\Sigma \vdash S}_\sigma \text{ is a prefix of } t \})_{\sigma \in \sem{\Sigma}}
 \and
-\sem{\Sigma \vdash \mathit{Literal}~S} \sigma \doteq \{ \sem{\Sigma \vdash S}\sigma \}
+\sem{\Sigma \vdash \mathit{Literal}~S} \doteq (\{ \sem{\Sigma \vdash S}_\sigma \})_{\sigma \in \sem{\Sigma}}
 \end{mathpar}
 
 \section*{Discriminator subsumption}
@@ -183,9 +182,21 @@ The interpretation $\sem{\Sigma \vdash d}$ of a discriminator well-formedness ju
 \and
 \end{mathpar}
 
-Above, $s' \sqsubseteq s$ means ``$s'$ is a prefix of $s$''.
-Ordering $\mathcal P(\mathit{Strings})$ by inclusion and the function space $\sem{\Sigma} \to \mathcal P(\mathit{Strings})$ pointwise, 
-The interpretation $\sem{\Sigma \vdash d \leq d'}$ of a subsumption judgment is a proof that that $\sem{\Sigma \vdash d} \leq \sem{\Sigma \vdash d'}$.
+Above, $s' \sqsubseteq s$ means ``$s'$ is a prefix of $s$''. 
+The interpretation $\sem{\Sigma \vdash d \leq d'}$ of a subsumption judgment is an arrow of $\mathit{Fam}(\mathcal P(\mathit{Strings}))_{\sem{\Sigma}}$ with domain $\sem{\Sigma \vdash d}$ and codomain $\sem{\Sigma \vdash d'}$.
+
+\section*{Database instances}
+
+Given lists $\rho$ and $\theta$ of strings, we write $\rho \cdot \theta$ for the list obtained by concatenating $\theta$ to the right of $\rho$.
+A \emph{database instance} is a partial function $f : \mathit{Strings}^{\star} \rightharpoonup \mathit{Strings}$ from lists of strings to strings. We write $\mathit{Inst}$ for the set of database instances. For a database instance $f$ and a list of strings $\rho$, we write $f \! \mid_\rho$ for the database instance defined such that for all lists of strings $\theta$ we have $$f \! \mid_\rho \! (\theta) \doteq f(\rho \cdot \theta)$$
+Furthermore, we define $\mathit{keys}(f) \doteq \{ s \mid f(s) \text{ is defined } \}$.
+
+\section*{Coeffect Well-formedness}
+
+The judgment $\Sigma \vdash A$ means that the coeffect $A$ is well-formed under index context $\Sigma$,
+in the sense that for each $(S_1,\ldots,S_n).[\phi] \in A$ we have $\Sigma \vdash S_i^{~i \in 1..n}$.
+
+The interpretation $\sem{\Sigma \vdash A}$ is a $\sem{\Sigma}$-indexed family of sets of database instances, defined as $$\sem{\Sigma \vdash A} \doteq \sdisp{\bigcap_{(S_1,\ldots,S_n).[\kappa] \in A} \{ f \in \mathit{Inst} \mid \forall s \in \mathit{keys}(f \! \mid_{\sigma S_1, \ldots, \sigma S_n}).~\mathit{chars}(s) \subseteq \phi \}}_{\sigma \in \sem{\Sigma}}$$
 
 \section*{Kind well-formedness}
 
@@ -207,9 +218,12 @@ The interpretation $\sem{\Sigma \vdash d \leq d'}$ of a subsumption judgment is 
   {\Sigma \vdash \forall \zeta. \kappa}
 \end{mathpar}
 
-The interpretation $\sem{\Sigma \vdash \kappa}$ of a kind well-formedness judgment is a $\sem{\Sigma}$-indexed family of posets, defined, for $\sigma \in \sem{\Sigma}$ as follows.
+The interpretation $\sem{\Sigma \vdash \kappa}$ of a kind well-formedness judgment is a $\sem{\Sigma}$-indexed family of posets, defined as follows.
 
-$$\sem{\Sigma \vdash \mathit{KString}(d,\phi)} \sigma \doteq (\mathcal P(X), \subseteq),~~\text{where } X \doteq \{ x \in \sem{\Sigma \vdash d} \sigma \mid \mathit{chars}(x) \subseteq \phi \}$$
+\begin{tabular}{ll}
+$\sem{\Sigma \vdash \mathit{KString}(d,\phi)} \doteq \sdisp{~(\mathcal P(X_\sigma), \subseteq)~}_{\sigma \in \sem{\Sigma}}$ & $\text{where } X_\sigma \doteq \{ x \in \sem{\Sigma \vdash d}_\sigma \mid \mathit{chars}(x) \subseteq \phi \}$ \\
+$\sem{\Sigma \vdash \mathit{KTree}(d)} \doteq \sdisp{~(\mathcal P(Y_\sigma), \subseteq)~}_{\sigma \in \sem{\Sigma}}$ & $\text{where } Y_\sigma \doteq \{ f \in \mathit{Strings}^\star \rightharpoonup \mathit{Strings} \mid f(\epsilon) \in \sem{\Sigma \vdash d}_{\sigma} \}$
+\end{tabular}
 
 \section*{Subkinding}
 
@@ -228,19 +242,6 @@ The interpretation $\sem{\Sigma \vdash \kappa <:: \kappa'}$ is a mono in the fib
   {\Sigma \vdash d \leq d'}
   {\Sigma \vdash \mathit{KTree}(d) <:: \mathit{KTree}(d')}
 \end{mathpar}
-
-\section*{Database instances}
-
-Given lists $\rho$ and $\theta$ of strings, we write $\rho \cdot \theta$ for the list obtained by concatenating $\theta$ to the right of $\rho$.
-A \emph{database instance} is a partial function $f : \mathit{Strings}^{\star} \rightharpoonup \mathit{Strings}$ from lists of strings to strings. We write $\mathit{Inst}$ for the set of database instances. For a database instance $f$ and a list of strings $\rho$, we write $f \! \mid_\rho$ for the database instance defined such that for all lists of strings $\theta$ we have $$f \! \mid_\rho \! (\theta) \doteq f(\rho \cdot \theta)$$
-Furthermore, we define $\mathit{keys}(f) \doteq \{ s \mid f(s) \text{ is defined } \}$.
-
-\section*{Coeffect Well-formedness}
-
-The judgment $\Sigma \vdash A$ means that the coeffect $A$ is well-formed under index context $\Sigma$,
-in the sense that for each $(S_1,\ldots,S_n).[\kappa] \in A$ we have $\Sigma \vdash S_i^{~i \in 1..n}$ and $\Sigma \vdash \kappa$.
-
-The interpretation $\sem{\Sigma \vdash A}$ is a function of type $\sem{\Sigma} \to \mathcal{P}(\mathit{Inst})$, defined as $$\sem{\Sigma \vdash A}\sigma \doteq \bigcap_{(S_1,\ldots,S_n).[\kappa] \in A} \{ f \in \mathit{Inst} \mid \mathit{keys}(f \! \mid_{\sigma S_1, \ldots, \sigma S_n}) \subseteq \sem{\Sigma \vdash \kappa} \sigma \}$$
 
 \section*{Fibred graded comonads}
 
@@ -275,9 +276,8 @@ In what follows, we define $\ast \doteq \mathit{KTree}(\mathit{Prefix}~\epsilon)
   {\Sigma \mid \Gamma@(A \cup \bigcup_{i \in 1..n} A_i \cup B_i) \vdash \tau.\{[\tau_i] :^{m_i} \tau_i'^{~i \in 1..n}\} :: \mathit{KTree}(d)}
 \and
 \inferrule[Path]
-  {\Sigma \vdash S_i^{~i \in 1..n} \\ 
-   \Sigma \mid \Gamma@A \vdash \tau :: \kappa \\ \Sigma \vdash \kappa <:: \star}
-  {\Sigma \mid \Gamma@(\{ (S_1,\ldots,S_n).[\kappa] \} \cup A) \vdash (S_1,\ldots,S_n).[\kappa] :: \kappa}
+  {\Sigma \vdash S_i^{~i \in 1..n}}
+  {\Sigma \mid \Gamma@(\{ (S_1,\ldots,S_n).[\phi] \} \cup A) \vdash (S_1,\ldots,S_n).[\phi] :: \mathit{KString}(\mathit{Prefix}~\epsilon,\phi)}
 \and
 \inferrule[StrAbs]
   {\Sigma, \zeta \mid \Gamma @ \emptyset \vdash \tau :: \kappa}
@@ -319,9 +319,8 @@ We will prove that $\Sigma \mid \Gamma @ A \vdash \tau :: \kappa$ implies that $
   {\Sigma \mid \Gamma@(A \cup \bigcup_{i \in 1..n} A_i \cup B_i) \vdash \tau.\{[\tau_i] :^{m_i} \tau_i'^{~i \in 1..n}\} :: \mathit{KTree}(d)}
 \and
 \inferrule[Path]
-  {\Sigma \vdash S_i^{~i \in 1..n} \\ 
-   \Sigma \mid \Gamma@A \vdash \tau :: \kappa \\ \Sigma \vdash \kappa <:: \star}
-  {\Sigma \mid \Gamma@(\{ (S_1,\ldots,S_n).[\tau] \} \cup A) \vdash (S_1,\ldots,S_n).[\tau] :: \kappa}
+  {\Sigma \vdash S_i^{~i \in 1..n}}
+  {\Sigma \mid \Gamma@(\{ (S_1,\ldots,S_n).[\phi] \} \cup A) \vdash (S_1,\ldots,S_n).[\phi] :: \mathit{KString}(\mathit{Prefix}~\epsilon,\phi)}
 \and
 \inferrule[StrAbs]
   {\sem{\Sigma, \zeta \mid \Gamma @ \emptyset \vdash \tau :: \kappa} = f : D_{\Sigma,\zeta}\emptyset(\sem{\Sigma,\zeta \vdash \Gamma}) \to \sem{\Sigma,\zeta \vdash \kappa}}
@@ -361,6 +360,14 @@ $= D_{\Sigma} A (\sem{\Sigma \vdash \Gamma})$
 \end{tabu}
 
 \subsection*{Index substitution lemmas}
+
+\subsubsection*{Notation}
+
+Given sets $I$ and $I$ and a function $u : I \to J$, we write $u^* : \mathit{Fam}(\mbf{Posets})_J \to \mathit{Fam}(\mbf{Posets})_I$ for the substitution functor induced by $u$, e.g. for an $J$-indexed family of posets $\sdisp{P_j}_{j \in J}$ we have $u^* \sdisp{P_j}_{j \in J} = \sdisp{ P_{u(i)} }_{i \in I}$.
+
+We overload the notation $u^*$ to other forms of set-indexed families. For example, we can also use $u^* : \mathit{Fam}(\mathit{Strings})_J \to \mathit{Fam}(\mathit{Strings})_I$ to reindex $J$-indexed families of strings, considering the set $\mathit{Strings}$ as a discrete category. 
+
+\subsubsection*{Lemmas}
 
 \begin{lemma}
 If $\Sigma,\zeta \vdash S$ and $\Sigma \vdash S'$ then $\Sigma \vdash S[S'/\zeta]$. Furthermore, $$\sem{\Sigma \vdash S[S'/\zeta]} = \langle \mathit{id}, \sem{\Sigma \vdash S'} \rangle^* \sem{\Sigma,\zeta \vdash S}$$
@@ -558,12 +565,6 @@ TODO.
 \end{proof}
 
 \subsection*{Semantic Substitution}
-
-\subsubsection*{Notation}
-
-Given sets $I$ and $I$ and a function $u : I \to J$, we write $u^* : \mathit{Fam}(\mbf{Posets})_J \to \mathit{Fam}(\mbf{Posets})_I$ for the substitution functor induced by $u$, e.g. for an $J$-indexed family of posets $\sdisp{P_j}_{j \in J}$ we have $u^* \sdisp{P_j}_{j \in J} = \sdisp{ P_{u(i)} }_{i \in I}$.
-
-We overload the notation $u^*$ to other set-indexed families. For example, we can also use $u^* : \mathit{Fam}(\mathit{Strings})_J \to \mathit{Fam}(\mathit{Strings})_I$ to reindex $J$-indexed families of strings, considering the set $\mathit{Strings}$ as a discrete category. 
 
 \subsubsection*{Index substitution}
 
