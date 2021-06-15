@@ -100,8 +100,8 @@ $\phi$ & $\in$ & $\mathcal P(\mathit{Chars})$ & (subsets of the set of character
 $s,t$ & $\in$ & $\mathit{Strings}$ & (where $\mathit{Strings} = \mathit{Chars}^{\star}$) \\~\\
 $S$ (string index) & $::=$ & $s$ & (literal string) \\
                    & $\mid$ & $\zeta$ & (string variable) \\~\\
-$d$ (discriminator) & $::=$  & $\mathit{Prefix}~s$ & (values begin with $s$) \\
-    & $\mid$ & $\mathit{Literal}~s$ & (values are equal to $s$) \\
+$d$ (discriminator) & $::=$  & $\mathit{Prefix}~S$ & (values begin with $s$) \\
+    & $\mid$ & $\mathit{Literal}~S$ & (values are equal to $S$) \\
  & & \\
 $m$ (multiplicity) & $::=$ & $1 \mid \mathit{set} \mid \mathit{opt}$\\~\\
 $\tau$ (type) & $::=$ & $\mathit{tuple} \{ s_i : \tau_i : c_i^{~i \in 1..n} \}$ & (pieced string) \\
@@ -110,7 +110,7 @@ $\tau$ (type) & $::=$ & $\mathit{tuple} \{ s_i : \tau_i : c_i^{~i \in 1..n} \}$ 
        & $\mid$ & $\biguplus \tau_i^{~i \in 1..n}$ & (union of disjoint types) \\ 
        & $\mid$ & $\tau.\{[\tau_i] :^{m_i} \tau_i ^{~i \in 1..n}\}$ & (record type - $\mathit{root}.\{ fields \}$) \\ 
        & $\mid$ & $\lambda (\alpha :: \kappa). \tau$ & (type abstraction) \\
-       & $\mid$ & $\lambda \zeta. \tau$ & (string abstraction) \\
+       & $\mid$ & $\lambda \zeta. \tau$ & (index abstraction) \\
        & $\mid$ & $\tau~[S]$ & (index application) \\
        & $\mid$ & $\tau~\tau$ & (type application) \\
        & $\mid$ & $\alpha$ & (type variable) \\~\\
@@ -118,14 +118,13 @@ $\kappa, \iota$ (kind) & $::=$ & $\mathit{KString}(d,\phi)$ & (Kind of string ty
                          & $\mid$ & $\mathit{KTree}(d)$ & (Kind of tree types w/ root discriminator $d$) \\
                          & $\mid$ & $\kappa \overset{A}{\Rightarrow} \kappa$ & (Kind of type abstractions) \\
                          & $\mid$ & $\forall \zeta. \kappa$ & (Kind of string abstractions) \\~\\
+\end{tabular}\\~\\~\\
+\begin{tabular}{llll}
 $\Sigma$ (index context) & $::=$ & $\Sigma,\zeta$ & (context extension) \\
                          & $\mid$ & $\emptyset$ & (empty context) \\~\\
 $\Gamma$ (kind context) & $::=$ & $\Gamma,x :: \kappa$ & (context extension) \\
                            & $\mid$ & $\emptyset$ & (empty context) \\~\\
-
-\end{tabular}\\~\\~\\
-\begin{tabular}{llll}
-
+$A$ (coeffect) & $\subseteq$ & $\mathit{String}^\star \times \mathcal P(\mathit{Chars})$ & ~ 
 \end{tabular}
 
 \section*{Index well-formedness}
@@ -158,7 +157,7 @@ The interpretation $\sem{\Sigma}$ of an index context $\Sigma = \zeta_1, \ldots,
   {\Sigma \vdash \mathit{Literal}~S}
 \end{mathpar}
 
-The interpretation $\sem{\Sigma \vdash d}$ of a discriminator well-formedness judgment is a $\sem{\Sigma}$-indexed family of sets of strings, i.e., viewing $\mathcal P(\mathit{Strings})$ as a thin category ordered by set inclusion, an object of $\mathit{Fam}(\mathcal P(\mathit{Strings}))_{\sem{\Sigma}}$. 
+The interpretation $\sem{\Sigma \vdash d}$ of a discriminator well-formedness judgment is a $\sem{\Sigma}$-indexed family of sets of strings, i.e., viewing $\mathcal P(\mathit{Strings})$ as a thin category ordered by set inclusion, $\sem{\Sigma \vdash d}$ is an object of $\mathit{Fam}(\mathcal P(\mathit{Strings}))_{\sem{\Sigma}}$. 
 \begin{mathpar}
 \sem{\Sigma \vdash \mathit{Prefix}~S} \doteq (\{ t \mid \sem{\Sigma \vdash S}_\sigma \text{ is a prefix of } t \})_{\sigma \in \sem{\Sigma}}
 \and
@@ -189,14 +188,31 @@ The interpretation $\sem{\Sigma \vdash d \leq d'}$ of a subsumption judgment is 
 
 Given lists $\rho$ and $\theta$ of strings, we write $\rho \cdot \theta$ for the list obtained by concatenating $\theta$ to the right of $\rho$.
 A \emph{database instance} is a partial function $f : \mathit{Strings}^{\star} \rightharpoonup \mathit{Strings}$ from lists of strings to strings. We write $\mathit{Inst}$ for the set of database instances. For a database instance $f$ and a list of strings $\rho$, we write $f \! \mid_\rho$ for the database instance defined such that for all lists of strings $\theta$ we have $$f \! \mid_\rho \! (\theta) \doteq f(\rho \cdot \theta)$$
-Furthermore, we define $\mathit{keys}(f) \doteq \{ s \mid f(s) \text{ is defined } \}$.
+Furthermore, we define $\mathit{keys}(f) \doteq \{ s \mid f(s) \text{ is defined} \}$.
 
 \section*{Coeffect Well-formedness}
 
 The judgment $\Sigma \vdash A$ means that the coeffect $A$ is well-formed under index context $\Sigma$,
 in the sense that for each $(S_1,\ldots,S_n).[\phi] \in A$ we have $\Sigma \vdash S_i^{~i \in 1..n}$.
 
-The interpretation $\sem{\Sigma \vdash A}$ is a $\sem{\Sigma}$-indexed family of sets of database instances, defined as $$\sem{\Sigma \vdash A} \doteq \sdisp{\bigcap_{(S_1,\ldots,S_n).[\kappa] \in A} \{ f \in \mathit{Inst} \mid \forall s \in \mathit{keys}(f \! \mid_{\sigma S_1, \ldots, \sigma S_n}).~\mathit{chars}(s) \subseteq \phi \}}_{\sigma \in \sem{\Sigma}}$$
+The interpretation $\sem{\Sigma \vdash A}$ is a $\sem{\Sigma}$-indexed family of posets of database instances, defined as $$\sem{\Sigma \vdash A} \doteq (I_\sigma, \leq_\sigma)_{\sigma \in \sem{\Sigma}}$$ where $$I_\sigma \doteq \sdisp{\bigcap_{(S_1,\ldots,S_n).[\kappa] \in A} \{ f \in \mathit{Inst} \mid \forall s \in \mathit{keys}(f \! \mid_{\sigma S_1, \ldots, \sigma S_n}).~\mathit{chars}(s) \subseteq \phi \}}_{\sigma \in \sem{\Sigma}}$$ and for $f,g \in I_{\sigma}$ we have
+$$f \leq_\sigma g \overset{\cdot}{\Leftrightarrow} (\forall \rho \in \mathit{Strings}^\star.~f(\rho) \text{ is defined} \Rightarrow g(\rho) \text{ is defined})$$
+
+
+\section*{Fibred graded comonads}
+
+For each $\Sigma$, we define a graded comonad $D_{\Sigma}$ on the category $\mathit{Fam}(\mbf{Posets})_{\sem{\Sigma}}$ of $\sem{\Sigma}$-indexed families of posets. The scalar coeffect structure is $$( \{ A \mid \Sigma \vdash A \}, \cup, \cup, \emptyset, \emptyset, \subseteq)$$ For objects $(X_\sigma)_{\sigma \in \sem{\Sigma}}$ of the fibre $\mathit{Fam}(\mbf{Posets})_{\sem{\Sigma}}$, we define $$D_{\Sigma} A(~(X_\sigma)_{\sigma \in \sem{\Sigma}}~) \doteq (X_\sigma \times \sem{\Sigma \vdash A}_\sigma)_{\sigma \in \sem{\Sigma}}$$ For arrows $(f_\sigma : X_\sigma \to Y_\sigma)_{\sigma \in \sem{\Sigma}}$ of the fibre $\mathit{Fam}(\mbf{Posets})_{\sem{\Sigma}}$ we define $$D_{\Sigma} A(~(f_\sigma)_{\sigma \in \sem{\Sigma}}~) \doteq (~(x_\sigma, a_\sigma) \mapsto (f_\sigma(x_\sigma),a_\sigma)~)_{\sigma \in \sem{\Sigma}}$$ Its counit $\epsilon$ is defined as $$\epsilon_X(x) \doteq (x,\mathit{Inst})$$ Its comultiplication $\delta$, for coeffect scalars $A$ and $B$, is defined as $$\delta_{A,B}((x,a),b) \doteq (x, a \cap b)$$ For string contexts $\Sigma$ and coeffect scalars $\Sigma \vdash A$ and $\Sigma \vdash B$ with $A \subseteq B$ we have a natural transformation $\mathit{sub}_{A,B} : D_{\Sigma} B \to D_{\Sigma } A$, defined as the family of inclusions $(\sem{\Sigma \vdash B}_\sigma \subseteq \sem{\Sigma \vdash A}_\sigma)_{\sigma \in \sem{\Sigma}}$.\\~\\
+For coeffect scalars $\Sigma \vdash A$ and kinding contexts $\Sigma \vdash \Gamma,x :: \kappa$, we have a natural isomorphism $$m_{\Sigma,A,\Gamma,\kappa} : D_{\Sigma} \emptyset(\sem{\Sigma \vdash \Gamma}) \times D_{\Sigma} A( \sem{\Sigma \vdash \kappa} ) \overset{\sim}{\to} D_{\Sigma} A \sem{\Sigma \vdash \Gamma,x :: \kappa}$$ defined to discard the copy of $\sem{\Sigma \vdash \emptyset}$ produced by applying $D_{\Sigma} \emptyset$ and then reassociate.
+
+\section*{Substitution Functors}
+
+Given a function $u : I \to J$, we write $u^* : \mathit{Fam}(\mbf{Posets})_J \to \mathit{Fam}(\mbf{Posets})_I$ for the substitution functor induced by $u$; i.e., for an $J$-indexed family of posets $\sdisp{P_j}_{j \in J}$ we have $$u^* (\sdisp{P_j}_{j \in J}) = \sdisp{ P_{u(i)} }_{i \in I}$$ and for a $J$-indexed family of monotone functions $(f_j : P_j \to Q_j)_{j \in J}$ we have $$u^*(\sdisp{f_j}_{j \in J}) \doteq \sdisp{f_{u(i)}}_{i \in I}$$
+
+We overload the notation $u^*$ to other forms of set-indexed families. For example, we can also use $u^* : \mathit{Fam}(\mathit{Strings})_J \to \mathit{Fam}(\mathit{Strings})_I$ to reindex $J$-indexed families of strings, considering the set $\mathit{Strings}$ as a discrete category. 
+
+\section*{Simple Products}
+
+Hello
 
 \section*{Kind well-formedness}
 
@@ -220,9 +236,11 @@ The interpretation $\sem{\Sigma \vdash A}$ is a $\sem{\Sigma}$-indexed family of
 
 The interpretation $\sem{\Sigma \vdash \kappa}$ of a kind well-formedness judgment is a $\sem{\Sigma}$-indexed family of posets, defined as follows.
 
-\begin{tabular}{ll}
-$\sem{\Sigma \vdash \mathit{KString}(d,\phi)} \doteq \sdisp{~(\mathcal P(X_\sigma), \subseteq)~}_{\sigma \in \sem{\Sigma}}$ & $\text{where } X_\sigma \doteq \{ x \in \sem{\Sigma \vdash d}_\sigma \mid \mathit{chars}(x) \subseteq \phi \}$ \\
-$\sem{\Sigma \vdash \mathit{KTree}(d)} \doteq \sdisp{~(\mathcal P(Y_\sigma), \subseteq)~}_{\sigma \in \sem{\Sigma}}$ & $\text{where } Y_\sigma \doteq \{ f \in \mathit{Strings}^\star \rightharpoonup \mathit{Strings} \mid f(\epsilon) \in \sem{\Sigma \vdash d}_{\sigma} \}$
+\begin{tabular}{lll}
+$\sem{\Sigma \vdash \mathit{KString}(d,\phi)}$ & $\doteq \sdisp{~(\mathcal P(X_\sigma), \subseteq)~}_{\sigma \in \sem{\Sigma}}$ & $\text{where } X_\sigma \doteq \{ x \in \sem{\Sigma \vdash d}_\sigma \mid \mathit{chars}(x) \subseteq \phi \}$ \\
+$\sem{\Sigma \vdash \mathit{KTree}(d)}$ & $\doteq \sdisp{~(\mathcal P(Y_\sigma), \subseteq)~}_{\sigma \in \sem{\Sigma}}$ & $\text{where } Y_\sigma \doteq \{ f \in \mathit{Inst} \mid f(\epsilon) \in \sem{\Sigma \vdash d}_{\sigma} \}$\\
+$\sem{\Sigma \vdash \kappa \overset{A}{\Rightarrow} \kappa'}$ & $\doteq D_{\Sigma} A(\sem{\Sigma \vdash \kappa}) \Rightarrow \sem{\Sigma \vdash \kappa'}$\\
+$\sem{\Sigma \vdash \forall \zeta. \kappa}$ & $\doteq \Pi_{\sem{\Sigma},\sem{\zeta}} \sem{\Sigma,\zeta \vdash \kappa} $ & ~
 \end{tabular}
 
 \section*{Subkinding}
@@ -243,17 +261,6 @@ The interpretation $\sem{\Sigma \vdash \kappa <:: \kappa'}$ is a mono in the fib
   {\Sigma \vdash \mathit{KTree}(d) <:: \mathit{KTree}(d')}
 \end{mathpar}
 
-\section*{Fibred graded comonads}
-
-For each $\Sigma$, we define a graded comonad $D_{\Sigma}$ on the category $\mathit{Fam}(\mbf{Posets})_{\sem{\Sigma}}$ of
-$\sem{\Sigma}$-indexed families of posets. The scalar coeffect structure is 
-$$( \{ A \mid \Sigma \vdash A \}, \cup, \cup, \emptyset, \emptyset, \subseteq)$$
-For objects $(X_\sigma)_{\sigma \in \sem{\Sigma}}$ of the fibre $\mathit{Fam}(\mbf{Posets})_{\sem{\Sigma}}$, we define $$D_{\Sigma} A(~(X_\sigma)_{\sigma \in \sem{\Sigma}}~) \doteq (X_\sigma \times \sem{\Sigma \vdash A}\sigma)_{\sigma \in \sem{\Sigma}}$$.
-For arrows $(f_\sigma : X_\sigma \to Y_\sigma)_{\sigma \in \sem{\Sigma}}$ of the fibre $\mathit{Fam}(\mbf{Posets})_{\sem{\Sigma}}$ we define $$D_{\Sigma} A(~(f_\sigma)_{\sigma \in \sem{\Sigma}}~) \doteq (~(x_\sigma, a_\sigma) \mapsto (f_\sigma(x_\sigma),a_\sigma)~)_{\sigma \in \sem{\Sigma}}$$
-Its counit $\epsilon$ is defined as $$\epsilon_X(x) \doteq (x,\mathit{Inst})$$
-Its comultiplication $\delta$, for coeffect scalars $A$ and $B$, is defined as $$\delta_{A,B}((x,a),b) \doteq (x, a \cap b)$$
-For all string contexts $\Sigma$ and coeffect scalars $\Sigma \vdash A$ and $\Sigma \vdash B$ with $A \subseteq B$ we have a natural transformation $\mathit{sub}_{A,B} : D_{\Sigma} B \to D_{\Sigma } A$. Since for posets $X$, $\sem{\Sigma \vdash B} \subseteq \sem{\Sigma \vdash A}$, we have that $\mathit{sub}_{A,B}$ is the identity function.\\~\\
-For all coeffect scalars $\Sigma \vdash A$ and kinding contexts $\Sigma \vdash \Gamma,x :: \kappa$, we have a natural isomorphism $$m_{\Sigma,A,\Gamma,\kappa} : D_{\Sigma} \emptyset(\sem{\Sigma \vdash \Gamma}) \times D_{\Sigma} A( \sem{\Sigma \vdash \kappa} ) \overset{\sim}{\to} D_{\Sigma} A \sem{\Sigma \vdash \Gamma,x :: \kappa}$$ defined to discard the copy of $\sem{\Sigma \vdash \emptyset}$ produced by applying $D_{\Sigma} \emptyset$, and to reassociate.
 \section*{Kinding}
 
 In what follows, we define $\ast \doteq \mathit{KTree}(\mathit{Prefix}~\epsilon)$, where $\epsilon$ is the empty string, so that all proper types have kind $\ast$. We define $\star \doteq \mathit{KString}(\mathit{Prefix}~\epsilon, \mathit{Chars})$, so that all string types have kind $\star$.
