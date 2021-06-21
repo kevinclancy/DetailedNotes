@@ -351,13 +351,13 @@ We will prove that $\Sigma \mid \Gamma @ A \vdash \tau :: \kappa$ implies that $
 %\and
 \inferrule[Record]
   {\sem{\Sigma \mid \Gamma@A \vdash \tau :: \mathit{KString}(d,\phi)} = f \\ 
-   \sem{\Sigma \mid \Gamma@B_i \vdash \tau_i :: \iota_i} = g_i^{~i \in 1..n} \\ \sem{\Sigma \vdash \iota_i <:: \star} = m_i^{~i \in 1..n} \\ 
-    \sem{\Sigma \mid \Gamma@A_i \vdash \tau_i' :: \kappa_i} = h_i^{~i \in 1..n} \\ \sem{\Sigma \vdash \kappa_i <:: \ast} = n_i^{~i \in 1..n}}
-  {\sem{\Sigma \mid \Gamma@(A \cup \bigcup_{i \in 1..n} A_i \cup B_i) \vdash \tau.\{[\tau_i] :^{m_i} \tau_i'^{~i \in 1..n}\} :: \mathit{KTree}(d)}_\sigma (\gamma,a) \doteq \\ \{ g \in \mathit{Inst} \mid (g(\epsilon) \in f(\gamma,a)) \wedge \\ (\forall s \in (g_i;m_i)(\gamma,a).~g \! \mid_{[s]} \in (h_i;n_i)(\gamma,a))^{i \in 1 ..n} \wedge \\ (g \# (g_i;m_i)(\gamma,a) \in \sem{m_i})^{i \in 1..n} \} }
+   \sem{\Sigma \mid \Gamma@B_i \vdash \tau_i :: \iota_i} = g_i^{~i \in 1..n} \\ \sem{\Sigma \vdash \iota_i <:: \star} = k_i^{~i \in 1..n} \\ 
+    \sem{\Sigma \mid \Gamma@A_i \vdash \tau_i' :: \kappa_i} = h_i^{~i \in 1..n} \\ \sem{\Sigma \vdash \kappa_i <:: \ast} = j_i^{~i \in 1..n}}
+  {\sem{\Sigma \mid \Gamma@(A \cup \bigcup_{i \in 1..n} A_i \cup B_i) \vdash \tau.\{[\tau_i] :^{m_i} \tau_i'^{~i \in 1..n}\} :: \mathit{KTree}(d)}_\sigma (\gamma,a) \doteq \\ \{ g \in \mathit{Inst} \mid (g(\epsilon) \in f_\sigma(\gamma,a)) \wedge \\ (\forall s \in (g_{i \sigma};j_{i \sigma})(\gamma,a).~g \! \mid_{[s]} \in (h_{i \sigma};k_{i \sigma})(\gamma,a))^{i \in 1 ..n} \wedge \\ (g \# (g_{i \sigma};j_{i \sigma})(\gamma,a) \in \sem{m_i})^{i \in 1..n} \} }
 \and
 \inferrule[Path]
   {\sem{\Sigma \vdash S_i} = f_i^{~i \in 1..n}}
-  {\sem{\Sigma \mid \Gamma@(\{ (S_1,\ldots,S_n).[\phi] \} \cup A) \vdash (S_1,\ldots,S_n).[\phi] :: \mathit{KString}(\mathit{Prefix}~\epsilon,\phi)}(\gamma,a) \doteq \\ \{ s \in \mathit{Strings} \mid a([f_1(\gamma),\ldots,f_n(\gamma),s]) \text{ is defined } \}}
+  {\sem{\Sigma \mid \Gamma@(\{ (S_1,\ldots,S_n).[\phi] \} \cup A) \vdash (S_1,\ldots,S_n).[\phi] :: \mathit{KString}(\mathit{Prefix}~\epsilon,\phi)}(\gamma,a) \doteq \\ \{ s \in \mathit{Strings} \mid a([f_1(\gamma),\ldots,f_n(\gamma),s]) \text{ is defined} \}}
 \and
 \inferrule[StrAbs]
   {\sem{\Sigma, \zeta \mid \Gamma @ \emptyset \vdash \tau :: \kappa} = f : D_{\Sigma,\zeta}\emptyset(\sem{\Sigma,\zeta \vdash \Gamma}) \to \sem{\Sigma,\zeta \vdash \kappa}}
@@ -582,11 +582,24 @@ $$\Sigma \mid \Gamma[S/\zeta] @ (A[S/\zeta] \cup \bigcup_{i \in 1.. n} A_i[S/\ze
 and furthermore,
 \begin{center}
 \begin{tabular}{l}
-$(\langle \mathit{id}, \sem{\Gamma \vdash S} \rangle^* \sem{\Sigma,\zeta \mid \Gamma @ A \cup \bigcup_{i \in 1..n} A_i \cup B_i \vdash \tau.\{ [\tau_i] :^{m_i} \tau_i' \} :: \mathit{KTree(d)} })_\sigma (\gamma,a)$ \\
-$= \sem{\Sigma,\zeta \mid \Gamma @ A \cup \bigcup_{i \in 1..n} A_i \cup B_i \vdash \tau.\{ [\tau_i] :^{m_i} \tau_i' \} :: \mathit{KTree(d)} }_{\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle(\sigma)}(\gamma,a)$ \\
-$= \{ g \in \mathit{Inst} \mid g(\epsilon) \in \sem{\Sigma,\zeta \mid \Gamma @ A \vdash \tau :: \mathit{KString(d,\phi)}}~\wedge$ \\
-$~~~~~\forall s \in (\sem{\Sigma,\zeta \mid \Gamma @ B_i \vdash \tau_i :: \iota_i};\sem{\Sigma,\zeta \vdash \iota_i <:: \star})(\gamma,a).$\\
-$~~~~~~~~~~~g \! \mid_{[s]} \in (\sem{\Sigma,\zeta \mid \Gamma @ A_i \vdash \tau_i' :: \kappa};\sem{\Sigma,\zeta \vdash \kappa_i <:: \ast})(\gamma,a)^{~i \in 1..n} \}$
+$(\langle \mathit{id}, \sem{\Gamma \vdash S} \rangle^* \sem{\Sigma,\zeta \mid \Gamma @ A \cup \bigcup_{i \in 1..n} (A_i \cup B_i) \vdash \tau.\{ [\tau_i] :^{m_i} \tau_i' \} :: \mathit{KTree(d)} })_\sigma (\gamma,a)$ \\~\\
+$= \sem{\Sigma,\zeta \mid \Gamma @ A \cup \bigcup_{i \in 1..n} (A_i \cup B_i) \vdash \tau.\{ [\tau_i] :^{m_i} \tau_i' \} :: \mathit{KTree(d)} }_{\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle(\sigma)}(\gamma,a)$ \\~\\
+$= \{ g \in \mathit{Inst} \mid$ \\
+$~~~~~~g(\epsilon) \in \sem{\Sigma,\zeta \mid \Gamma @ A \vdash \tau :: \mathit{KString(d,\phi)}}_{\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle(\sigma)}(\gamma,a)~\wedge$ \\
+$~~~~~~\forall s \in (\sem{\Sigma,\zeta \mid \Gamma @ B_i \vdash \tau_i :: \iota_i}_{\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle(\sigma)};\sem{\Sigma,\zeta \vdash \iota_i <:: \star}_{\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle(\sigma)})(\gamma,a).$\\
+$~~~~~~~~g \! \mid_{[s]} \in (\sem{\Sigma,\zeta \mid \Gamma @ A_i \vdash \tau_i' :: \kappa}_{\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle(\sigma)};\sem{\Sigma,\zeta \vdash \kappa_i <:: \ast}_{\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle(\sigma)})(\gamma,a)^{~i \in 1..n}~\wedge$\\
+$~~~~~~g \# (\sem{\Sigma,\zeta \mid \Gamma @ B_i \vdash \tau_i :: \iota_i}_{\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle(\sigma)};\sem{\Sigma,\zeta \vdash \iota_i <:: \star}_{\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle(\sigma)})(\gamma,a) \in \sem{m_i}^{~i \in 1..n} \}$\\~\\
+$= \{ g \in \mathit{Inst} \mid$ \\
+$~~~~~~g(\epsilon) \in \langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^* \sem{\Sigma,\zeta \mid \Gamma @ A \vdash \tau :: \mathit{KString(d,\phi)}}_{\sigma}(\gamma,a)~\wedge$ \\
+$~~~~~~\forall s \in (\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^* \sem{\Sigma,\zeta \mid \Gamma @ B_i \vdash \tau_i :: \iota_i}_{\sigma};\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^* \sem{\Sigma,\zeta \vdash \iota_i <:: \star}_{\sigma})(\gamma,a).$\\
+$~~~~~~~~g \! \mid_{[s]} \in (\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^* \sem{\Sigma,\zeta \mid \Gamma @ A_i \vdash \tau_i' :: \kappa}_{\sigma};\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^* \sem{\Sigma,\zeta \vdash \kappa_i <:: \ast}_{\sigma})(\gamma,a)^{~i \in 1..n}~\wedge$\\
+$~~~~~~g \# (\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^* \sem{\Sigma,\zeta \mid \Gamma @ B_i \vdash \tau_i :: \iota_i}_{\sigma};\sem{\Sigma,\zeta \vdash \iota_i <:: \star}_{\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle(\sigma)})(\gamma,a) \in \sem{m_i}^{~i \in 1..n} \}$ \\~\\
+$= \{ g \in \mathit{Inst} \mid$ \\
+$~~~~~~g(\epsilon) \in \sem{\Sigma \mid \Gamma[S/\zeta] @ A[S/\zeta] \vdash \tau[S/\zeta] :: \mathit{KString(d[S/\zeta],\phi)}}_{\sigma}(\gamma,a)~\wedge$ \\
+$~~~~~~\forall s \in (\sem{\Sigma \mid \Gamma[S/\zeta] @ B_i[S/\zeta] \vdash \tau_i[S/\zeta] :: \iota_i[S/\zeta]}_{\sigma};\sem{\Sigma \vdash \iota_i[S/\zeta] <:: \star}_{\sigma})(\gamma,a).$\\
+$~~~~~~~~g \! \mid_{[s]} \in (\sem{\Sigma \mid \Gamma[S/\zeta] @ A_i[S/\zeta] \vdash \tau_i'[S/\zeta] :: \kappa[S/\zeta]}_{\sigma};\sem{\Sigma \vdash \kappa_i[S/\zeta] <:: \ast}_{\sigma})(\gamma,a)^{~i \in 1..n}~\wedge$\\
+$~~~~~~g \# (\sem{\Sigma \mid \Gamma[S/\zeta] @ B_i[S/\zeta] \vdash \tau_i[S/\zeta] :: \iota_i[S/\zeta]}_{\sigma};\sem{\Sigma \vdash \iota_i[S/\zeta] <:: \star}_{\sigma})(\gamma,a) \in \sem{m_i}^{~i \in 1..n} \}$\\~\\
+$= \sem{\Sigma \mid \Gamma[S/\zeta] @ (A \cup \bigcup_{i \in 1..n} (A_i \cup B_i))[S/\zeta] \vdash (\tau.\{ [\tau_i] :^{m_i} \tau'_i \})[S/\zeta] :: \mathit{KTree}(d)[S/\zeta]  }_{\sigma}(\gamma,a)  $
 \end{tabular}
 \end{center}
 that is,
