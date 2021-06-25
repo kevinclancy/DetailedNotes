@@ -296,6 +296,10 @@ The interpretation $\sem{\Sigma \vdash \kappa <:: \kappa'}$ is a mono in the fib
 In what follows, we define $\ast \doteq \mathit{KTree}(\mathit{Prefix}~\epsilon)$, where $\epsilon$ is the empty string, so that all proper types have kind $\ast$. We define $\star \doteq \mathit{KString}(\mathit{Prefix}~\epsilon, \mathit{Chars})$, so that all string types have kind $\star$.
 
 \begin{mathpar}
+\inferrule[TyVar]
+  {i \in 1..n}
+  {\Sigma \mid x_1 :: \kappa_1, \ldots, x_n :: \kappa_n \vdash x_i :: \kappa_i}
+\and
 \inferrule[Tuple]
   {\Sigma \mid \Gamma@A_i \vdash \tau_i :: \kappa_i^{~i \in 1..n} \\ 
    \Sigma \vdash \kappa_i <:: \mathit{KString}(d_i,\phi_i)^{~i \in 1..n} \\
@@ -314,7 +318,7 @@ In what follows, we define $\ast \doteq \mathit{KTree}(\mathit{Prefix}~\epsilon)
 \and
 \inferrule[Path]
   {\Sigma \vdash S_i^{~i \in 1..n}}
-  {\Sigma \mid \Gamma@(\{ (S_1,\ldots,S_n).[\phi] \} \cup A) \vdash (S_1,\ldots,S_n).[\phi] :: \mathit{KString}(\mathit{Prefix}~\epsilon,\phi)}
+  {\Sigma \mid \Gamma@(\{ (S_1,\ldots,S_n).[\phi] \}) \vdash (S_1,\ldots,S_n).[\phi] :: \mathit{KString}(\mathit{Prefix}~\epsilon,\phi)}
 \and
 \inferrule[StrAbs]
   {\Sigma, \zeta \mid \Gamma @ \emptyset \vdash \tau :: \kappa}
@@ -349,6 +353,10 @@ We will prove that $\Sigma \mid \Gamma @ A \vdash \tau :: \kappa$ implies that $
 %  {\Sigma \mid \Gamma@A_i \vdash \tau_i :: \mathit{KTree}(d_i)^{~i \in 1..n} \\ \mathit{disjoint} \{ d_i^{~i \in 1..n} \} }
 %  {\Sigma \mid \Gamma@(\bigcup_{i \in 1..n} A_i) \vdash \biguplus_{i \in 1..n} \tau_i :: \mathit{KTree}(\mathit{merge}~\{ d_i^{~i \in 1..n} \})}
 %\and
+\inferrule[TyVar]
+  {i \in 1..n}
+  {\sem{\Sigma \mid x_1:\kappa, \ldots, x_n :: \kappa_n \vdash x_i :: \kappa_i} \doteq \pi_{\sem{\Sigma \vdash \kappa_1},\ldots,\sem{\Sigma \vdash \kappa_n}}^i}
+\and
 \inferrule[Record]
   {\sem{\Sigma \mid \Gamma@A \vdash \tau :: \mathit{KString}(d,\phi)} = f \\ 
    \sem{\Sigma \mid \Gamma@B_i \vdash \tau_i :: \iota_i} = g_i^{~i \in 1..n} \\ \sem{\Sigma \vdash \iota_i <:: \star} = k_i^{~i \in 1..n} \\ 
@@ -357,7 +365,7 @@ We will prove that $\Sigma \mid \Gamma @ A \vdash \tau :: \kappa$ implies that $
 \and
 \inferrule[Path]
   {\sem{\Sigma \vdash S_i} = f_i^{~i \in 1..n}}
-  {\sem{\Sigma \mid \Gamma@(\{ (S_1,\ldots,S_n).[\phi] \} \cup A) \vdash (S_1,\ldots,S_n).[\phi] :: \mathit{KString}(\mathit{Prefix}~\epsilon,\phi)}(\gamma,a) \doteq \\ \{ s \in \mathit{Strings} \mid a([f_1(\gamma),\ldots,f_n(\gamma),s]) \text{ is defined} \}}
+  {\sem{\Sigma \mid \Gamma@(\{ (S_1,\ldots,S_n).[\phi] \}) \vdash (S_1,\ldots,S_n).[\phi] :: \mathit{KString}(\mathit{Prefix}~\epsilon,\phi)}_{\sigma}(\gamma,a) \doteq \\ \{ s \in \mathit{Strings} \mid a([f_{1 \sigma}(\gamma),\ldots,f_{n \sigma}(\gamma),s]) \text{ is defined} \}}
 \and
 \inferrule[StrAbs]
   {\sem{\Sigma, \zeta \mid \Gamma @ \emptyset \vdash \tau :: \kappa} = f : D_{\Sigma,\zeta}\emptyset(\sem{\Sigma,\zeta \vdash \Gamma}) \to \sem{\Sigma,\zeta \vdash \kappa}}
@@ -368,9 +376,10 @@ We will prove that $\Sigma \mid \Gamma @ A \vdash \tau :: \kappa$ implies that $
   {\sem{\Sigma \mid \Gamma @ \emptyset \vdash \lambda (\alpha :: \kappa).\tau :: \kappa \overset{A}{\Rightarrow} \kappa'} \doteq \Lambda(m_{\Sigma,A,\Gamma,\kappa};f) : D_{\Sigma} \emptyset(\sem{\Sigma \vdash \Gamma}) \to \sem{\Sigma \vdash \kappa \overset{A}{\Rightarrow} \kappa'}}
 \and
 \inferrule[TyApp]
-  {\Sigma \mid \Gamma @ A \vdash \tau :: \kappa \overset{C}{\Rightarrow} \iota \\ 
-   \Sigma \mid \Gamma @ B \vdash \tau' :: \kappa}
-  {\Sigma \mid \Gamma @ (A \cup B \cup C) \vdash \tau~\tau' :: \iota}
+  {\sem{\Sigma \mid \Gamma @ A \vdash \tau :: \kappa \overset{C}{\Rightarrow} \iota} = f : D_\Sigma A \sem{\Sigma \vdash \Gamma} \to (D_\Sigma C \sem{\Sigma \vdash \kappa} \Rightarrow \sem{\Sigma \vdash \iota}) \\ 
+   \sem{\Sigma \mid \Gamma @ B \vdash \tau' :: \kappa} = g : D_\Sigma B \sem{\Sigma \vdash \Gamma} \to \sem{\Sigma \vdash \kappa}}
+  {\sem{\Sigma \mid \Gamma @ (A \cup B \cup C) \vdash \tau~\tau' :: \iota} = \\ 
+\langle (\mathit{sub}_{A \cup B \cup C, A})_{\sem{\Sigma \vdash \Gamma}};f, (\mathit{sub}_{A \cup B \cup C,C \cup B})_{\sem{\Sigma \vdash \Gamma}};(\delta_{C,B})_{\sem{\Sigma \vdash \Gamma}};D_{\Sigma} C(g) \rangle;(\mathit{ev})_{D_{\Sigma}C(\sem{\Sigma \vdash \Gamma})}}
 \and
 \inferrule[StrApp]
   {\sem{\Sigma \mid \Gamma @ A \vdash \tau :: \forall \zeta. \kappa} = f : D_{\Sigma}A(\sem{\Sigma \vdash \Gamma}) \to \sem{\Sigma \vdash \forall \zeta. \kappa} \\ \sem{\Sigma \vdash S} = g : \sem{\Sigma} \to \mathit{Strings}}
@@ -575,10 +584,16 @@ $= \langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^* \sem{\Sigma,\zeta \mid \
 $$\Sigma \mid \Gamma[S/\zeta ]@ A_i[S/\zeta] \vdash \tau_i'[S/\zeta] :: \kappa_i[S/\zeta]^{~i \in 1..n}$$
 Applying Lemma \ref{SK-Subst2} gives
 $$\Sigma \vdash \iota_i[S/\zeta] <:: \star^{~i \in 1..n}$$
+and 
+$$\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^* \sem{\Sigma \vdash \iota_i[S/\zeta] <:: \star} = \sem{\Sigma \vdash \iota_i[S/\zeta] <:: \star}^{~i \in 1..n}$$
 Applying Lemma \ref{SK-Subst3} gives
 $$\Sigma \vdash \kappa_i[S/\zeta] <:: \ast^{~i \in 1..n}$$ 
+and
+$$\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^* \sem{\Sigma \vdash \kappa_i[S/\zeta] <:: \ast} = \sem{\Sigma \vdash \kappa_i[S/\zeta] <:: \ast}^{~i \in 1..n}$$
 Applying \begin{sc}Record\end{sc} then gives 
 $$\Sigma \mid \Gamma[S/\zeta] @ (A[S/\zeta] \cup \bigcup_{i \in 1.. n} A_i[S/\zeta] \cup B_i[S/\zeta]) \vdash \tau[S/\zeta].\{ [\tau_i[S/\zeta] :^{m_i} \tau_i'[S/\zeta]^{~i \in 1..n} \} :: \mathit{KTree}(d[S/\zeta])$$
+that is,
+$$\Sigma \mid \Gamma[S/\zeta] @ (A \cup \bigcup_{i \in 1..n} A_i \cup B_i)[S/\zeta] \vdash (\tau.\{ [\tau_i] :^{m_i} \tau'_i \})[S/\zeta] :: (\mathit{KTree}(d))[S/\zeta]$$
 and furthermore,
 \begin{center}
 \begin{tabular}{l}
@@ -602,11 +617,24 @@ $~~~~~~g \# (\sem{\Sigma \mid \Gamma[S/\zeta] @ B_i[S/\zeta] \vdash \tau_i[S/\ze
 $= \sem{\Sigma \mid \Gamma[S/\zeta] @ (A \cup \bigcup_{i \in 1..n} (A_i \cup B_i))[S/\zeta] \vdash (\tau.\{ [\tau_i] :^{m_i} \tau'_i \})[S/\zeta] :: \mathit{KTree}(d)[S/\zeta]  }_{\sigma}(\gamma,a)  $
 \end{tabular}
 \end{center}
-that is,
-$$\Sigma \mid \Gamma[S/\zeta] @ (A \cup \bigcup_{i \in 1..n} A_i \cup B_i)[S/\zeta] \vdash (\tau.\{ [\tau_i] :^{m_i} \tau'_i \})[S/\zeta] :: (\mathit{KTree}(d))[S/\zeta]$$
-
+and therefore,
+$$\langle \mathit{id}, \sem{\Gamma \vdash S} \rangle^* \sem{\Sigma,\zeta \mid \Gamma @ A \cup \bigcup_{i \in 1..n} (A_i \cup B_i) \vdash \tau.\{ [\tau_i] :^{m_i} \tau_i' \} :: \mathit{KTree}(d))}$$ $$=$$ $$\sem{\Sigma \mid \Gamma[S/\zeta] @ (A \cup \bigcup_{i \in 1..n} (A_i \cup B_i))[S/\zeta] \vdash (\tau.\{ [\tau_i] :^{m_i} \tau'_i \})[S/\zeta] :: \mathit{KTree}(d)[S/\zeta]}$$
 \item[Case \sc{Path}]:~\\
-Applying lemma \ref{SWF-Subst} to $\Sigma,\zeta \vdash S_i^{~i \in 1..n}$ gives $\Sigma \vdash S_i[S/\zeta]^{~i \in 1..n}$. The IH gives $\Sigma \mid \Gamma[S/\zeta] @ A[S/\zeta] \vdash \tau[S/\zeta] :: \kappa[S/\zeta]$. Applying lemma \ref{SK-Subst2} gives $\Sigma \vdash \kappa[S/\zeta] <:: \star$.
+Applying lemma \ref{SWF-Subst} to $\Sigma,\zeta \vdash S_i^{~i \in 1..n}$ gives $$\Sigma \vdash S_i[S/\zeta]^{~i \in 1..n}$$ and $$\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^* \sem{\Sigma, \zeta \vdash S_i} = \sem{\Sigma \vdash S_i[S/\zeta]}^{i \in 1..n}$$ 
+Applying \begin{sc}Path\end{sc} gives 
+$$\Sigma \mid \Gamma[S/\zeta] @ \{ (S_1[S/\zeta],\ldots,S_n[S/\zeta]).[\phi] \} \vdash S_1[S/\zeta],\ldots,S_n[S/\zeta]).[\phi] :: \mathit{KString}(\mathit{Prefix}~\epsilon,\phi)$$
+i.e.,
+$$\Sigma \mid \Gamma[S/\zeta] @ \{ (S_1,\ldots,S_n).[\phi] \}[S/\zeta] \vdash ((S_1,\ldots,S_n).[\phi])[S/\zeta] :: (\mathit{KString}(\mathit{Prefix}~\epsilon,\phi))[S/\zeta]$$
+Furthermore, we have\\~\\
+$(\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^* \sem{\Sigma,\zeta \vdash \Gamma @ \{ (S_1, \ldots, S_n).[\phi] \} \vdash (S_1, \ldots, S_n).[\phi] :: \mathit{KString(\mathit{Prefix}~\epsilon,\phi)} })_{\sigma}(\gamma,a)$\\~\\
+$= \sem{\Sigma,\zeta \vdash \Gamma @ \{ (S_1, \ldots, S_n).[\phi] \} \vdash (S_1, \ldots, S_n).[\phi] :: \mathit{KString(\mathit{Prefix}~\epsilon,\phi)}}_{\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle(\sigma)}(\gamma,a)$\\~\\
+$= \{ s \in \mathit{Strings} \mid a([\sem{\Sigma,\zeta \vdash S_1}_{\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle}, \ldots, \sem{\Sigma,\zeta \vdash S_n}_{\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle}, s])\}$\\~\\
+$= \{ s \in \mathit{Strings} \mid$ \\
+$~~~~~~~~~~~~~a([\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^*\sem{\Sigma,\zeta \vdash S_1}_\sigma, \ldots, \langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^*\sem{\Sigma,\zeta \vdash S_n}_\sigma, s])\}$\\~\\
+$= \{ s \in \mathit{Strings} \mid a([\sem{\Sigma \vdash S_1[S/\zeta]}_\sigma, \ldots, \sem{\Sigma \vdash S_n[S/\zeta]}_\sigma, s])\}$\\~\\
+$= \sem{\Sigma \mid \Gamma[S/\zeta] @ A[S/\zeta] \vdash (S_1[S/\zeta], \ldots S_n[S/\zeta]).[\phi] :: \mathit{KString}(\mathit{Prefix}~\epsilon,\phi)}_{\sigma}(\gamma, a)$\\~\\
+$= \sem{\Sigma \mid \Gamma[S/\zeta] @ A[S/\zeta] \vdash ((S_1, \ldots S_n).[\phi])[S/\zeta] :: (\mathit{KString}(\mathit{Prefix}~\epsilon,\phi))[S/\zeta]}_\sigma(\gamma,a)$
+
 
 \item[Case \begin{sc}StrAbs\end{sc}]:~\\
 
@@ -628,57 +656,22 @@ TODO.
 
 \end{proof}
 
-\subsection*{Semantic Substitution}
-
-\subsubsection*{Index substitution}
-
-\begin{lemma}
-If $\Sigma,\zeta \vdash S$ and $\Sigma \vdash S'$ then $\Sigma \vdash S[S'/\zeta]$ and $$\sem{\Sigma \vdash S[S'/\zeta]} = \langle \mathit{id}, \sem{\Sigma \vdash S'} \rangle^* \sem{\Sigma,\zeta \vdash S}$$
-\end{lemma}
-
-\begin{proof}
-
-\end{proof}
-
-\subsubsection*{Kind well-formedness semantic substitution}
-
-\begin{lemma}
-Let $\Sigma,\zeta \vdash \kappa$ and $\Sigma \vdash S$. Then $$\sem{\Sigma \vdash \kappa[S/\zeta]} = \langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^* \sem{\Sigma,\zeta \vdash \kappa}$$
-\end{lemma}
-
-\begin{proof}
-By induction on the proof of $\Sigma \vdash \kappa$.
-\begin{description}
-\item[Case \begin{sc}KWF-Str\end{sc}]:~\\
-Hello
-\end{description}
-\end{proof}
-
-\subsubsection*{Kinding semantic substitution}
-
-\begin{lemma}
-Let $g \doteq \sem{\Sigma \vdash S}$. Then $\sem{\Sigma \mid \Gamma[S/\zeta] @ A[S/\zeta] \vdash \tau[S/\zeta] :: \kappa[S/\zeta]} = \langle \mathit{id}, g \rangle^* \sem{\Sigma,\zeta \mid \Gamma @ A \vdash \tau :: \kappa}$. 
-\end{lemma}
-
-\begin{proof}
-By induction on the proof of $\Sigma,\zeta \mid \Gamma @ A \vdash \tau :: \kappa$.
-
-\begin{description}
-\item[\sc{Record}]:~\\
-The IH gives $$\sem{\Sigma \mid \Gamma[S/\zeta] @ A[S/\zeta] \vdash \tau[S/\zeta] :: \kappa[S/\zeta]} = \langle \mathit{id}, g \rangle^* \sem{\Sigma,\zeta \mid \Gamma @ A \vdash \tau :: \kappa}$$ and $$\sem{\Sigma \mid \Gamma[S/\zeta] @ B_i[S/\zeta] \vdash \tau_i[S/\zeta] :: \kappa_i[S/\zeta]} = \langle \mathit{id}, g \rangle^* \sem{\Sigma,\zeta \mid \Gamma @ B_i \vdash \tau_i :: \iota_i}^{~i \in 1..n}$$ and $$\sem{\Sigma \mid \Gamma[S/\zeta] @ A_i[S/\zeta] \vdash \tau_i'[S/\zeta] :: \kappa_i[S/\zeta]} = \langle \mathit{id}, g \rangle^* \sem{\Sigma,\zeta \mid \Gamma @ A_i \vdash \tau_i' :: \kappa_i}^{~i \in 1..n}$$
-\end{description}
-
-\end{proof}
-
 \subsection*{Soundness}
 
-\subsubsection*{String abstraction applications}
+\subsubsection*{Index reduction}
 
-We must prove that $\Sigma \mid \Gamma @ A \vdash (\lambda \zeta.\tau)~[S] :: \kappa[S/\zeta]$ implies 
-$$\Sigma \mid \Gamma @ A \vdash \tau[S/\zeta] :: \kappa[S/\zeta]$$
-We must further prove that $$\sem{\Sigma \mid \Gamma @ A \vdash (\lambda \zeta.\tau)~[S] :: \kappa[S/\zeta]}$$
-is equal to $$\sem{\Sigma \mid \Gamma @ A \vdash \tau[S/\zeta] :: \kappa[S/\zeta]}$$
-We do so by induction on the structure of $\tau$.
+Soundness for index reduction is standard. We must prove that $$\Sigma \mid \Gamma @ \emptyset \vdash (\lambda \zeta.\tau)~[S] :: \kappa[S/\zeta]$$ implies $$\Sigma \mid \Gamma @ \emptyset \vdash \tau[S/\zeta] :: \kappa[S/\zeta]$$ This is a straightforward corollary of the index substitution lemma.
+We must further prove that $$\sem{\Sigma \mid \Gamma @ \emptyset \vdash (\lambda \zeta.\tau)~[S] :: \kappa[S/\zeta]}$$
+is equal to $$\sem{\Sigma \mid \Gamma @ \emptyset \vdash \tau[S/\zeta] :: \kappa[S/\zeta]}$$ or, because $\zeta$ does not occur in $\Sigma$ and hence $\Gamma[S/\zeta] = \Gamma$, $$\sem{\Sigma \mid \Gamma[S/\zeta] @ \emptyset \vdash \tau[S/\zeta] :: \kappa[S/\zeta]}$$ which we've proven is equal to $$\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^* \sem{\Sigma,\zeta \mid \Gamma @ \emptyset \vdash \tau :: \kappa}$$
+Unfolding the definition of $\sem{\Sigma \mid \Gamma @ \emptyset \vdash (\lambda \zeta. \tau)~[S]}$, it easy to see this:\\~\\
+$\sem{\Sigma \mid \Gamma @ \emptyset \vdash (\lambda \zeta. \tau)~[S]}$\\
+$= \langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^* (\sem{\Sigma,\zeta \mid \Gamma @ \emptyset \vdash \tau :: \kappa}^\flat)^\sharp$\\
+$= \langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^* \sem{\Sigma,\zeta \mid \Gamma @ \emptyset \vdash \tau :: \kappa}$ 
+
+\subsubsection*{Type reduction}
+
+Soundness for type reduction is also standard. We must prove that $$\Sigma \mid \Gamma @ A \vdash (\lambda x :: \kappa. \tau)~\tau' :: \iota$$ implies $$\Sigma \mid \Gamma @ A \vdash \tau[\tau'/x] :: \iota$$ This is a straigtforward corollary of the type substitution lemma. Furthermore, we must prove
+TODO: explain the semantic side of this
 
 \section*{Additional ideas}
 
