@@ -125,7 +125,8 @@ $\Sigma$ (index context) & $::=$ & $\Sigma,\zeta$ & (context extension) \\
                          & $\mid$ & $\emptyset$ & (empty context) \\~\\
 $\Gamma$ (kind context) & $::=$ & $\Gamma,x :: \kappa$ & (context extension) \\
                            & $\mid$ & $\emptyset$ & (empty context) \\~\\
-$A$ (coeffect) & $\subseteq$ & $\mathit{String}^\star \times \mathcal P(\mathit{Chars})$ & ~ 
+$q$ (coeffect constraint)  & $::=$ & $(S_1,\ldots,S_n).[\phi]$ & ~ \\~\\ 
+$A$ (coeffect) & $\subseteq$ & $q$ & ~ 
 \end{tabular}
 
 \section*{Index well-formedness}
@@ -207,11 +208,15 @@ in the sense that for each $(S_1,\ldots,S_n).[\phi] \in A$ we have $\Sigma \vdas
 The interpretation $\sem{\Sigma \vdash A}$ is a $\sem{\Sigma}$-indexed family of posets of database instances, defined as $$\sem{\Sigma \vdash A} \doteq (I_\sigma, \leq_\sigma)_{\sigma \in \sem{\Sigma}}$$ where $$I_\sigma \doteq \sdisp{\bigcap_{(S_1,\ldots,S_n).[\phi] \in A} \{ f \in \mathit{Inst} \mid \forall s \in \mathit{keys}(f \! \mid_{\sigma S_1, \ldots, \sigma S_n}).~\mathit{chars}(s) \subseteq \phi \}}_{\sigma \in \sem{\Sigma}}$$ and for $f,g \in I_{\sigma}$ we have
 $$f \leq_\sigma g \overset{\cdot}{\Leftrightarrow} (\forall \rho \in \mathit{Strings}^\star.~f(\rho) \text{ is defined} \Rightarrow g(\rho) \text{ is defined})$$
  
+\section*{Coeffect composition}
 
+For all $\Sigma$ and all $A$ and $B$ with $\Sigma \vdash A$ and $\Sigma \vdash B$ we define $A \bullet B$ as\\~\\
+$(A - B)~\cup~(B - A)~\cup$\\
+$\{ (S_1,\ldots,S_n).[\phi_1 \cap \phi_2] \mid (S_1,\ldots,S_n).[\phi_1] \in A \wedge (S_1,\ldots,S_n).[\phi_2] \in B \}$ 
 \section*{Fibred graded comonads}
  
-For each $\Sigma$, we define a graded comonad $D_{\Sigma}$ on the category $\mathit{Fam}(\mbf{Posets})_{\sem{\Sigma}}$ of $\sem{\Sigma}$-indexed families of posets. The scalar coeffect structure is $$( \{ A \mid \text{the judgment } \Sigma \vdash A \text{ is provable} \}, \cup, \cup, \emptyset, \emptyset, \subseteq)$$ For objects $(X_\sigma)_{\sigma \in \sem{\Sigma}}$ of the fibre $\mathit{Fam}(\mbf{Posets})_{\sem{\Sigma}}$, we define $$D_{\Sigma} A(~(X_\sigma)_{\sigma \in \sem{\Sigma}}~) \doteq (X_\sigma \times \sem{\Sigma \vdash A}_\sigma)_{\sigma \in \sem{\Sigma}}$$ For arrows $(f_\sigma : X_\sigma \to Y_\sigma)_{\sigma \in \sem{\Sigma}}$ of the fibre $\mathit{Fam}(\mbf{Posets})_{\sem{\Sigma}}$ we define $$D_{\Sigma} A(~(f_\sigma)_{\sigma \in \sem{\Sigma}}~) \doteq (~(x_\sigma, a_\sigma) \mapsto (f_\sigma(x_\sigma),a_\sigma)~)_{\sigma \in \sem{\Sigma}}$$ Its counit $\epsilon$ is defined as $$\epsilon_X(x,a) \doteq x
-$$ Its comultiplication $\delta$, for coeffect scalars $A$ and $B$, is defined as $$\delta_{A,B}((x,a),b) \doteq (x, a \cap b)$$ For string contexts $\Sigma$ and coeffect scalars $\Sigma \vdash A$ and $\Sigma \vdash B$ with $A \subseteq B$ we have a natural transformation $\mathit{sub}_{A,B} : D_{\Sigma} B \to D_{\Sigma } A$, defined at component $X \in \mathit{Fam}(\mbf{Posets})_{\sem{\Sigma}}$ as the family of monotone functions $$(~(x,b) \mapsto (x,b) : X_\sigma \times \sem{\Sigma \vdash B}_\sigma \to X_{\sigma} \times \sem{\Sigma \vdash A}_{\sigma}~)_{\sigma \in \sem{\Sigma}}$$
+For each $\Sigma$, we define a graded comonad $D_{\Sigma}$ on the category $\mathit{Fam}(\mbf{Posets})_{\sem{\Sigma}}$ of $\sem{\Sigma}$-indexed families of posets. The scalar coeffect structure is $$( \{ A \mid \text{the judgment } \Sigma \vdash A \text{ is provable} \}, \bullet, \bullet, \emptyset, \emptyset, \subseteq)$$ For objects $(X_\sigma)_{\sigma \in \sem{\Sigma}}$ of the fibre $\mathit{Fam}(\mbf{Posets})_{\sem{\Sigma}}$, we define $$D_{\Sigma} A(~(X_\sigma)_{\sigma \in \sem{\Sigma}}~) \doteq (X_\sigma \times \sem{\Sigma \vdash A}_\sigma)_{\sigma \in \sem{\Sigma}}$$ For arrows $(f_\sigma : X_\sigma \to Y_\sigma)_{\sigma \in \sem{\Sigma}}$ of the fibre $\mathit{Fam}(\mbf{Posets})_{\sem{\Sigma}}$ we define $$D_{\Sigma} A(~(f_\sigma)_{\sigma \in \sem{\Sigma}}~) \doteq (~(x_\sigma, a_\sigma) \mapsto (f_\sigma(x_\sigma),a_\sigma)~)_{\sigma \in \sem{\Sigma}}$$ Its counit $\epsilon$ is defined as $$\epsilon_X(x,a) \doteq x
+$$ Its comultiplication $\delta$, for coeffect scalars $A$ and $B$, is defined as $$\delta_{A,B}(x,a \bullet b) \doteq ((x, a), b)$$ For string contexts $\Sigma$ and coeffect scalars $\Sigma \vdash A$ and $\Sigma \vdash B$ with $A \subseteq B$ we have a natural transformation $\mathit{sub}_{A,B} : D_{\Sigma} B \to D_{\Sigma } A$, defined at component $X \in \mathit{Fam}(\mbf{Posets})_{\sem{\Sigma}}$ as the family of monotone functions $$(~(x,b) \mapsto (x,b) : X_\sigma \times \sem{\Sigma \vdash B}_\sigma \to X_{\sigma} \times \sem{\Sigma \vdash A}_{\sigma}~)_{\sigma \in \sem{\Sigma}}$$
 which is an arrow in $\mathit{Fam}(\mbf{Posets})_{\sem{\Sigma}}$ of type $$D_{\Sigma}B(X) \to D_{\Sigma}A(X)$$
 For coeffect scalars $\Sigma \vdash A$ and kinding contexts $\Sigma \vdash \Gamma,x :: \kappa$, we have a natural isomorphism $$m_{\Sigma,A,\Gamma,\kappa} : D_{\Sigma} \emptyset(\sem{\Sigma \vdash \Gamma}) \times D_{\Sigma} A( \sem{\Sigma \vdash \kappa} ) \overset{\sim}{\to} D_{\Sigma} A \sem{\Sigma \vdash \Gamma,x :: \kappa}$$ defined to discard the copy of $\sem{\Sigma \vdash \emptyset}$ produced by applying $D_{\Sigma} \emptyset$ and then reassociate.
 
