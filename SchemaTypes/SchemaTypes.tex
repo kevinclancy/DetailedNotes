@@ -269,10 +269,11 @@ TODO: finish this... some of it can be found in Jacobs Lemma 1.9.2.
 The interpretation $\sem{\Sigma \vdash \kappa}$ of a kind well-formedness judgment is a $\sem{\Sigma}$-indexed family of posets, defined as follows.
 
 \begin{tabular}{lll}
-$\sem{\Sigma \vdash \mathit{KString}(d,\phi)}$ & $\doteq \sdisp{~(\mathcal P(X_\sigma), \subseteq)~}_{\sigma \in \sem{\Sigma}}$ & $\text{where } X_\sigma \doteq \{ f \in \mathit{Inst} \mid x \in \sem{\Sigma \vdash d}_\sigma \mid \mathit{chars}(x) \subseteq \phi \}$ \\
+$\sem{\Sigma \vdash \mathit{KString}(d,\phi)}$ & $\doteq \sdisp{~(\mathcal P(X_\sigma), \subseteq)~}_{\sigma \in \sem{\Sigma}}$ & $\text{where } X_\sigma \doteq \{ f \in \mathit{Inst} \mid f(\epsilon) \in \sem{\Sigma \vdash d}_\sigma$ \\
+ & &~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~$\wedge~\mathit{chars}(f(\epsilon)) \subseteq \phi \}$ \\
 $\sem{\Sigma \vdash \mathit{KTree}(d)}$ & $\doteq \sdisp{~(\mathcal P(Y_\sigma), \subseteq)~}_{\sigma \in \sem{\Sigma}}$ & $\text{where } Y_\sigma \doteq \{ f \in \mathit{Inst} \mid f(\epsilon) \in \sem{\Sigma \vdash d}_{\sigma} \}$\\
 $\sem{\Sigma \vdash \kappa \overset{A}{\Rightarrow} \kappa'}$ & $\doteq D_{\Sigma} A(\sem{\Sigma \vdash \kappa}) \Rightarrow \sem{\Sigma \vdash \kappa'}$\\
-$\sem{\Sigma \vdash \forall \zeta. \kappa}$ & $\doteq \Pi_{\sem{\Sigma},\sem{\zeta}} \sem{\Sigma,\zeta \vdash \kappa} $ & ~
+$\sem{\Sigma \vdash \forall \zeta. \kappa}$ & $\doteq \Pi_{\sem{\Sigma},\sem{\zeta}} \sem{\Sigma,\zeta \vdash \kappa} $ & 
 \end{tabular}
 
 \section*{Subkinding}
