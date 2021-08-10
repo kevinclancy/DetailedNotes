@@ -195,7 +195,9 @@ $\sem{set}$ & $\doteq$ & $\mathbb N$
 \end{tabular}
 \section*{Database instances}
 
-Given lists of strings $\rho$ and $\theta$, we write $\rho \cdot \theta$ for the list obtained by concatenating $\theta$ to the right of $\rho$. A \emph{database instance} is a partial function $f : \mathit{Strings}^{\star} \rightharpoonup \mathit{Strings}$ from lists of strings to strings. We write $\mathit{Inst}$ for the set of database instances. For a database instance $f$ and a list of strings $\rho$, we write $f \! \mid_\rho$ for the database instance defined such that for all lists of strings $\theta$ we have $$f \! \mid_\rho \! (\theta) \doteq f(\rho \cdot \theta)$$ We write the list of strings consisting of $s_1, \ldots, s_n$ as $[s_1,\ldots,s_n]$. Given a set of strings $X$ and a database instance $f$ we define the notation $$f \# X \doteq | \{ x \in X \mid f([x]) \text{ is defined } \} |$$ Furthermore, we define $$\mathit{keys}(f) \doteq \{ s \in \mathit{Strings} \mid f([s]) \text{ is defined} \}$$
+Given lists of strings $\rho$ and $\theta$, we write $\rho \cdot \theta$ for the list obtained by concatenating $\theta$ to the right of $\rho$. A \emph{database instance} is a partial function $f : \mathit{Strings}^{\star} \rightharpoonup \mathit{Strings}$ from lists of strings to strings. We write $\mathit{Inst}$ for the set of database instances. For a database instance $f$ and a list of strings $\rho$, we write $f \! \mid_\rho$ for the database instance defined such that for all lists of strings $\theta$ we have $$f \! \mid_\rho \! (\theta) \doteq f(\rho \cdot \theta)$$ We call a list of strings a \emph{node}. We say that database $f$ is \emph{active} at node $\rho$ if $f \! \mid_\rho$ is defined somewhere. We write the list of strings consisting of $s_1, \ldots, s_n$ as $[s_1,\ldots,s_n]$. For database instances $f$ we define the notation $$\mathit{keys}(f) \doteq \{ s \in \mathit{Strings} \mid f \text{ is active at } s \}$$ Furthermore, for sets of strings $X$ we define
+$$f \# X \doteq | \mathit{keys}(f) \cap X |$$ 
+
 
 \section*{Coeffect Well-formedness}
 
@@ -269,9 +271,8 @@ TODO: finish this... some of it can be found in Jacobs Lemma 1.9.2.
 The interpretation $\sem{\Sigma \vdash \kappa}$ of a kind well-formedness judgment is a $\sem{\Sigma}$-indexed family of posets, defined as follows.
 
 \begin{tabular}{lll}
-$\sem{\Sigma \vdash \mathit{KString}(d,\phi)}$ & $\doteq \sdisp{~(\mathcal P(X_\sigma), \subseteq)~}_{\sigma \in \sem{\Sigma}}$ & $\text{where } X_\sigma \doteq \{ f \in \mathit{Inst} \mid f(\epsilon) \in \sem{\Sigma \vdash d}_\sigma$ \\
- & &~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~$\wedge~\mathit{chars}(f(\epsilon)) \subseteq \phi \}$ \\
-$\sem{\Sigma \vdash \mathit{KTree}(d)}$ & $\doteq \sdisp{~(\mathcal P(Y_\sigma), \subseteq)~}_{\sigma \in \sem{\Sigma}}$ & $\text{where } Y_\sigma \doteq \{ f \in \mathit{Inst} \mid f(\epsilon) \in \sem{\Sigma \vdash d}_{\sigma} \}$\\
+$\sem{\Sigma \vdash \mathit{KString}(d,\phi)}$ & $\doteq \sdisp{~(\mathcal P(X_\sigma), \subseteq)~}_{\sigma \in \sem{\Sigma}}$ & $\text{where } X_\sigma \doteq \{~\{ \epsilon \mapsto s \} \mid \mathit{chars}(s) \subseteq \phi \}$ \\
+$\sem{\Sigma \vdash \mathit{KTree}(d)}$ & $\doteq \sdisp{~(\mathcal P(Y_\sigma), \subseteq)~}_{\sigma \in \sem{\Sigma}}$ & $\text{where } Y_\sigma \doteq \{ f \in \mathit{Inst} \mid f(\epsilon) \in \sem{\Sigma \vdash d}_{\sigma} \}$ \\
 $\sem{\Sigma \vdash \kappa \overset{A}{\Rightarrow} \kappa'}$ & $\doteq D_{\Sigma} A(\sem{\Sigma \vdash \kappa}) \Rightarrow \sem{\Sigma \vdash \kappa'}$\\
 $\sem{\Sigma \vdash \forall \zeta. \kappa}$ & $\doteq \Pi_{\sem{\Sigma},\sem{\zeta}} \sem{\Sigma,\zeta \vdash \kappa} $ & 
 \end{tabular}
