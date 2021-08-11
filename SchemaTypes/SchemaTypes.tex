@@ -17,6 +17,7 @@
 \usepackage{tikz}
 \usepackage{tabu}
 \usepackage{quiver} 
+\usepackage{stackengine}
 
 \usetikzlibrary{cd}
  
@@ -28,6 +29,8 @@
 \newcommand{\mbf}{\mathbf}
 \newcommand{\sem}[1]{\llbracket #1 \rrbracket}
 \newcommand{\defeq}{\overset{\mathit{def}}{=}}
+\newcommand{\capdot}{~\stackinset{c}{}{c}{}{\scalebox{0.8}{$\bullet$}}{$\cap$}~}
+\newcommand{\bigcapdot}{\mathop{\stackinset{c}{}{c}{}{\scalebox{0.8}{$\bullet$}}{$\bigcap$}}}
 
 
 \newcommand{\vrt}[2]{
@@ -210,19 +213,46 @@ $$f \leq_\sigma g \overset{\cdot}{\Leftrightarrow} (\forall \rho \in \mathit{Str
  
 \section*{Coeffect composition}
 
-For all $\Sigma$ and all $A$ and $B$ with $\Sigma \vdash A$ and $\Sigma \vdash B$ we define $A \bullet B$ as\\~\\
+For all $\Sigma$ and all $A$ and $B$ with $\Sigma \vdash A$ and $\Sigma \vdash B$ we define $A \capdot B$ as\\~\\
 $(A - B)~\cup~(B - A)~\cup$\\
 $\{ (S_1,\ldots,S_n).[\phi_1 \cap \phi_2] \mid (S_1,\ldots,S_n).[\phi_1] \in A \wedge (S_1,\ldots,S_n).[\phi_2] \in B \}$ 
+
+Clearly, $\Sigma \vdash A$ and $\Sigma \vdash B$ implies $\Sigma \vdash A \capdot B$. 
 \section*{Fibred graded comonads}
  
-For each $\Sigma$, we define a graded comonad $D_{\Sigma}$ on the category $\mathit{Fam}(\mbf{Posets})_{\sem{\Sigma}}$ of $\sem{\Sigma}$-indexed families of posets. The scalar coeffect structure is $$( \{ A \mid \text{the judgment } \Sigma \vdash A \text{ is provable} \}, \bullet, \bullet, \emptyset, \emptyset, \subseteq)$$ For objects $(X_\sigma)_{\sigma \in \sem{\Sigma}}$ of the fibre $\mathit{Fam}(\mbf{Posets})_{\sem{\Sigma}}$, we define $$D_{\Sigma} A(~(X_\sigma)_{\sigma \in \sem{\Sigma}}~) \doteq (X_\sigma \times \sem{\Sigma \vdash A}_\sigma)_{\sigma \in \sem{\Sigma}}$$ For arrows $(f_\sigma : X_\sigma \to Y_\sigma)_{\sigma \in \sem{\Sigma}}$ of the fibre $\mathit{Fam}(\mbf{Posets})_{\sem{\Sigma}}$ we define $$D_{\Sigma} A(~(f_\sigma)_{\sigma \in \sem{\Sigma}}~) \doteq (~(x_\sigma, a_\sigma) \mapsto (f_\sigma(x_\sigma),a_\sigma)~)_{\sigma \in \sem{\Sigma}}$$ Its counit $\epsilon$ is defined as $$\epsilon_X(x,a) \doteq x
-$$ Its comultiplication $\delta$, for coeffect scalars $A$ and $B$, is defined as $$\delta_{A,B}(x,a \bullet b) \doteq ((x, a), b)$$ For string contexts $\Sigma$ and coeffect scalars $\Sigma \vdash A$ and $\Sigma \vdash B$ with $A \subseteq B$ we have a natural transformation $\mathit{sub}_{A,B} : D_{\Sigma} B \to D_{\Sigma } A$, defined at component $X \in \mathit{Fam}(\mbf{Posets})_{\sem{\Sigma}}$ as the family of monotone functions $$(~(x,b) \mapsto (x,b) : X_\sigma \times \sem{\Sigma \vdash B}_\sigma \to X_{\sigma} \times \sem{\Sigma \vdash A}_{\sigma}~)_{\sigma \in \sem{\Sigma}}$$
+For each $\Sigma$, we define a graded comonad $D_{\Sigma}$ on the category $\mathit{Fam}(\mbf{Posets})_{\sem{\Sigma}}$ of $\sem{\Sigma}$-indexed families of posets. The scalar coeffect structure is $$( \{ A \mid \text{the judgment } \Sigma \vdash A \text{ is provable} \}, \capdot, \capdot, \emptyset, \emptyset, \subseteq)$$ For objects $(X_\sigma)_{\sigma \in \sem{\Sigma}}$ of the fibre $\mathit{Fam}(\mbf{Posets})_{\sem{\Sigma}}$, we define $$D_{\Sigma} A(~(X_\sigma)_{\sigma \in \sem{\Sigma}}~) \doteq (X_\sigma \times \sem{\Sigma \vdash A}_\sigma)_{\sigma \in \sem{\Sigma}}$$ For arrows $(f_\sigma : X_\sigma \to Y_\sigma)_{\sigma \in \sem{\Sigma}}$ of the fibre $\mathit{Fam}(\mbf{Posets})_{\sem{\Sigma}}$ we define $$D_{\Sigma} A(~(f_\sigma)_{\sigma \in \sem{\Sigma}}~) \doteq (~(x_\sigma, a_\sigma) \mapsto (f_\sigma(x_\sigma),a_\sigma)~)_{\sigma \in \sem{\Sigma}}$$ Its counit $\epsilon$ is defined as $$(\epsilon_{\emptyset})_X \doteq (x,a) \mapsto x
+$$ Its comultiplication $\delta$, for coeffect scalars $A$ and $B$, is defined as $$(\delta_{A,B})_X \doteq (x,a \capdot b) \mapsto ((x, a), b)$$ 
+It's easy to see that $(D_{\Sigma}, \epsilon, \delta)$ forms a graded comonad. The following diagram commutes because duplication followed by projection is the identity.
+
+\[\begin{tikzcd}
+	{D_{\Sigma} A} && {(D_{\Sigma} A) \circ (D_{\Sigma} \emptyset)} \\
+	\\
+	{(D_{\Sigma} \emptyset) \circ (D_{\Sigma} A)} && {D_{\Sigma} A}
+	\arrow["{\delta_{\empty,A}}"', from=1-1, to=3-1]
+	\arrow["{\epsilon_{\emptyset} \circ (D_{\Sigma} A)}"', from=3-1, to=3-3]
+	\arrow["{\delta_{A, \emptyset}}", from=1-1, to=1-3]
+	\arrow["{(D_{\Sigma} A) \circ \epsilon_{\emptyset}}", from=1-3, to=3-3]
+	\arrow[no head, equals, from=1-1, to=3-3]
+\end{tikzcd}\]
+And the following diagram commutes because duplicating an object twice is the same as duplicating and then duplicating the duplicate.
+
+\[\begin{tikzcd}
+	{(D_{\Sigma}~A \capdot B \capdot C)} && {(D_{\Sigma}~A \capdot B) \circ (D_{\Sigma} C)} \\
+	\\
+	{(D_{\Sigma} A) \circ (D_{\Sigma}~B \capdot C)} && {(D_{\Sigma} A) \circ (D_{\Sigma} B) \circ (D_{\Sigma} C)}
+	\arrow["{\delta_{A, B \capdot C}}"', from=1-1, to=3-1]
+	\arrow["{D_{\Sigma} A \circ \delta_{B,C}}"', from=3-1, to=3-3]
+	\arrow["{\delta_{A \bullet B, C}}", from=1-1, to=1-3]
+	\arrow["{\delta_{A,B} \circ D_{\Sigma} C}", from=1-3, to=3-3]
+\end{tikzcd}\]
+
+For string contexts $\Sigma$ and coeffect scalars $\Sigma \vdash A$ and $\Sigma \vdash B$ with $A \subseteq B$ we have a natural transformation $\mathit{sub}_{A,B} : D_{\Sigma} B \to D_{\Sigma } A$, defined at component $X \in \mathit{Fam}(\mbf{Posets})_{\sem{\Sigma}}$ as the family of monotone functions $$(~(x,b) \mapsto (x,b) : X_\sigma \times \sem{\Sigma \vdash B}_\sigma \to X_{\sigma} \times \sem{\Sigma \vdash A}_{\sigma}~)_{\sigma \in \sem{\Sigma}}$$
 which is an arrow in $\mathit{Fam}(\mbf{Posets})_{\sem{\Sigma}}$ of type $$D_{\Sigma}B(X) \to D_{\Sigma}A(X)$$
 For coeffect scalars $\Sigma \vdash A$ and kinding contexts $\Sigma \vdash \Gamma,x :: \kappa$, we have a natural isomorphism $$m_{\Sigma,A,\Gamma,\kappa} : D_{\Sigma} \emptyset(\sem{\Sigma \vdash \Gamma}) \times D_{\Sigma} A( \sem{\Sigma \vdash \kappa} ) \overset{\sim}{\to} D_{\Sigma} A \sem{\Sigma \vdash \Gamma,x :: \kappa}$$ defined to discard the copy of $\sem{\Sigma \vdash \emptyset}$ produced by applying $D_{\Sigma} \emptyset$ and then reassociate.
 
 \section*{Substitution Functors}
 
-Given a function $u : I \to J$, we write $u^* : \mathit{Fam}(\mbf{Posets})_J \to \mathit{Fam}(\mbf{Posets})_I$ for the substitution functor induced by $u$; i.e., for an $J$-indexed family of posets $\sdisp{P_j}_{j \in J}$ we have $$u^* (\sdisp{P_j}_{j \in J}) = \sdisp{ P_{u(i)} }_{i \in I}$$ and for a $J$-indexed family of monotone functions $(f_j : P_j \to Q_j)_{j \in J}$ we have $$u^*(\sdisp{f_j}_{j \in J}) \doteq \sdisp{f_{u(i)}}_{i \in I}$$
+Given a function $u : I \to J$, we write $u^* : \mathit{Fam}(\mbf{Posets})_J \to \mathit{Fam}(\mbf{Posets})_I$ for the substitution functor induced by $u$; i.e., for an $J$-indexed family of posets $\sdisp{P_j}_{j \in J}$ we have $$u^* (\sdisp{P_j}_{j \in J}) = \sdisp{ P_{u(i)} }_{i \in I}$$ and for a $J$-indexed family of monotone functions $(f_j : P_j \to Q_j)_{j \in J}$ we have $$u^*(\sdisp{f_j}_{j \in J}) = \sdisp{f_{u(i)}}_{i \in I}$$
 
 We overload the notation $u^*$ to other forms of set-indexed families. For example, we can also use $u^* : \mathit{Fam}(\mathit{Strings})_J \to \mathit{Fam}(\mathit{Strings})_I$ to reindex $J$-indexed families of strings, considering the set $\mathit{Strings}$ as a discrete category. 
 
@@ -276,7 +306,8 @@ TODO: finish this... some of it can be found in Jacobs Lemma 1.9.2.
 The interpretation $\sem{\Sigma \vdash \kappa}$ of a kind well-formedness judgment is a $\sem{\Sigma}$-indexed family of posets, defined as follows.
 
 \begin{tabular}{lll}
-$\sem{\Sigma \vdash \mathit{KString}(d,\phi)}$ & $\doteq \sdisp{~(\mathcal P(X_\sigma), \subseteq)~}_{\sigma \in \sem{\Sigma}}$ & $\text{where } X_\sigma \doteq \{~\{ \epsilon \mapsto s \} \mid \mathit{chars}(s) \subseteq \phi \}$ \\
+$\sem{\Sigma \vdash \mathit{KString}(d,\phi)}$ & $\doteq \sdisp{~(\mathcal P(X_\sigma), \subseteq)~}_{\sigma \in \sem{\Sigma}}$ & $\text{where } X_\sigma \doteq \{~\{ \epsilon \mapsto s \} \in \mathit{Inst} \mid s \in \sem{\Sigma \vdash d}_{\sigma} ~\wedge$ \\
+ & &~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~$\mathit{chars}(s) \subseteq \phi \}$ \\
 $\sem{\Sigma \vdash \mathit{KTree}(d)}$ & $\doteq \sdisp{~(\mathcal P(Y_\sigma), \subseteq)~}_{\sigma \in \sem{\Sigma}}$ & $\text{where } Y_\sigma \doteq \{ f \in \mathit{Inst} \mid f(\epsilon) \in \sem{\Sigma \vdash d}_{\sigma} \}$ \\
 $\sem{\Sigma \vdash \kappa \overset{A}{\Rightarrow} \kappa'}$ & $\doteq D_{\Sigma} A(\sem{\Sigma \vdash \kappa}) \Rightarrow \sem{\Sigma \vdash \kappa'}$\\
 $\sem{\Sigma \vdash \forall \zeta. \kappa}$ & $\doteq \Pi_{\sem{\Sigma},\sem{\zeta}} \sem{\Sigma,\zeta \vdash \kappa} $ & 
@@ -313,17 +344,17 @@ In what follows, we define $\ast \doteq \mathit{KTree}(\mathit{Prefix}~\epsilon)
   {\Sigma \mid \Gamma@A_i \vdash \tau_i :: \kappa_i^{~i \in 1..n} \\ 
    \Sigma \vdash \kappa_i <:: \mathit{KString}(d_i,\phi_i)^{~i \in 1..n} \\
    c_i \not \in \phi_i^{~i \in 1..n} }
-  {\Sigma \mid \Gamma@(\bigcup_{i \in 1..n} A_i) \vdash \mathit{tuple} \{ s_i : \tau_i : c_i^{~i \in 1..n}\} :: \mathit{KString}(d_1, (\bigcup_{i \in 1..n} \phi_i) \cup \{ c_1, \ldots, c_n \})}
+  {\Sigma \mid \Gamma@(\bigcapdot_{i \in 1..n} A_i) \vdash \mathit{tuple} \{ s_i : \tau_i : c_i^{~i \in 1..n}\} :: \mathit{KString}(d_1, (\bigcup_{i \in 1..n} \phi_i) \cup \{ c_1, \ldots, c_n \})}
 \and
 \inferrule[DisjUnion]
   {\Sigma \mid \Gamma@A_i \vdash \tau_i :: \mathit{KTree}(d_i)^{~i \in 1..n} \\ \mathit{disjoint} \{ d_i^{~i \in 1..n} \} }
-  {\Sigma \mid \Gamma@(\bigcup_{i \in 1..n} A_i) \vdash \biguplus_{i \in 1..n} \tau_i :: \mathit{KTree}(\mathit{merge}~\{ d_i^{~i \in 1..n} \})}
+  {\Sigma \mid \Gamma@(\bigcapdot_{i \in 1..n} A_i) \vdash \biguplus_{i \in 1..n} \tau_i :: \mathit{KTree}(\mathit{merge}~\{ d_i^{~i \in 1..n} \})}
 \and
 \inferrule[Record]
   {\Sigma \mid \Gamma@A \vdash \tau :: \mathit{KString}(d,\phi) \\ 
     \Sigma \mid \Gamma@B_i \vdash \tau_i :: \iota_i^{~i \in 1..n} \\ \Sigma \vdash \iota_i <:: \star^{~i \in 1..n} \\ 
     \Sigma \mid \Gamma@A_i \vdash \tau_i' :: \kappa_i^{~i \in 1..n} \\ \Sigma \vdash \kappa_i <:: \ast^{~i \in 1..n}}
-  {\Sigma \mid \Gamma@(A \cup \bigcup_{i \in 1..n} A_i \cup B_i) \vdash \tau.\{[\tau_i] :^{m_i} \tau_i'^{~i \in 1..n}\} :: \mathit{KTree}(d)}
+  {\Sigma \mid \Gamma@(A \capdot \bigcapdot_{i \in 1..n} A_i \capdot B_i) \vdash \tau.\{[\tau_i] :^{m_i} \tau_i'^{~i \in 1..n}\} :: \mathit{KTree}(d)}
 \and
 \inferrule[Path]
   {\Sigma \vdash S_i^{~i \in 1..n}}
@@ -340,7 +371,7 @@ In what follows, we define $\ast \doteq \mathit{KTree}(\mathit{Prefix}~\epsilon)
 \inferrule[TyApp]
   {\Sigma \mid \Gamma @ A \vdash \tau :: \kappa \overset{C}{\Rightarrow} \iota \\ 
    \Sigma \mid \Gamma @ B \vdash \tau' :: \kappa}
-  {\Sigma \mid \Gamma @ (A \cup B \cup C) \vdash \tau~\tau' :: \iota}
+  {\Sigma \mid \Gamma @ (A \capdot B \capdot C) \vdash \tau~\tau' :: \iota}
 \and
 \inferrule[StrApp]
   {\Sigma \mid \Gamma @ A \vdash \tau :: \forall \zeta. \kappa \\ \Sigma \vdash S}
@@ -370,7 +401,7 @@ We will prove that $\Sigma \mid \Gamma @ A \vdash \tau :: \kappa$ implies that $
   {\sem{\Sigma \mid \Gamma@A \vdash \tau :: \mathit{KString}(d,\phi)} = f \\ 
    \sem{\Sigma \mid \Gamma@B_i \vdash \tau_i :: \iota_i} = g_i^{~i \in 1..n} \\ \sem{\Sigma \vdash \iota_i <:: \star} = k_i^{~i \in 1..n} \\ 
     \sem{\Sigma \mid \Gamma@A_i \vdash \tau_i' :: \kappa_i} = h_i^{~i \in 1..n} \\ \sem{\Sigma \vdash \kappa_i <:: \ast} = j_i^{~i \in 1..n}}
-  {\sem{\Sigma \mid \Gamma@(A \cup \bigcup_{i \in 1..n} A_i \cup B_i) \vdash \tau.\{[\tau_i] :^{m_i} \tau_i'^{~i \in 1..n}\} :: \mathit{KTree}(d)}_\sigma (\gamma,a) \doteq \\ \{ g \in \mathit{Inst} \mid (g(\epsilon) \in f_\sigma(\gamma,a)) \wedge \\ (\forall s \in (g_{i \sigma};j_{i \sigma})(\gamma,a).~g \! \mid_{[s]} \in (h_{i \sigma};k_{i \sigma})(\gamma,a))^{i \in 1 ..n} \wedge \\ (g \# (g_{i \sigma};j_{i \sigma})(\gamma,a) \in \sem{m_i})^{i \in 1..n} \} }
+  {\sem{\Sigma \mid \Gamma@(A \capdot \bigcapdot_{i \in 1..n} A_i \capdot B_i) \vdash \tau.\{[\tau_i] :^{m_i} \tau_i'^{~i \in 1..n}\} :: \mathit{KTree}(d)}_\sigma (\gamma,a) \doteq \\ \{ g \in \mathit{Inst} \mid (g(\epsilon) \in f_\sigma(\gamma,a)) \wedge \\ (\forall s \in (g_{i \sigma};j_{i \sigma})(\gamma,a).~g \! \mid_{[s]} \in (h_{i \sigma};k_{i \sigma})(\gamma,a))^{i \in 1 ..n} \wedge \\ (g \# (g_{i \sigma};j_{i \sigma})(\gamma,a) \in \sem{m_i})^{i \in 1..n} \} }
 \and
 \inferrule[Path]
   {\sem{\Sigma \vdash S_i} = f_i^{~i \in 1..n}}
@@ -387,8 +418,8 @@ We will prove that $\Sigma \mid \Gamma @ A \vdash \tau :: \kappa$ implies that $
 \inferrule[TyApp]
   {\sem{\Sigma \mid \Gamma @ A \vdash \tau :: \kappa \overset{C}{\Rightarrow} \iota} = f : D_\Sigma A \sem{\Sigma \vdash \Gamma} \to (D_\Sigma C \sem{\Sigma \vdash \kappa} \Rightarrow \sem{\Sigma \vdash \iota}) \\ 
    \sem{\Sigma \mid \Gamma @ B \vdash \tau' :: \kappa} = g : D_\Sigma B \sem{\Sigma \vdash \Gamma} \to \sem{\Sigma \vdash \kappa}}
-  {\sem{\Sigma \mid \Gamma @ (A \cup B \cup C) \vdash \tau~\tau' :: \iota} = \\ 
-\langle (\mathit{sub}_{A \cup B \cup C, A})_{\sem{\Sigma \vdash \Gamma}};f, (\mathit{sub}_{A \cup B \cup C,C \cup B})_{\sem{\Sigma \vdash \Gamma}};(\delta_{C,B})_{\sem{\Sigma \vdash \Gamma}};D_{\Sigma} C(g) \rangle;(\mathit{ev})_{D_{\Sigma}C(\sem{\Sigma \vdash \Gamma})}}
+  {\sem{\Sigma \mid \Gamma @ (A \capdot B \capdot C) \vdash \tau~\tau' :: \iota} = \\ 
+\langle (\mathit{sub}_{A \capdot B \capdot C, A})_{\sem{\Sigma \vdash \Gamma}};f, (\mathit{sub}_{A \capdot B \capdot C,C \capdot B})_{\sem{\Sigma \vdash \Gamma}};(\delta_{C,B})_{\sem{\Sigma \vdash \Gamma}};D_{\Sigma} C(g) \rangle;(\mathit{ev})_{D_{\Sigma}C(\sem{\Sigma \vdash \Gamma})}}
 \and
 \inferrule[StrApp]
   {\sem{\Sigma \mid \Gamma @ A \vdash \tau :: \forall \zeta. \kappa} = f : D_{\Sigma}A(\sem{\Sigma \vdash \Gamma}) \to \sem{\Sigma \vdash \forall \zeta. \kappa} \\ \sem{\Sigma \vdash S} = g : \sem{\Sigma} \to \mathit{Strings}}
