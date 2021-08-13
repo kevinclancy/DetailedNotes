@@ -29,8 +29,8 @@
 \newcommand{\mbf}{\mathbf}
 \newcommand{\sem}[1]{\llbracket #1 \rrbracket}
 \newcommand{\defeq}{\overset{\mathit{def}}{=}}
-\newcommand{\capdot}{~\stackinset{c}{}{c}{}{\scalebox{0.8}{$\bullet$}}{$\cap$}~}
-\newcommand{\bigcapdot}{\mathop{\stackinset{c}{}{c}{}{\scalebox{0.8}{$\bullet$}}{$\bigcap$}}}
+\newcommand{\capdot}{~\stackinset{c}{}{c}{}{\scalebox{0.8}{$\ast$}}{$\cap$}~}
+\newcommand{\bigcapdot}{\mathop{\stackinset{c}{}{c}{}{\scalebox{0.8}{$\ast$}}{$\bigcap$}}}
 
 
 \newcommand{\vrt}[2]{
@@ -331,6 +331,15 @@ The interpretation $\sem{\Sigma \vdash \kappa <:: \kappa'}$ is a mono in the fib
   {\Sigma \vdash \mathit{KTree}(d) <:: \mathit{KTree}(d')}
 \end{mathpar}
 
+Each of the above three judgments are interpreted as families of inclusions. For example, for \begin{sc}SK-StrTree\end{sc}, our hypothesis is interpreted as a family of inclusions $$(i_\sigma : \sem{\Sigma \vdash d}_{\sigma} \subseteq \sem{\Sigma \vdash d'}_\sigma)_{\sigma \in \sem{\Sigma}}$$ and we have\\
+$\sem{\Sigma \vdash \mathit{KString(d,\phi)} <:: \mathit{KTree}(d')}_\sigma$\\
+$= \{~\{ \epsilon \mapsto s \} \in \mathit{Inst} \mid s \in \sem{\Sigma \vdash d}_{\sigma} \wedge \mathit{chars}(s) \subseteq \phi \}$\\
+$\subseteq \{~\{ \epsilon \mapsto s \} \in \mathit{Inst} \mid s \in \sem{\Sigma \vdash d}_{\sigma} \}$\\
+$\subseteq \{~\{ \epsilon \mapsto s \} \in \mathit{Inst} \mid s \in \sem{\Sigma \vdash d'}_{\sigma} \}$\\
+$\subseteq \{ f \in \mathit{Inst} \mid f(\epsilon) \in \sem{\Sigma \vdash d'}_{\sigma} \}$
+
+
+
 \section*{Kinding}
 
 In what follows, we define $\ast \doteq \mathit{KTree}(\mathit{Prefix}~\epsilon)$, where $\epsilon$ is the empty string, so that all proper types have kind $\ast$. We define $\star \doteq \mathit{KString}(\mathit{Prefix}~\epsilon, \mathit{Chars})$, so that all string types have kind $\star$.
@@ -540,9 +549,24 @@ $$\Sigma \vdash (\forall \zeta'. \kappa)[S/\zeta]$$.
 \end{proof}
 
 \begin{lemma}
-If $\Sigma,\zeta \vdash d \leq d'$ and $\Sigma \vdash S$ then $\Sigma \vdash d[S/\zeta] \leq d[S/\zeta']$.
+If $\Sigma,\zeta \vdash d \leq d'$ and $\Sigma \vdash S$ then $\Sigma \vdash d[S/\zeta] \leq d'[S/\zeta]$ and 
+$$\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^* \sem{\Sigma \vdash d \leq d'} = \sem{\Sigma,\zeta \vdash d \leq d'}$$.
 \label{SD-Subst}
 \end{lemma}
+
+\begin{proof}
+By cases on $\Sigma,\zeta \vdash d \leq d'$.
+\begin{description}
+\item[Case SD-PrefPref:]~\\
+Since $s$ and $s'$ are string literals, we can apply \begin{sc}SD-PrefPref\end{sc} to obtain $\Sigma \vdash \mathit{Prefix}~s \leq \mathit{Prefix}~s'$. Since $(\mathit{Prefix}~s)[S/\zeta] = \mathit{Prefix}~s$ and likewise for $s'$, we have $\Sigma \vdash (\mathit{Prefix}~s)[S/\zeta] \leq (\mathit{Prefix}~s')[S/\zeta]$. Furthermore, for $\sigma \in \sem{\Sigma}$ we have\\~\\ 
+$(\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^* \sem{\Sigma,\zeta \vdash \mathit{Prefix}~s \leq \mathit{Prefix}~s'})_\sigma$\\
+$= \sem{\Sigma,\zeta \vdash \mathit{Prefix}~s \leq \mathit{Prefix}~s'}_{\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle(\sigma)}$\\
+$= (\{ t \mid s \sqsubseteq t \} \hookrightarrow \{ t \mid s' \sqsubseteq t \})$\\
+$= \sem{\Sigma \vdash \mathit{Prefix}~s \leq \mathit{Prefix}~s'}_{\sigma}$\\
+$= \sem{\Sigma \vdash (\mathit{Prefix}~s)[S/\zeta] \leq (\mathit{Prefix}~s')[S/\zeta]}_{\sigma}$
+\end{description}
+
+\end{proof}
 
 \begin{proof}
 One of the following conditions holds. 
@@ -556,11 +580,11 @@ If 1 or 2 then $d[S/\zeta] = d$, $d'[S/\zeta] = d'$, and $\Sigma \vdash d \leq d
 $$\Sigma \vdash d[S/\zeta] \leq d'[S/\zeta]$$
 
 If 3 holds then $d[S/\zeta] = d'[S/\zeta] = \mathit{Literal}~S$. Applying \begin{sc}SD-LitLit\end{sc} gives
-$\Sigma \vdash d[S/\zeta] \leq d'[S/\zeta]$. 
+$\Sigma \vdash d[S/\zeta] \leq d'[S/\zeta]$.
 \end{proof}
 
 \begin{lemma}
-If $\Sigma,\zeta \vdash \kappa <:: \kappa'$ and $\Sigma \vdash S$ then $\Sigma \vdash \kappa[S/\zeta] <:: \kappa'[S/\zeta]$.
+If $\Sigma,\zeta \vdash \kappa <:: \kappa'$ and $\Sigma \vdash S$ then $\Sigma \vdash \kappa[S/\zeta] <:: \kappa'[S/\zeta]$ and $\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^*\sem{\Sigma,\zeta \vdash \kappa <:: \kappa'} = \sem{\Sigma \vdash \kappa[S/\zeta] <:: \kappa'[S/\zeta]}$.
 \label{SK-Subst}
 \end{lemma}
 
@@ -625,20 +649,20 @@ $$\Sigma \mid \Gamma[S/\zeta ]@ A_i[S/\zeta] \vdash \tau_i'[S/\zeta] :: \kappa_i
 Applying Lemma \ref{SK-Subst2} gives
 $$\Sigma \vdash \iota_i[S/\zeta] <:: \star^{~i \in 1..n}$$
 and 
-$$\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^* \sem{\Sigma \vdash \iota_i[S/\zeta] <:: \star} = \sem{\Sigma \vdash \iota_i[S/\zeta] <:: \star}^{~i \in 1..n}$$
+$$\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^* \sem{\Sigma,\zeta \vdash \iota_i <:: \star} = \sem{\Sigma \vdash \iota_i[S/\zeta] <:: \star}^{~i \in 1..n}$$
 Applying Lemma \ref{SK-Subst3} gives
 $$\Sigma \vdash \kappa_i[S/\zeta] <:: \ast^{~i \in 1..n}$$ 
 and
-$$\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^* \sem{\Sigma \vdash \kappa_i[S/\zeta] <:: \ast} = \sem{\Sigma \vdash \kappa_i[S/\zeta] <:: \ast}^{~i \in 1..n}$$
+$$\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^* \sem{\Sigma,\zeta \vdash \kappa_i <:: \ast} = \sem{\Sigma \vdash \kappa_i[S/\zeta] <:: \ast}^{~i \in 1..n}$$
 Applying \begin{sc}Record\end{sc} then gives 
-$$\Sigma \mid \Gamma[S/\zeta] @ (A[S/\zeta] \cup \bigcup_{i \in 1.. n} A_i[S/\zeta] \cup B_i[S/\zeta]) \vdash \tau[S/\zeta].\{ [\tau_i[S/\zeta] :^{m_i} \tau_i'[S/\zeta]^{~i \in 1..n} \} :: \mathit{KTree}(d[S/\zeta])$$
+$$\Sigma \mid \Gamma[S/\zeta] @ (A[S/\zeta] \capdot \bigcapdot_{i \in 1.. n} A_i[S/\zeta] \capdot B_i[S/\zeta]) \vdash \tau[S/\zeta].\{ [\tau_i[S/\zeta] :^{m_i} \tau_i'[S/\zeta]^{~i \in 1..n} \} :: \mathit{KTree}(d[S/\zeta])$$
 that is,
-$$\Sigma \mid \Gamma[S/\zeta] @ (A \cup \bigcup_{i \in 1..n} A_i \cup B_i)[S/\zeta] \vdash (\tau.\{ [\tau_i] :^{m_i} \tau'_i \})[S/\zeta] :: (\mathit{KTree}(d))[S/\zeta]$$
+$$\Sigma \mid \Gamma[S/\zeta] @ (A \capdot \bigcapdot_{i \in 1..n} A_i \capdot B_i)[S/\zeta] \vdash (\tau.\{ [\tau_i] :^{m_i} \tau'_i \})[S/\zeta] :: (\mathit{KTree}(d))[S/\zeta]$$
 and furthermore,
 \begin{center}
 \begin{tabular}{l}
-$(\langle \mathit{id}, \sem{\Gamma \vdash S} \rangle^* \sem{\Sigma,\zeta \mid \Gamma @ A \cup \bigcup_{i \in 1..n} (A_i \cup B_i) \vdash \tau.\{ [\tau_i] :^{m_i} \tau_i' \} :: \mathit{KTree(d)} })_\sigma (\gamma,a)$ \\~\\
-$= \sem{\Sigma,\zeta \mid \Gamma @ A \cup \bigcup_{i \in 1..n} (A_i \cup B_i) \vdash \tau.\{ [\tau_i] :^{m_i} \tau_i' \} :: \mathit{KTree(d)} }_{\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle(\sigma)}(\gamma,a)$ \\~\\
+$(\langle \mathit{id}, \sem{\Gamma \vdash S} \rangle^* \sem{\Sigma,\zeta \mid \Gamma @ A \capdot \bigcapdot_{i \in 1..n} (A_i \capdot B_i) \vdash \tau.\{ [\tau_i] :^{m_i} \tau_i' \} :: \mathit{KTree(d)} })_\sigma (\gamma,a)$ \\~\\
+$= \sem{\Sigma,\zeta \mid \Gamma @ A \capdot \bigcapdot_{i \in 1..n} (A_i \capdot B_i) \vdash \tau.\{ [\tau_i] :^{m_i} \tau_i' \} :: \mathit{KTree(d)} }_{\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle(\sigma)}(\gamma,a)$ \\~\\
 $= \{ g \in \mathit{Inst} \mid$ \\
 $~~~~~~g(\epsilon) \in \sem{\Sigma,\zeta \mid \Gamma @ A \vdash \tau :: \mathit{KString(d,\phi)}}_{\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle(\sigma)}(\gamma,a)~\wedge$ \\
 $~~~~~~\forall s \in (\sem{\Sigma,\zeta \mid \Gamma @ B_i \vdash \tau_i :: \iota_i}_{\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle(\sigma)};\sem{\Sigma,\zeta \vdash \iota_i <:: \star}_{\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle(\sigma)})(\gamma,a).$\\
@@ -654,11 +678,11 @@ $~~~~~~g(\epsilon) \in \sem{\Sigma \mid \Gamma[S/\zeta] @ A[S/\zeta] \vdash \tau
 $~~~~~~\forall s \in (\sem{\Sigma \mid \Gamma[S/\zeta] @ B_i[S/\zeta] \vdash \tau_i[S/\zeta] :: \iota_i[S/\zeta]}_{\sigma};\sem{\Sigma \vdash \iota_i[S/\zeta] <:: \star}_{\sigma})(\gamma,a).$\\
 $~~~~~~~~g \! \mid_{[s]} \in (\sem{\Sigma \mid \Gamma[S/\zeta] @ A_i[S/\zeta] \vdash \tau_i'[S/\zeta] :: \kappa[S/\zeta]}_{\sigma};\sem{\Sigma \vdash \kappa_i[S/\zeta] <:: \ast}_{\sigma})(\gamma,a)^{~i \in 1..n}~\wedge$\\
 $~~~~~~g \# (\sem{\Sigma \mid \Gamma[S/\zeta] @ B_i[S/\zeta] \vdash \tau_i[S/\zeta] :: \iota_i[S/\zeta]}_{\sigma};\sem{\Sigma \vdash \iota_i[S/\zeta] <:: \star}_{\sigma})(\gamma,a) \in \sem{m_i}^{~i \in 1..n} \}$\\~\\
-$= \sem{\Sigma \mid \Gamma[S/\zeta] @ (A \cup \bigcup_{i \in 1..n} (A_i \cup B_i))[S/\zeta] \vdash (\tau.\{ [\tau_i] :^{m_i} \tau'_i \})[S/\zeta] :: \mathit{KTree}(d)[S/\zeta]  }_{\sigma}(\gamma,a)  $
+$= \sem{\Sigma \mid \Gamma[S/\zeta] @ (A \capdot \bigcapdot_{i \in 1..n} (A_i \capdot B_i))[S/\zeta] \vdash (\tau.\{ [\tau_i] :^{m_i} \tau'_i \})[S/\zeta] :: \mathit{KTree}(d)[S/\zeta]  }_{\sigma}(\gamma,a)  $
 \end{tabular}
 \end{center}
 and therefore,
-$$\langle \mathit{id}, \sem{\Gamma \vdash S} \rangle^* \sem{\Sigma,\zeta \mid \Gamma @ A \cup \bigcup_{i \in 1..n} (A_i \cup B_i) \vdash \tau.\{ [\tau_i] :^{m_i} \tau_i' \} :: \mathit{KTree}(d))}$$ $$=$$ $$\sem{\Sigma \mid \Gamma[S/\zeta] @ (A \cup \bigcup_{i \in 1..n} (A_i \cup B_i))[S/\zeta] \vdash (\tau.\{ [\tau_i] :^{m_i} \tau'_i \})[S/\zeta] :: \mathit{KTree}(d)[S/\zeta]}$$
+$$\langle \mathit{id}, \sem{\Gamma \vdash S} \rangle^* \sem{\Sigma,\zeta \mid \Gamma @ A \capdot \bigcapdot_{i \in 1..n} (A_i \capdot B_i) \vdash \tau.\{ [\tau_i] :^{m_i} \tau_i' \} :: \mathit{KTree}(d))}$$ $$=$$ $$\sem{\Sigma \mid \Gamma[S/\zeta] @ (A \capdot \bigcapdot_{i \in 1..n} (A_i \capdot B_i))[S/\zeta] \vdash (\tau.\{ [\tau_i] :^{m_i} \tau'_i \})[S/\zeta] :: \mathit{KTree}(d)[S/\zeta]}$$
 \item[Case \sc{Path}]:~\\
 Applying lemma \ref{SWF-Subst} to $\Sigma,\zeta \vdash S_i^{~i \in 1..n}$ gives $$\Sigma \vdash S_i[S/\zeta]^{~i \in 1..n}$$ and $$\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^* \sem{\Sigma, \zeta \vdash S_i} = \sem{\Sigma \vdash S_i[S/\zeta]}^{i \in 1..n}$$ 
 Applying \begin{sc}Path\end{sc} gives 
