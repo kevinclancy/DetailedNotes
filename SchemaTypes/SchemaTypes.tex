@@ -169,6 +169,10 @@ The interpretation $\sem{\Sigma \vdash d}$ of a discriminator well-formedness ju
 \sem{\Sigma \vdash \mathit{Literal}~S} \doteq (\{ \sem{\Sigma \vdash S}_\sigma \})_{\sigma \in \sem{\Sigma}}
 \end{mathpar}
 
+For $A,B \in \mathcal P(\mathit{Strings})$, there is at most one arrow (set inclusion) with domain $A$ and 
+codomain $B$; we write this arrow as $i_{A,B}$.
+
+
 \section*{Discriminator subsumption}
 
 \begin{mathpar}
@@ -187,7 +191,7 @@ The interpretation $\sem{\Sigma \vdash d}$ of a discriminator well-formedness ju
 \end{mathpar}
 
 Above, $s' \sqsubseteq s$ means ``$s'$ is a prefix of $s$''. 
-The interpretation $\sem{\Sigma \vdash d \leq d'}$ of a subsumption judgment is an arrow of $\mathit{Fam}(\mathcal P(\mathit{Strings}))_{\sem{\Sigma}}$ with domain $\sem{\Sigma \vdash d}$ and codomain $\sem{\Sigma \vdash d'}$.
+The interpretation $\sem{\Sigma \vdash d \leq d'}$ of a subsumption judgment is an arrow of $\mathit{Fam}(\mathcal P(\mathit{Strings}))_{\sem{\Sigma}}$ with domain $\sem{\Sigma \vdash d}$ and codomain $\sem{\Sigma \vdash d'}$. 
 
 \section*{Multiplicities}
 
@@ -559,49 +563,35 @@ By cases on $\Sigma,\zeta \vdash d \leq d'$.
 \begin{description}
 \item[Case SD-PrefPref:]~\\
 Since $s$ and $s'$ are string literals, we can apply \begin{sc}SD-PrefPref\end{sc} to obtain $\Sigma \vdash \mathit{Prefix}~s \leq \mathit{Prefix}~s'$. Since $(\mathit{Prefix}~s)[T/\zeta] = \mathit{Prefix}~s$ and likewise for $s'$, we have $\Sigma \vdash (\mathit{Prefix}~s)[T/\zeta] \leq (\mathit{Prefix}~s')[T/\zeta]$. Furthermore, for $\sigma \in \sem{\Sigma}$ we have\\~\\ 
-$(\langle \mathit{id}, \sem{\Sigma \vdash T} \rangle^* \sem{\Sigma,\zeta \vdash \mathit{Prefix}~s \leq \mathit{Prefix}~s'})_\sigma$\\
-$= \sem{\Sigma,\zeta \vdash \mathit{Prefix}~s \leq \mathit{Prefix}~s'}_{\langle \mathit{id}, \sem{\Sigma \vdash T} \rangle(\sigma)}$\\
-$= (\{ t \mid s \sqsubseteq t \} \hookrightarrow \{ t \mid s' \sqsubseteq t \})$\\
-$= \sem{\Sigma \vdash \mathit{Prefix}~s \leq \mathit{Prefix}~s'}_{\sigma}$\\
+$(\langle \mathit{id}, \sem{\Sigma \vdash T} \rangle^* \sem{\Sigma,\zeta \vdash \mathit{Prefix}~s \leq \mathit{Prefix}~s'})_\sigma$\\~\\
+$= \sem{\Sigma,\zeta \vdash \mathit{Prefix}~s \leq \mathit{Prefix}~s'}_{\langle \mathit{id}, \sem{\Sigma \vdash T} \rangle(\sigma)}$\\~\\
+$= i_{\{ t \mid s \sqsubseteq t \}, \{ t \mid s' \sqsubseteq t \}}$\\~\\
+$= \sem{\Sigma \vdash \mathit{Prefix}~s \leq \mathit{Prefix}~s'}_{\sigma}$\\~\\
 $= \sem{\Sigma \vdash (\mathit{Prefix}~s)[T/\zeta] \leq (\mathit{Prefix}~s')[T/\zeta]}_{\sigma}$
 \item[Case SD-LitLit:]~\\
 ~
-\begin{description}
-\item[Case $S = \zeta$:]~\\
-By assumption we have $\Sigma \vdash T$, and so applying \begin{sc}SD-LitLit\end{sc} gives $\Sigma \vdash \mathit{Literal}~T \leq \mathit{Literal}~T$. Since $S[T/\zeta] = T$, we have $$\Sigma \vdash \mathit{Literal}~S[T/\zeta] \leq S[T/\zeta]$$
+Applying Lemma ? to our hypothesis $\Sigma,\zeta \vdash S$ and our assumption $\Sigma \vdash T$ gives
+$\Sigma \vdash S[T/\zeta]$ and $\langle \mathit{id}, \sem{\Sigma \vdash T} \rangle^* \sem{\Sigma,\zeta \vdash S} = \sem{\Sigma \vdash S[T/\zeta]}$. Applying \begin{sc}SD-LitLit\end{sc} then gives $$\Sigma \vdash \mathit{Literal}~S[T/\zeta] \leq \mathit{Literal}~S[T/\zeta]$$
+
 Furthermore, for $\sigma \in \sem{\Sigma}$ we have\\~\\
-$(\langle \mathit{id},\sem{\Sigma \vdash T} \rangle^* \sem{\Sigma,\zeta \vdash \mathit{Literal}~\zeta \leq \mathit{Literal~\zeta}})_\sigma$\\
-$= \sem{\Sigma,\zeta \vdash \mathit{Literal}~\zeta \leq \mathit{Literal}~\zeta}_{\langle \mathit{id}, \sem{\Sigma \vdash T}\rangle(\sigma)}$\\
-$= \{ \sem{\Sigma,\zeta \vdash \zeta}_{\langle \mathit{id}, \sem{\Sigma \vdash T}\rangle(\sigma)} \} \subseteq \{ \sem{\Sigma,\zeta \vdash \zeta}_{\langle \mathit{id}, \sem{\Sigma \vdash T}\rangle(\sigma)} \}$\\
-$= \{ (\langle \mathit{id}, \sem{\Sigma \vdash T}\rangle^*\sem{\Sigma,\zeta \vdash \zeta})_\sigma \} \subseteq \{ (\langle \mathit{id}, \sem{\Sigma \vdash T}\rangle^*\sem{\Sigma,\zeta \vdash \zeta})_\sigma \}$\\
-$= \{ \sem{\Sigma \vdash T}_{\sigma} \} \subseteq \{ \sem{\Sigma \vdash T}_{\sigma} \}$\\
-$= \sem{\Sigma \vdash \mathit{Literal}~T \leq \mathit{Literal}~T}_{\sigma}$\\
-$= \sem{\Sigma \vdash \mathit{Literal}~\zeta[T/\zeta] \leq \mathit{Literal}~\zeta[T/\zeta]}_{\sigma}$
+$(\langle \mathit{id},\sem{\Sigma \vdash T} \rangle^* \sem{\Sigma,\zeta \vdash \mathit{Literal}~S \leq \mathit{Literal~S}})_\sigma$\\~\\
+$= \sem{\Sigma,\zeta \vdash \mathit{Literal}~S \leq \mathit{Literal}~S}_{\langle \mathit{id}, \sem{\Sigma \vdash T}\rangle(\sigma)}$\\~\\
+$= i_{\{ \sem{\Sigma,\zeta \vdash S}_{\langle \mathit{id}, \sem{\Sigma \vdash T}\rangle(\sigma)} \}, \{ \sem{\Sigma,\zeta \vdash S}_{\langle \mathit{id}, \sem{\Sigma \vdash T}\rangle(\sigma)} \}}$\\~\\
+$= i_{\{~(\langle \mathit{id}, \sem{\Sigma \vdash T}\rangle^*\sem{\Sigma,\zeta \vdash S})_\sigma~\}, \{~(\langle \mathit{id}, \sem{\Sigma \vdash T}\rangle^*\sem{\Sigma,\zeta \vdash S})_\sigma~\}}$\\~\\
+$= i_{ \{ \sem{\Sigma \vdash S[T/\zeta]}_{\sigma} \}, \{ \sem{\Sigma \vdash S[T/\zeta]}_{\sigma} \} }$\\~\\
+$= \sem{\Sigma \vdash \mathit{Literal}~S[T/\zeta] \leq \mathit{Literal}~S[T/\zeta]}_{\sigma}$
 
- 
-\item[Case $S = \xi \in \Sigma$:]~\\
-a
+\item[Case SD-LitPref:]~\\
+
+Applying \begin{sc}SD-LitPref\end{sc} gives $\Sigma \vdash \mathit{Literal}~s \leq \mathit{Prefix}~s'$. Since $\mathit{Literal}~s[T/\zeta] = \mathit{Literal}~s$ and $\mathit{Prefix~s'}[T/\zeta] = \mathit{Prefix}~s'[T/\zeta]$ we have $\Sigma \vdash \mathit{Literal}~s \leq \mathit{Prefix}~s'$. Furthermore, for $\sigma \in \sem{\Sigma}$ we have\\~\\
+$(\langle \mathit{id}, \sem{\Sigma \vdash T} \rangle^* \sem{\Sigma,\zeta \vdash \mathit{Literal}~s \leq \mathit{Prefix}~s'})_\sigma$\\~\\
+$= \sem{\Sigma,\zeta \vdash \mathit{Literal}~s \leq \mathit{Prefix}~s'}_{\langle \mathit{id}, \sem{\Sigma \vdash T} \rangle(\sigma)}$\\~\\
+$= i_{\{ s \}, \{ t \mid s' \sqsubseteq t \}}$\\~\\
+$= \sem{\Sigma \vdash \mathit{Literal}~s \leq \mathit{Prefix}~s'}_{\sigma}$\\~\\
+$= \sem{\Sigma \vdash (\mathit{Literal}~s)[T/\zeta] \leq (\mathit{Prefix}~s')[T/\zeta]}_{\sigma}$
 
 \end{description}
 
-
-\end{description}
-
-\end{proof}
-
-\begin{proof}
-One of the following conditions holds. 
-\begin{enumerate}
-\item Both $d$ and $d'$ are closed, or
-\item $d = d' = \mathit{Literal}~\zeta'$ where $\zeta' \in \Sigma$, or
-\item $d = d' = \mathit{Literal}~\zeta$
-\end{enumerate}
-
-If 1 or 2 then $d[S/\zeta] = d$, $d'[S/\zeta] = d'$, and $\Sigma \vdash d \leq d'$, from which we conclude 
-$$\Sigma \vdash d[S/\zeta] \leq d'[S/\zeta]$$
-
-If 3 holds then $d[S/\zeta] = d'[S/\zeta] = \mathit{Literal}~S$. Applying \begin{sc}SD-LitLit\end{sc} gives
-$\Sigma \vdash d[S/\zeta] \leq d'[S/\zeta]$.
 \end{proof}
 
 \begin{lemma}
