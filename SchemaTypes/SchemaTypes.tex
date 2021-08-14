@@ -98,11 +98,11 @@ $\mathit{Chars}$ & $\doteq$ & the set of all characters \\
 $\mathit{TypeVars}$ & $\doteq$ & the set of all type variables \\
 $\mathit{StringVars}$ & $\doteq$ & the set of all string variables \\
 $\alpha$ & $\in$ & $\mathit{TypeVars}$ & ~ \\
-$\zeta$ & $\in$ & $\mathit{StringVars}$ & ~ \\
+$\zeta,\xi$ & $\in$ & $\mathit{StringVars}$ & ~ \\
 $c$ & $\in$ & $\mathit{Chars}$ & (characters) \\
 $\phi$ & $\in$ & $\mathcal P(\mathit{Chars})$ & (subsets of the set of characters) \\
 $s,t$ & $\in$ & $\mathit{Strings}$ & (where $\mathit{Strings} = \mathit{Chars}^{\star}$) \\~\\
-$S$ (string index) & $::=$ & $s$ & (literal string) \\
+$S,T$ (string index) & $::=$ & $s$ & (literal string) \\
                    & $\mid$ & $\zeta$ & (string variable) \\~\\
 $d$ (discriminator) & $::=$  & $\mathit{Prefix}~S$ & (values that begin with $S$) \\
     & $\mid$ & $\mathit{Literal}~S$ & (values that are equal to $S$) \\
@@ -199,7 +199,7 @@ $\sem{set}$ & $\doteq$ & $\mathbb N$
 \end{tabular}
 \section*{Database instances}
 
-Given lists of strings $\rho$ and $\theta$, we write $\rho \cdot \theta$ for the list obtained by concatenating $\theta$ to the right of $\rho$. A \emph{database instance} is a partial function $f : \mathit{Strings}^{\star} \rightharpoonup \mathit{Strings}$ from lists of strings to strings. We write $\mathit{Inst}$ for the set of database instances. For a database instance $f$ and a list of strings $\rho$, we write $f \! \mid_\rho$ for the database instance defined such that for all lists of strings $\theta$ we have $$f \! \mid_\rho \! (\theta) \doteq f(\rho \cdot \theta)$$ We call a list of strings a \emph{node}. We say that database $f$ is \emph{active} at node $\rho$ if $f \! \mid_\rho$ is defined somewhere. We write the list of strings consisting of $s_1, \ldots, s_n$ as $[s_1,\ldots,s_n]$. For database instances $f$ we define the notation $$\mathit{keys}(f) \doteq \{ s \in \mathit{Strings} \mid f \text{ is active at } s \}$$ Furthermore, for sets of strings $X$ we define
+Given lists of strings $\rho$ and $\theta$, we write $\rho \cdot \theta$ for the list obtained by concatenating $\theta$ to the right of $\rho$. A \emph{database instance} is a partial function $f : \mathit{Strings}^{\star} \rightharpoonup \mathit{Strings}$ from lists of strings to strings. We write $\mathit{Inst}$ for the set of database instances. For a database instance $f$ and a list of strings $\rho$, we write $f \! \mid_\rho$ for the database instance defined such that for all lists of strings $\theta$ we have $$f \! \mid_\rho \! (\theta) \doteq f(\rho \cdot \theta)$$ We call a list of strings a \emph{node}. We say that database $f$ is \emph{active} at node $\rho$ if $f \! \mid_\rho$ is defined somewhere. We write the list of strings consisting of $s_1, \ldots, s_n$ as $[s_1,\ldots,s_n]$. For database instances $f$ we define the notation $$\mathit{keys}(f) \doteq \{ s \in \mathit{Strings} \mid f \text{ is active at } [s] \}$$ Furthermore, for sets of strings $X$ we define
 $$f \# X \doteq | \mathit{keys}(f) \cap X |$$ 
 
 
@@ -549,8 +549,8 @@ $$\Sigma \vdash (\forall \zeta'. \kappa)[S/\zeta]$$.
 \end{proof}
 
 \begin{lemma}
-If $\Sigma,\zeta \vdash d \leq d'$ and $\Sigma \vdash S$ then $\Sigma \vdash d[S/\zeta] \leq d'[S/\zeta]$ and 
-$$\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^* \sem{\Sigma \vdash d \leq d'} = \sem{\Sigma,\zeta \vdash d \leq d'}$$.
+If $\Sigma,\zeta \vdash d \leq d'$ and $\Sigma \vdash T$ then $\Sigma \vdash d[T/\zeta] \leq d'[T/\zeta]$ and 
+$$\langle \mathit{id}, \sem{\Sigma \vdash T} \rangle^* \sem{\Sigma \vdash d \leq d'} = \sem{\Sigma,\zeta \vdash d \leq d'}$$.
 \label{SD-Subst}
 \end{lemma}
 
@@ -558,12 +558,33 @@ $$\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^* \sem{\Sigma \vdash d \leq
 By cases on $\Sigma,\zeta \vdash d \leq d'$.
 \begin{description}
 \item[Case SD-PrefPref:]~\\
-Since $s$ and $s'$ are string literals, we can apply \begin{sc}SD-PrefPref\end{sc} to obtain $\Sigma \vdash \mathit{Prefix}~s \leq \mathit{Prefix}~s'$. Since $(\mathit{Prefix}~s)[S/\zeta] = \mathit{Prefix}~s$ and likewise for $s'$, we have $\Sigma \vdash (\mathit{Prefix}~s)[S/\zeta] \leq (\mathit{Prefix}~s')[S/\zeta]$. Furthermore, for $\sigma \in \sem{\Sigma}$ we have\\~\\ 
-$(\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^* \sem{\Sigma,\zeta \vdash \mathit{Prefix}~s \leq \mathit{Prefix}~s'})_\sigma$\\
-$= \sem{\Sigma,\zeta \vdash \mathit{Prefix}~s \leq \mathit{Prefix}~s'}_{\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle(\sigma)}$\\
+Since $s$ and $s'$ are string literals, we can apply \begin{sc}SD-PrefPref\end{sc} to obtain $\Sigma \vdash \mathit{Prefix}~s \leq \mathit{Prefix}~s'$. Since $(\mathit{Prefix}~s)[T/\zeta] = \mathit{Prefix}~s$ and likewise for $s'$, we have $\Sigma \vdash (\mathit{Prefix}~s)[T/\zeta] \leq (\mathit{Prefix}~s')[T/\zeta]$. Furthermore, for $\sigma \in \sem{\Sigma}$ we have\\~\\ 
+$(\langle \mathit{id}, \sem{\Sigma \vdash T} \rangle^* \sem{\Sigma,\zeta \vdash \mathit{Prefix}~s \leq \mathit{Prefix}~s'})_\sigma$\\
+$= \sem{\Sigma,\zeta \vdash \mathit{Prefix}~s \leq \mathit{Prefix}~s'}_{\langle \mathit{id}, \sem{\Sigma \vdash T} \rangle(\sigma)}$\\
 $= (\{ t \mid s \sqsubseteq t \} \hookrightarrow \{ t \mid s' \sqsubseteq t \})$\\
 $= \sem{\Sigma \vdash \mathit{Prefix}~s \leq \mathit{Prefix}~s'}_{\sigma}$\\
-$= \sem{\Sigma \vdash (\mathit{Prefix}~s)[S/\zeta] \leq (\mathit{Prefix}~s')[S/\zeta]}_{\sigma}$
+$= \sem{\Sigma \vdash (\mathit{Prefix}~s)[T/\zeta] \leq (\mathit{Prefix}~s')[T/\zeta]}_{\sigma}$
+\item[Case SD-LitLit:]~\\
+~
+\begin{description}
+\item[Case $S = \zeta$:]~\\
+By assumption we have $\Sigma \vdash T$, and so applying \begin{sc}SD-LitLit\end{sc} gives $\Sigma \vdash \mathit{Literal}~T \leq \mathit{Literal}~T$. Since $S[T/\zeta] = T$, we have $$\Sigma \vdash \mathit{Literal}~S[T/\zeta] \leq S[T/\zeta]$$
+Furthermore, for $\sigma \in \sem{\Sigma}$ we have\\~\\
+$(\langle \mathit{id},\sem{\Sigma \vdash T} \rangle^* \sem{\Sigma,\zeta \vdash \mathit{Literal}~\zeta \leq \mathit{Literal~\zeta}})_\sigma$\\
+$= \sem{\Sigma,\zeta \vdash \mathit{Literal}~\zeta \leq \mathit{Literal}~\zeta}_{\langle \mathit{id}, \sem{\Sigma \vdash T}\rangle(\sigma)}$\\
+$= \{ \sem{\Sigma,\zeta \vdash \zeta}_{\langle \mathit{id}, \sem{\Sigma \vdash T}\rangle(\sigma)} \} \subseteq \{ \sem{\Sigma,\zeta \vdash \zeta}_{\langle \mathit{id}, \sem{\Sigma \vdash T}\rangle(\sigma)} \}$\\
+$= \{ (\langle \mathit{id}, \sem{\Sigma \vdash T}\rangle^*\sem{\Sigma,\zeta \vdash \zeta})_\sigma \} \subseteq \{ (\langle \mathit{id}, \sem{\Sigma \vdash T}\rangle^*\sem{\Sigma,\zeta \vdash \zeta})_\sigma \}$\\
+$= \{ \sem{\Sigma \vdash T}_{\sigma} \} \subseteq \{ \sem{\Sigma \vdash T}_{\sigma} \}$\\
+$= \sem{\Sigma \vdash \mathit{Literal}~T \leq \mathit{Literal}~T}_{\sigma}$\\
+$= \sem{\Sigma \vdash \mathit{Literal}~\zeta[T/\zeta] \leq \mathit{Literal}~\zeta[T/\zeta]}_{\sigma}$
+
+ 
+\item[Case $S = \xi \in \Sigma$:]~\\
+a
+
+\end{description}
+
+
 \end{description}
 
 \end{proof}
