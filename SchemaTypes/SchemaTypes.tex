@@ -319,7 +319,6 @@ $\sem{\Sigma \vdash \forall \zeta. \kappa}$ & $\doteq \Pi_{\sem{\Sigma},\sem{\ze
 
 \section*{Subkinding}
 
-The interpretation $\sem{\Sigma \vdash \kappa <:: \kappa'}$ is a mono in the fibre $\mathit{Fam}(\mbf{Posets})_{\sem{\Sigma}}$ from $\sem{\Sigma \vdash \kappa}$ to $\sem{\Sigma \vdash \kappa'}$.
 
 \begin{mathpar}
 \inferrule[SK-StrTree]
@@ -335,7 +334,11 @@ The interpretation $\sem{\Sigma \vdash \kappa <:: \kappa'}$ is a mono in the fib
   {\Sigma \vdash \mathit{KTree}(d) <:: \mathit{KTree}(d')}
 \end{mathpar}
 
-Each of the above three judgments are interpreted as families of inclusions. For example, for \begin{sc}SK-StrTree\end{sc}, our hypothesis is interpreted as a family of inclusions $$(i_\sigma : \sem{\Sigma \vdash d}_{\sigma} \subseteq \sem{\Sigma \vdash d'}_\sigma)_{\sigma \in \sem{\Sigma}}$$ and we have\\
+Abstractly, the interpretation $\sem{\Sigma \vdash \kappa <:: \kappa'}$ is a mono in the fibre $\mathit{Fam}(\mbf{Posets})_{\sem{\Sigma}}$ from $\sem{\Sigma \vdash \kappa}$ to $\sem{\Sigma \vdash \kappa'}$. 
+
+% TODO: is mono really the right concept above, or is there a suitable factorization system on the Fam(Posets) category that should be used instead?
+
+For discriminators $d$ and $\phi \subseteq \mathit{Chars}$, we have that $\sem{\Sigma \vdash \mathit{KString}(d,\phi)}$ and $\sem{\Sigma \vdash \mathit{KTree}(d)}$ are families of sets. Each judgment $\Sigma \vdash \kappa <:: \kappa'$ above is interpreted as the family of inclusions $(i_{\sem{\Sigma \vdash \kappa}_\sigma,\sem{\Sigma \vdash \kappa'}_\sigma})_{\sigma \in \sem{\Sigma}}$. For example, for \begin{sc}SK-StrTree\end{sc}, our hypothesis is interpreted as a family of inclusions $$(i_{\sem{\Sigma \vdash d}_{\sigma}, \sem{\Sigma \vdash d'}_\sigma})_{\sigma \in \sem{\Sigma}}$$ and we have that $(i_{\sem{\Sigma \vdash \kappa}_\sigma,\sem{\Sigma \vdash \kappa'}_\sigma})_{\sigma \in \sem{\Sigma}}$ exists, because\\~\\
 $\sem{\Sigma \vdash \mathit{KString(d,\phi)} <:: \mathit{KTree}(d')}_\sigma$\\
 $= \{~\{ \epsilon \mapsto s \} \in \mathit{Inst} \mid s \in \sem{\Sigma \vdash d}_{\sigma} \wedge \mathit{chars}(s) \subseteq \phi \}$\\
 $\subseteq \{~\{ \epsilon \mapsto s \} \in \mathit{Inst} \mid s \in \sem{\Sigma \vdash d}_{\sigma} \}$\\
@@ -605,6 +608,11 @@ By induction on $\Sigma,\zeta \vdash \kappa <:: \kappa'$.
 \begin{description}
 \item[Case \begin{sc}SK-StrTree\end{sc}]:~\\
 Applying lemma \ref{SD-Subst} to the premise $\Sigma,\zeta \vdash d \leq d'$ gives $$\Sigma \vdash d[S/\zeta] \leq d'[S/\zeta]$$ Applying \begin{sc}SK-StrTree\end{sc} gives $$\Sigma \vdash \mathit{KString(d[S/\zeta],\phi) <:: \mathit{KTree}(d'[S/\zeta])}$$
+Furthermore, for $\sigma \in \sem{\Sigma}$ we have\\~\\
+$(\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^* \sem{\Sigma,\zeta \vdash \mathit{KString}(d,\phi) <:: KTree(d')})_\sigma $\\~\\
+$= \sem{\Sigma,\zeta \vdash \mathit{KString}(d,\phi) <:: KTree(d')}_{\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle(\sigma)}$\\~\\
+$= a$
+
 \item[Case \begin{sc}SK-StrStr\end{sc}]:~\\
 Applying lemma \ref{SD-Subst} to the premise $\Sigma,\zeta \vdash d \leq d'$ gives $$\Sigma \vdash d[S/\zeta] \leq d'[S/\zeta]$$ Applying \begin{sc}SK-StrStr\end{sc} gives $$\Sigma \vdash \mathit{KString}(d[S/\zeta],\phi) <:: \mathit{KString}(d'[S/\zeta], \phi')$$
 \item[Case \begin{sc}SK-TreeTree\end{sc}]:~\\
