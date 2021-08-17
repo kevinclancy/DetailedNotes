@@ -345,8 +345,6 @@ $\subseteq \{~\{ \epsilon \mapsto s \} \in \mathit{Inst} \mid s \in \sem{\Sigma 
 $\subseteq \{~\{ \epsilon \mapsto s \} \in \mathit{Inst} \mid s \in \sem{\Sigma \vdash d'}_{\sigma} \}$\\
 $\subseteq \{ f \in \mathit{Inst} \mid f(\epsilon) \in \sem{\Sigma \vdash d'}_{\sigma} \}$
 
-
-
 \section*{Kinding}
 
 In what follows, we define $\ast \doteq \mathit{KTree}(\mathit{Prefix}~\epsilon)$, where $\epsilon$ is the empty string, so that all proper types have kind $\ast$. We define $\star \doteq \mathit{KString}(\mathit{Prefix}~\epsilon, \mathit{Chars})$, so that all string types have kind $\star$.
@@ -524,19 +522,30 @@ Similar to the previous case.
 \end{proof}
 
 \begin{lemma}
-If $\Sigma,\zeta \vdash \kappa$ and $\Sigma \vdash S$ then $\Sigma \vdash \kappa[S/\zeta]$.
-Furthermore, if $\Sigma,\zeta \vdash A$ and $\Sigma \vdash S$ then $\Sigma \vdash A[S/\zeta]$.
+If $\Sigma,\zeta \vdash A$ and $\Sigma \vdash S$ then $\Sigma \vdash A[S/\zeta]$ and
+$$\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^* \sem{\Sigma, \zeta \vdash A} = \sem{\Sigma \vdash A[S/\zeta]}$$ %TODO: make use of this fact; I need to revise the interpretation of wf coeffects to use the notation \sem{\Sigma \vdash S_i}_\sigma instead of \sigma S_i
 \end{lemma}
 
 \begin{proof}
-By simultaneous induction on the proofs of $\Sigma,\zeta \vdash \kappa$ and $\Sigma,\zeta \vdash A$. 
+If $\Sigma,\zeta \vdash A$ then for each $(S_1,\ldots,S_n).[\phi] \in A$ we have $\Sigma,\zeta \vdash S_i^{~i \in 1..n}$. By Lemma \ref{SWF-Subst} we have $\Sigma \vdash S_i[S/\zeta]$ and $$\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^* \sem{\Sigma,\zeta \vdash S_i} = \sem{\Sigma \vdash S_i[S/\zeta]}$$ From this, we deduce that $\Sigma \vdash (S_1[S/\zeta],\ldots,S_n[S/\zeta]).[\phi]$; hence $\Sigma \vdash A[S/\zeta]$. 
+
+And for $\sigma \in \sem{\Sigma}$, writing $\rho$ for $\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle(\sigma)$, we have\\~\\ 
+$(\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^* \sem{\Sigma,\zeta \vdash A})_\sigma$\\~\\
+$= \sem{\Sigma,\zeta \vdash A}_{\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle(\sigma)}$\\~\\
+$= \sdisp{\bigcap_{(S_1,\ldots,S_n).[\phi] \in A} \{ f \in \mathit{Inst} \mid \forall s \in \mathit{keys}(f \! \mid_{\rho S_1, \ldots, \rho S_n}).~\mathit{chars}(s) \subseteq \phi \},~\leq}$\\~\\
+$= \sdisp{\bigcap_{(S_1,\ldots,S_n).[\phi] \in A} \{ f \in \mathit{Inst} \mid \forall s \in \mathit{keys}(f \! \mid_{\sigma S_1[S/\zeta], \ldots, \sigma S_n[S/\zeta]}).~\mathit{chars}(s) \subseteq \phi \},~\leq}$
+$= \sdisp{\bigcap_{(S_1,\ldots,S_n).[\phi] \in A[S/\zeta]} \{ f \in \mathit{Inst} \mid \forall s \in \mathit{keys}(f \! \mid_{\sigma S_1, \ldots, \sigma S_n}).~\mathit{chars}(s) \subseteq \phi \},~\leq}$\\~\\
+$= \sem{\Sigma \vdash A[S/\zeta]}_\sigma$
+\end{proof}
+
+\begin{lemma}
+If $\Sigma,\zeta \vdash \kappa$ and $\Sigma \vdash S$ then $\Sigma \vdash \kappa[S/\zeta]$ and $$\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^* \sem{\Sigma,\zeta \vdash \kappa} = \sem{\Sigma \vdash \kappa[S/\zeta]}$$ 
+\end{lemma}
+
+\begin{proof}
+By induction on the proofs of $\Sigma,\zeta \vdash \kappa$ and $\Sigma,\zeta \vdash A$. 
 
 \begin{description}
-\item[Case $\Sigma,\zeta \vdash A$]:~\\
-If $\Sigma,\zeta \vdash A$ then for each $(S_1,\ldots,S_n).[\phi] \in A$ we 
-have $\Sigma,\zeta \vdash S_i^{~i \in 1..n}$ and $\Sigma,\zeta \vdash \kappa$. By Lemma \ref{SWF-Subst} we have
-$\Sigma \vdash S_i[S/\zeta]$. By the inductive hypothesis, we have $\Sigma \vdash \kappa[S/\zeta]$. From this,
-we deduce that $\Sigma \vdash (S_1[S/\zeta],\ldots,S_n[S/\zeta]).[\phi[S/\zeta]]$; hence $\Sigma \vdash A[S/\zeta]$. (TODO: should we name the ``rule'' for concluding coeffect well-formedness judgments?)
 \item[Case \sc{KWF-Str}]:~\\
 We apply Lemma \ref{DWF-Subst} to the premise to get $\Sigma \vdash d[S/\zeta]$. Then applying 
 \begin{sc}KWF-Str\end{sc} using $\Sigma \vdash d[S/\zeta]$ as the premise gives 
