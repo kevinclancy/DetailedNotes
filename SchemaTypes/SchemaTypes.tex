@@ -212,7 +212,7 @@ $$f \# X \doteq | \mathit{keys}(f) \cap X |$$
 The judgment $\Sigma \vdash A$ means that the coeffect $A$ is well-formed under index context $\Sigma$,
 in the sense that for each $(S_1,\ldots,S_n).[\phi] \in A$ we have $\Sigma \vdash S_i^{~i \in 1..n}$.
 
-The interpretation $\sem{\Sigma \vdash A}$ is a $\sem{\Sigma}$-indexed family of posets of database instances, defined as $$\sem{\Sigma \vdash A} \doteq (I_\sigma, \leq_\sigma)_{\sigma \in \sem{\Sigma}}$$ where $$I_\sigma \doteq \sdisp{\bigcap_{(S_1,\ldots,S_n).[\phi] \in A} \{ f \in \mathit{Inst} \mid \forall s \in \mathit{keys}(f \! \mid_{\sigma S_1, \ldots, \sigma S_n}).~\mathit{chars}(s) \subseteq \phi \}}_{\sigma \in \sem{\Sigma}}$$ and for $f,g \in I_{\sigma}$ we have
+The interpretation $\sem{\Sigma \vdash A}$ is a $\sem{\Sigma}$-indexed family of posets of database instances, defined as $$\sem{\Sigma \vdash A} \doteq (I_\sigma, \leq_\sigma)_{\sigma \in \sem{\Sigma}}$$ where $$I_\sigma \doteq \sdisp{\bigcap_{(S_1,\ldots,S_n).[\phi] \in A} \{ f \in \mathit{Inst} \mid \forall s \in \mathit{keys}(f \! \mid_{[\sem{\Sigma \vdash S_1}_\sigma, \ldots, \sem{\Sigma \vdash S_n}_\sigma]}).~\mathit{chars}(s) \subseteq \phi \}}_{\sigma \in \sem{\Sigma}}$$ and for $f,g \in I_{\sigma}$ we have
 $$f \leq_\sigma g \overset{\cdot}{\Leftrightarrow} (\forall \rho \in \mathit{Strings}^\star.~f(\rho) \text{ is defined} \Rightarrow g(\rho) \text{ is defined})$$
  
 \section*{Coeffect composition}
@@ -281,7 +281,7 @@ The \emph{canonical transformation} is obtained as follows. First, from the well
 Then, the canonical transformation is the transpose of 
 $$\pi^* f^* \Pi \overset{\cong}{\longrightarrow} (f \times \mathit{id})^* \pi^* \Pi \overset{(f \times \mathit{id})^* \epsilon}{\longrightarrow} (f \times \mathit{id})^*$$
 
-In the specific case of $\mathit{Fam}(\mathbf{Posets})$, for sets $I$ and $J$ we define $\Pi_{(I,J)} : \mathit{Fam}(\mathbf{Posets})_{I \times J} \to \mathit{Fam}(\mathbf{Posets})_I$ by
+In the specific case of $\mathit{Fam}(\mathbf{Posets})$, for sets $I$ and $J$ we have $\Pi_{(I,J)} : \mathit{Fam}(\mathbf{Posets})_{I \times J} \to \mathit{Fam}(\mathbf{Posets})_I$ equal to the mapping
 $$(P_{(i,j)})_{(i,j) \in I \times J} \mapsto (\Pi_{j \in J} P_{(i,j)})_{i \in I}$$  
 where for $i \in I$, $\Pi_{j \in J} P_{(i,j)}$ is a $J$-indexed product of posets.
 
@@ -523,33 +523,40 @@ Similar to the previous case.
 
 \begin{lemma}
 If $\Sigma,\zeta \vdash A$ and $\Sigma \vdash S$ then $\Sigma \vdash A[S/\zeta]$ and
-$$\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^* \sem{\Sigma, \zeta \vdash A} = \sem{\Sigma \vdash A[S/\zeta]}$$ %TODO: make use of this fact; I need to revise the interpretation of wf coeffects to use the notation \sem{\Sigma \vdash S_i}_\sigma instead of \sigma S_i
+$$\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^* \sem{\Sigma, \zeta \vdash A} = \sem{\Sigma \vdash A[S/\zeta]}$$
 \end{lemma}
 
 \begin{proof}
-If $\Sigma,\zeta \vdash A$ then for each $(S_1,\ldots,S_n).[\phi] \in A$ we have $\Sigma,\zeta \vdash S_i^{~i \in 1..n}$. By Lemma \ref{SWF-Subst} we have $\Sigma \vdash S_i[S/\zeta]$ and $$\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^* \sem{\Sigma,\zeta \vdash S_i} = \sem{\Sigma \vdash S_i[S/\zeta]}$$ From this, we deduce that $\Sigma \vdash (S_1[S/\zeta],\ldots,S_n[S/\zeta]).[\phi]$; hence $\Sigma \vdash A[S/\zeta]$. 
-
+If $\Sigma,\zeta \vdash A$ then for each $(S_1,\ldots,S_n).[\phi] \in A$ we have $\Sigma,\zeta \vdash S_i^{~i \in 1..n}$. By Lemma \ref{SWF-Subst} we have $\Sigma \vdash S_i[S/\zeta]$ and $$\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^* \sem{\Sigma,\zeta \vdash S_i} = \sem{\Sigma \vdash S_i[S/\zeta]}$$ From this, we deduce that $\Sigma \vdash (S_1[S/\zeta],\ldots,S_n[S/\zeta]).[\phi]$; hence $\Sigma \vdash A[S/\zeta]$. \\~\\
 And for $\sigma \in \sem{\Sigma}$, writing $\rho$ for $\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle(\sigma)$, we have\\~\\ 
 $(\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^* \sem{\Sigma,\zeta \vdash A})_\sigma$\\~\\
 $= \sem{\Sigma,\zeta \vdash A}_{\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle(\sigma)}$\\~\\
-$= \sdisp{\bigcap_{(S_1,\ldots,S_n).[\phi] \in A} \{ f \in \mathit{Inst} \mid \forall s \in \mathit{keys}(f \! \mid_{\rho S_1, \ldots, \rho S_n}).~\mathit{chars}(s) \subseteq \phi \},~\leq}$\\~\\
-$= \sdisp{\bigcap_{(S_1,\ldots,S_n).[\phi] \in A} \{ f \in \mathit{Inst} \mid \forall s \in \mathit{keys}(f \! \mid_{\sigma S_1[S/\zeta], \ldots, \sigma S_n[S/\zeta]}).~\mathit{chars}(s) \subseteq \phi \},~\leq}$
-$= \sdisp{\bigcap_{(S_1,\ldots,S_n).[\phi] \in A[S/\zeta]} \{ f \in \mathit{Inst} \mid \forall s \in \mathit{keys}(f \! \mid_{\sigma S_1, \ldots, \sigma S_n}).~\mathit{chars}(s) \subseteq \phi \},~\leq}$\\~\\
+$= \sdisp{\bigcap_{(S_1,\ldots,S_n).[\phi] \in A} \{ f \in \mathit{Inst} \mid \forall s \in \mathit{keys}(f \! \mid_{\sem{\Sigma,\zeta \vdash S_1}_\rho, \ldots, \sem{\Sigma,\zeta \vdash S_n}_\rho}).~\mathit{chars}(s) \subseteq \phi \},~\leq}$\\~\\
+$= \sdisp{\bigcap_{(S_1,\ldots,S_n).[\phi] \in A} \{ f \in \mathit{Inst} \mid \forall s \in \mathit{keys}(f \! \mid_{   (\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^* \sem{\Sigma,\zeta \vdash S_1})_\sigma, \ldots, (\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^* \sem{\Sigma,\zeta \vdash S_n})_\sigma}).~\mathit{chars}(s) \subseteq \phi \},~\leq}$\\~\\
+$= \sdisp{\bigcap_{(S_1,\ldots,S_n).[\phi] \in A} \{ f \in \mathit{Inst} \mid \forall s \in \mathit{keys}(f \! \mid_{   \sem{\Sigma \vdash S_1[S/\zeta]}_\sigma, \ldots, \sem{\Sigma \vdash S_n[S/\zeta]}_\sigma}).~\mathit{chars}(s) \subseteq \phi \},~\leq}$\\~\\
+$= \sdisp{\bigcap_{(S_1,\ldots,S_n).[\phi] \in A[S/\zeta]} \{ f \in \mathit{Inst} \mid \forall s \in \mathit{keys}(f \! \mid_{\sem{\Sigma \vdash S_1}_\sigma, \ldots, \sem{\Sigma \vdash S_n}_\sigma}).~\mathit{chars}(s) \subseteq \phi \},~\leq}$\\~\\
 $= \sem{\Sigma \vdash A[S/\zeta]}_\sigma$
-\end{proof}
+\end{proof}~\\~\\
 
 \begin{lemma}
 If $\Sigma,\zeta \vdash \kappa$ and $\Sigma \vdash S$ then $\Sigma \vdash \kappa[S/\zeta]$ and $$\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^* \sem{\Sigma,\zeta \vdash \kappa} = \sem{\Sigma \vdash \kappa[S/\zeta]}$$ 
 \end{lemma}
 
 \begin{proof}
-By induction on the proofs of $\Sigma,\zeta \vdash \kappa$ and $\Sigma,\zeta \vdash A$. 
+By induction on the proof of $\Sigma,\zeta \vdash \kappa$. 
 
 \begin{description}
 \item[Case \sc{KWF-Str}]:~\\
 We apply Lemma \ref{DWF-Subst} to the premise to get $\Sigma \vdash d[S/\zeta]$. Then applying 
 \begin{sc}KWF-Str\end{sc} using $\Sigma \vdash d[S/\zeta]$ as the premise gives 
-$\Sigma \vdash \mathit{KString}(d[S/\zeta],\phi)$, i.e. $\Sigma \vdash \kappa[S/\zeta]$.
+$\Sigma \vdash \mathit{KString}(d[S/\zeta],\phi)$, i.e. $\Sigma \vdash \kappa[S/\zeta]$.\\~\\
+Furthermore, for $\sigma \in \sem{\Sigma}$, we have that\\~\\
+$(\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^* \sem{\Sigma,\zeta \vdash \mathit{KString(d,\phi)}})_\sigma$\\~\\
+$= \sem{\Sigma,\zeta \vdash \mathit{KString(d,\phi)}}_{\langle \mathit{id}, \sem{\Sigma \vdash S}(\sigma)}$\\~\\
+$= (\{~\{ \epsilon \mapsto s \} \in \mathit{Inst} \mid s \in \sem{\Sigma,\zeta \vdash d}_{\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle (\sigma)} \wedge \mathit{chars}(s) \subseteq \phi ~\} , \subseteq)$\\~\\
+$= (\{~\{ \epsilon \mapsto s \} \in \mathit{Inst} \mid s \in \sem{\Sigma \vdash [S/\zeta]d}_{\sigma} \wedge \mathit{chars}(s) \subseteq \phi ~\} , \subseteq)$\\~\\
+$= \sem{\Sigma \vdash \mathit{KString(d[S/\zeta],\phi)}}_\sigma$\\~\\
+$= \sem{\Sigma \vdash (\mathit{KString(d,\phi)})[S/\zeta]}_\sigma$
 
 \item[Case \sc{KWF-Tree}]:~\\
 Similar to the above case.
