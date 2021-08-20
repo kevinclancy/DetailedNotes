@@ -578,7 +578,20 @@ $= \sem{\Sigma \vdash (\kappa \overset{A}{\Rightarrow} \kappa')[S/\zeta] }_\sigm
 
 \item[Case \sc{KWF-StrFun}]:~\\
 The premise for proving $\Sigma,\zeta \vdash \forall \zeta'.\kappa$ is $\Sigma,\zeta,\zeta' \vdash \kappa$. Exchanging $\zeta$ and $\zeta'$ gives $\Sigma,\zeta',\zeta \vdash \kappa$. (The proof should be of the same height.) Applying the IH gives $\Sigma,\zeta' \vdash \kappa[S/\zeta]$. Applying \begin{sc}KWF-StrFun\end{sc} gives $\Sigma \vdash \forall \zeta'. \kappa[S/\zeta]$ i.e.
-$$\Sigma \vdash (\forall \zeta'. \kappa)[S/\zeta]$$.
+$$\Sigma \vdash (\forall \zeta'. \kappa)[S/\zeta]$$
+Furthermore, substituting $\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle$ for $f$ in the Beck-Chevalley condition for simple products, we have\\~\\
+%$(\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^* \sem{\Sigma,\zeta \vdash \forall \zeta'. \kappa})_\sigma$\\~\\
+%$= \sem{\Sigma,\zeta \vdash \forall \zeta'. \kappa}_{\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle(\sigma)}$\\~\\
+%$= (\Pi_{\sem{\Sigma,\zeta}, \sem{\zeta'}} \sem{\Sigma,\zeta,\zeta' \vdash \kappa})_{\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle(\sigma)}$
+$(\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^* \sem{\Sigma,\zeta \vdash \forall \zeta'. \kappa})_\sigma$\\~\\
+$= (\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^* \Pi_{\sem{\Sigma,\zeta},\sem{\zeta'}} \sem{\Sigma,\zeta,\zeta' \vdash \kappa})_\sigma$\\~\\
+$\cong (\Pi_{\sem{\Sigma},\sem{\zeta'}} (\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle \times \mathit{id})^* \sem{\Sigma, \zeta, \zeta' \vdash \kappa})_\sigma$\\~\\
+$= \Pi_{t \in \mathit{Strings}} ((\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle \times \mathit{id})^* \sem{\Sigma,\zeta,\zeta' \vdash \kappa})_{\sigma, t} $\\~\\
+$= \Pi_{t \in \mathit{Strings}} \sem{\Sigma,\zeta,\zeta' \vdash \kappa}_{(\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle \times \mathit{id} )(\sigma, t)}$\\~\\
+$= \Pi_{t \in \mathit{Strings}} \sem{\Sigma,\zeta,\zeta' \vdash \kappa}_{\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle(\sigma),t}$\\~\\
+$= (\Pi_{\sem{\Sigma,\zeta},\sem{\zeta'}} \sem{\Sigma,\zeta,\zeta' \vdash \kappa} )_{\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle(\sigma),t}$\\~\\
+=~todo: this is wrong... I need to swap $\zeta$ and $\zeta'$ above so that I can substitute $S$ for $\zeta$.
+
 \end{description}
 \end{proof}
 
