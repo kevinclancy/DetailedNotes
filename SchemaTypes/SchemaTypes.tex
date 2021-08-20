@@ -562,8 +562,19 @@ $= \sem{\Sigma \vdash (\mathit{KString(d,\phi)})[S/\zeta]}_\sigma$
 Similar to the above case.
 
 \item[Case \sc{KWF-TyFun}]:~\\
-Our inductive hypothesis gives $\Sigma \vdash \kappa[S/\zeta]$, $\Sigma \vdash \kappa'[S/\zeta]$, and
-$\Sigma \vdash A[S/\zeta]$. Applying \begin{sc}KWF-TyFun\end{sc} gives $\Sigma \vdash \kappa[S/\zeta] \overset{A[S/\zeta]}{\Rightarrow} \kappa'[S/\zeta]$ i.e. $$\Sigma \vdash (\kappa \overset{A}{\Rightarrow} \kappa')[S/\zeta]$$
+Our inductive hypothesis gives $\Sigma \vdash \kappa[S/\zeta]$, $\Sigma \vdash \kappa'[S/\zeta]$,
+$\Sigma \vdash A[S/\zeta]$, and furthermore $$\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^*\sem{\Sigma,\zeta \vdash \kappa} = \sem{\Sigma \vdash \kappa[S/\zeta]},$$ $$\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^* \sem{\Sigma,\zeta \vdash \kappa'} = \sem{\Sigma \vdash \kappa'[S/\zeta]}, \text{ and}$$ $$\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^* \sem{\Sigma,\zeta \vdash A} = \sem{\Sigma \vdash A[S/\zeta]}$$  Applying \begin{sc}KWF-TyFun\end{sc} gives $\Sigma \vdash \kappa[S/\zeta] \overset{A[S/\zeta]}{\Rightarrow} \kappa'[S/\zeta]$ i.e. $$\Sigma \vdash (\kappa \overset{A}{\Rightarrow} \kappa')[S/\zeta]$$
+
+Furthermore, for $\sigma \in \sem{\Sigma}$ we have\\~\\ 
+$(\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^* \sem{\Sigma,\zeta \vdash \kappa \overset{A}{\Rightarrow} \kappa'})_\sigma$\\~\\
+$= \sem{\Sigma,\zeta \vdash \kappa \overset{A}{\Rightarrow} \kappa'}_{\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle(\sigma)}$\\~\\
+$= D_{\Sigma} A( \sem{\Sigma,\zeta \vdash \kappa} )_{\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle(\sigma)} \Rightarrow \sem{\Sigma,\zeta \vdash \kappa'}_{\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle(\sigma)}$\\~\\
+$= \sem{\Sigma,\zeta \vdash \kappa}_{\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle(\sigma)} \times \sem{\Sigma \vdash A}_{\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle(\sigma)} \Rightarrow \sem{\Sigma,\zeta \vdash \kappa'}_{\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle(\sigma)}$\\~\\
+$= (\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^* \sem{\Sigma,\zeta \vdash \kappa} )_\sigma \times (\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^* \sem{\Sigma \vdash A})_\sigma \\ ~~~\Rightarrow (\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^* \sem{\Sigma \vdash \kappa'})_\sigma$\\~\\
+$= \sem{\Sigma \vdash \kappa[S/\zeta]}_\sigma \times \sem{\Sigma \vdash A[S/\zeta]}_\sigma \Rightarrow \sem{\Sigma \vdash \kappa'[S/\zeta]}_\sigma$\\~\\
+$= D_{\Sigma} A[S/\zeta] (\sem{\Sigma \vdash \kappa[S/\zeta]})_\sigma \Rightarrow \sem{\Sigma \vdash \kappa'[S/\zeta]}_\sigma$\\~\\
+$= \sem{\Sigma \vdash \kappa[S/\zeta] \overset{A[S/\zeta]}{\Rightarrow} \kappa'[S/\zeta]}_\sigma $\\~\\
+$= \sem{\Sigma \vdash (\kappa \overset{A}{\Rightarrow} \kappa')[S/\zeta] }_\sigma$
 
 \item[Case \sc{KWF-StrFun}]:~\\
 The premise for proving $\Sigma,\zeta \vdash \forall \zeta'.\kappa$ is $\Sigma,\zeta,\zeta' \vdash \kappa$. Exchanging $\zeta$ and $\zeta'$ gives $\Sigma,\zeta',\zeta \vdash \kappa$. (The proof should be of the same height.) Applying the IH gives $\Sigma,\zeta' \vdash \kappa[S/\zeta]$. Applying \begin{sc}KWF-StrFun\end{sc} gives $\Sigma \vdash \forall \zeta'. \kappa[S/\zeta]$ i.e.
