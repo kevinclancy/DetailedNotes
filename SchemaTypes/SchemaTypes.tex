@@ -32,6 +32,7 @@
 \newcommand{\capdot}{~\stackinset{c}{}{c}{}{\scalebox{0.8}{$\ast$}}{$\cap$}~}
 \newcommand{\bigcapdot}{\mathop{\stackinset{c}{}{c}{}{\scalebox{0.8}{$\ast$}}{$\bigcap$}}}
 
+\newtheorem{remark}{Remark}
 
 \newcommand{\vrt}[2]{
 \pile{
@@ -536,10 +537,74 @@ $= \sdisp{\bigcap_{(S_1,\ldots,S_n).[\phi] \in A} \{ f \in \mathit{Inst} \mid \f
 $= \sdisp{\bigcap_{(S_1,\ldots,S_n).[\phi] \in A} \{ f \in \mathit{Inst} \mid \forall s \in \mathit{keys}(f \! \mid_{   \sem{\Sigma \vdash S_1[S/\zeta]}_\sigma, \ldots, \sem{\Sigma \vdash S_n[S/\zeta]}_\sigma}).~\mathit{chars}(s) \subseteq \phi \},~\leq}$\\~\\
 $= \sdisp{\bigcap_{(S_1,\ldots,S_n).[\phi] \in A[S/\zeta]} \{ f \in \mathit{Inst} \mid \forall s \in \mathit{keys}(f \! \mid_{\sem{\Sigma \vdash S_1}_\sigma, \ldots, \sem{\Sigma \vdash S_n}_\sigma}).~\mathit{chars}(s) \subseteq \phi \},~\leq}$\\~\\
 $= \sem{\Sigma \vdash A[S/\zeta]}_\sigma$
-\end{proof}~\\~\\
+\end{proof}~\\
 
 \begin{lemma}
-If $\Sigma,\zeta \vdash \kappa$ and $\Sigma \vdash S$ then $\Sigma \vdash \kappa[S/\zeta]$ and $$\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^* \sem{\Sigma,\zeta \vdash \kappa} = \sem{\Sigma \vdash \kappa[S/\zeta]}$$ 
+For all $\Sigma$, $\xi \not \in \Sigma$, and $S$ with $\Sigma \vdash S$ we have $\Sigma,\xi \vdash S$ and $$\sem{\Sigma,\xi \vdash S} = \pi_{\sem{\Sigma}, \sem{\xi}}^*\sem{\Sigma \vdash S}$$
+\label{lemma:weakiwf}
+\end{lemma}
+\begin{proof}
+By cases.
+\begin{description}
+\item[Case IWF-Var:]~\\
+By the premise of \begin{sc}IWF-Var\end{sc}, $\zeta \in \Sigma$. Hence $\zeta \in \Sigma,\xi$, and so applying \begin{sc}IWF-Var\end{sc} gives $\Sigma,\xi \vdash \zeta$. For $\rho \in \sem{\Sigma,\xi}$ we have
+$$(\pi_{\sem{\Sigma}, \sem{\xi}}^*\sem{\Sigma \vdash \zeta})_\rho = \sem{\Sigma \vdash \zeta}_{\pi(\rho)} = \pi(\rho)(\zeta) = \rho(\zeta) = \sem{\Sigma,\xi \vdash \zeta}_{\rho}$$
+
+\item[Case IWF-Lit:]~\\
+
+Apply \begin{sc}IWF-Lit\end{sc} to get $\Sigma,\xi \vdash s$. For $\rho \in \sem{\Sigma,\xi}$ we have $$(\pi_{\sem{\Sigma},\sem{\xi}}^* \sem{\Sigma \vdash s})_\rho = \sem{\Sigma \vdash s}_{\pi(\rho)} = s = \sem{\Sigma,\xi \vdash s}_\rho$$
+
+\end{description}
+\end{proof}
+
+\begin{remark}
+Recall that the interpretation $\sem{\Sigma \vdash S}$ is a $\sem{\Sigma}$-indexed family of strings. Fibrational connotations aside, this is the same thing as a function from $\sem{\Sigma}$ to the set of strings; the notation $\sem{\Sigma \vdash S}_\sigma$ is an application of this function to $\sigma$.\\~\\
+Applying a substitution functor $\pi^* \sem{\Sigma \vdash S}$ gives us the family $(\sem{\Sigma \vdash S}_{\pi(\sigma)})_{\sigma \in \sem{\Sigma}}$. Thus in the fibration $\mathit{Fam}(\mathit{Strings})$, substitution is precomposition: $$\pi^* \sem{\Sigma \vdash S} = \pi;\sem{\Sigma \vdash S}$$ With this we can rephrase Lemma \ref{lemma:weakiwf} as $$\sem{\Sigma,\xi \vdash S} = \pi_{\sem{\Sigma},\sem{\xi}};\sem{\Sigma \vdash S}$$  
+\end{remark}
+
+\begin{lemma}
+Let $p : \mathbb E \to \mathbb D$ be a fibration and let $i : I \to I \in \mathbb D_1$ be an iso. Then $i^* \cong \mathit{id}_{\mathbb E_I}$. 
+\end{lemma}
+
+\begin{proof}
+Jacobs Exercise 1.4.2 asks us to prove that if $u : I \to J$ is an iso in a fibration's base category, then its cartesian lifting $\overline{u}(X) : u^*(X) \to X$ is also an iso. Naturality is easy to see from the following diagram
+
+\[\begin{tikzcd}
+	{i^*(X)} &&&&& X \\
+	& {i^*(Y)} &&&&& Y \\
+	\\
+	& I &&&& I
+	\arrow["i", from=4-2, to=4-6]
+	\arrow["{i^*(f)}"', dashed, from=1-1, to=2-2]
+	\arrow["{\overline{i}(Y)}"', from=2-2, to=2-7]
+	\arrow["{\overline{i}(X)}", from=1-1, to=1-6]
+	\arrow["f", from=1-6, to=2-7]
+\end{tikzcd}\]
+
+\end{proof}
+
+\begin{lemma}
+Let $p : \mathbb C \to \mathbb D$ be a fibration. Let $u,v : I \to J \in \mathbb D_1$ such that $u \cong v$.
+\end{lemma}
+
+\begin{lemma}
+For all $\Sigma$, $\xi$, and $S$ with $\Sigma \vdash S$,  we have $$\langle \mathit{id}_{\sem \Sigma}, \sem{\Sigma \vdash S} \rangle \times \mathit{id}_{\sem{\xi}} \cong \langle \mathit{id}_{\sem{\Sigma,\xi}}, \sem{\Sigma,\xi \vdash S} \rangle$$
+\label{lemma:subswap}
+\end{lemma}
+
+\begin{proof}~\\~\\
+$\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle \times \mathit{id}$\\~\\
+$= \langle \pi ; \langle \mathit{id}_{\sem{\Sigma}} , \sem{\Sigma \vdash S} \rangle \times \mathit{id}_{\sem{\zeta}}$\\~\\
+$= \langle \langle \pi, \pi;\sem{\Sigma \vdash S} \rangle, \pi' \rangle$\\~\\
+$= \langle \langle \pi, \sem{\Sigma,\zeta \vdash S} \rangle, \pi' \rangle$\\~\\
+$\cong \langle \langle \pi, \sem{\Sigma,\zeta \vdash S} \rangle, \pi' \rangle; \langle \langle \pi;\pi,\pi' \rangle, \pi;\pi' \rangle$\\~\\
+$= \langle \langle \pi, \pi' \rangle; \sem{\Sigma, \zeta \vdash \zeta} \rangle $\\~\\
+$= \langle \mathit{id}, \sem{\Sigma,\zeta \vdash S} \rangle$
+
+\end{proof}
+
+\begin{lemma}
+If $\Sigma,\zeta \vdash \kappa$ and $\Sigma \vdash S$ then $\Sigma \vdash \kappa[S/\zeta]$ and $$\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^* \sem{\Sigma,\zeta \vdash \kappa} \cong \sem{\Sigma \vdash \kappa[S/\zeta]}$$ 
 \end{lemma}
 
 \begin{proof}
@@ -579,14 +644,15 @@ $= \sem{\Sigma \vdash (\kappa \overset{A}{\Rightarrow} \kappa')[S/\zeta] }_\sigm
 \item[Case \sc{KWF-StrFun}]:~\\
 The premise for proving $\Sigma,\zeta \vdash \forall \zeta'.\kappa$ is $\Sigma,\zeta,\zeta' \vdash \kappa$. Exchanging $\zeta$ and $\zeta'$ gives $\Sigma,\zeta',\zeta \vdash \kappa$. (The proof should be of the same height.) Applying the IH gives $\Sigma,\zeta' \vdash \kappa[S/\zeta]$. Applying \begin{sc}KWF-StrFun\end{sc} gives $\Sigma \vdash \forall \zeta'. \kappa[S/\zeta]$ i.e.
 $$\Sigma \vdash (\forall \zeta'. \kappa)[S/\zeta]$$
-Furthermore, substituting $\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle$ for $f$ in the Beck-Chevalley condition for simple products, we have\\~\\
-%$(\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^* \sem{\Sigma,\zeta \vdash \forall \zeta'. \kappa})_\sigma$\\~\\
-%$= \sem{\Sigma,\zeta \vdash \forall \zeta'. \kappa}_{\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle(\sigma)}$\\~\\
-%$= (\Pi_{\sem{\Sigma,\zeta}, \sem{\zeta'}} \sem{\Sigma,\zeta,\zeta' \vdash \kappa})_{\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle(\sigma)}$
-$(\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^* \sem{\Sigma,\zeta \vdash \forall \zeta'. \kappa})_\sigma$\\~\\
-$= (\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^* \Pi_{\sem{\Sigma,\zeta},\sem{\zeta'}} \sem{\Sigma,\zeta,\zeta' \vdash \kappa})_\sigma$\\~\\
-$\cong (\Pi_{\sem{\Sigma},\sem{\zeta'}} (\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle \times \mathit{id})^* \sem{\Sigma, \zeta, \zeta' \vdash \kappa})_\sigma$\\~\\
-$= \Pi_{t \in \mathit{Strings}} ((\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle \times \mathit{id})^* \sem{\Sigma,\zeta,\zeta' \vdash \kappa})_{\sigma, t} $\\~\\
+Furthermore, we have\\~\\
+$(\langle \mathit{id}_{\sem{\Sigma}}, \sem{\Sigma \vdash S} \rangle^* \sem{\Sigma,\zeta \vdash \forall \zeta'. \kappa})_\sigma$\\
+$~~~~~~~~~=$\\
+$(\langle \mathit{id}_{\sem{\Sigma}}, \sem{\Sigma \vdash S} \rangle^* \Pi_{\sem{\Sigma,\zeta},\sem{\zeta'}} \sem{\Sigma,\zeta,\zeta' \vdash \kappa})_\sigma$\\~\\
+$~~~~~~~~~\cong \text{ (By Beck-Chevalley)}$\\~\\
+$(\Pi_{\sem{\Sigma},\sem{\zeta'}} (\langle \mathit{id}_{\sem{\Sigma}}, \sem{\Sigma \vdash S} \rangle \times \mathit{id}_{\sem{\zeta'}})^* \sem{\Sigma, \zeta, \zeta' \vdash \kappa})_\sigma$\\~\\
+$~~~~~~~~~\cong (\text{ Because }f \cong g \Rightarrow f^* \cong g^*)$\\~\\
+$(\Pi_{\sem{\Sigma},\sem{\zeta'}} (\langle \mathit{id}_{\sem{\Sigma}}, \sem{\Sigma \vdash S} \rangle \times \mathit{id}_{\sem{\zeta'}})^* \sem{\Sigma, \zeta, \zeta' \vdash \kappa})_\sigma$
+$\Pi_{t \in \mathit{Strings}} ((\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle \times \mathit{id})^* \sem{\Sigma,\zeta,\zeta' \vdash \kappa})_{\sigma, t} $\\~\\
 $= \Pi_{t \in \mathit{Strings}} \sem{\Sigma,\zeta,\zeta' \vdash \kappa}_{(\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle \times \mathit{id} )(\sigma, t)}$\\~\\
 $= \Pi_{t \in \mathit{Strings}} \sem{\Sigma,\zeta,\zeta' \vdash \kappa}_{\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle(\sigma),t}$\\~\\
 $= (\Pi_{\sem{\Sigma,\zeta},\sem{\zeta'}} \sem{\Sigma,\zeta,\zeta' \vdash \kappa} )_{\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle(\sigma),t}$\\~\\
