@@ -460,6 +460,42 @@ $= id_{\sem{\Sigma}}^* D_{\Sigma} A (\sem{\Sigma \vdash \Gamma})$ \\
 $= D_{\Sigma} A (\sem{\Sigma \vdash \Gamma})$
 \end{tabu}
 
+\subsection*{Index exchange lemmas}
+
+\begin{lemma}
+If $\Sigma,\zeta,\zeta' \vdash \kappa$ then $\Sigma,\zeta',\zeta \vdash \kappa$ and $$\sem{\Sigma,\zeta,\zeta' \vdash \kappa} = \langle \langle \pi;\pi, \pi' \rangle, \pi;\pi' \rangle^* \sem{\Sigma,\zeta',\zeta \vdash \kappa}$$
+\label{lemma:kwf-exchng}
+\end{lemma}
+ 
+\begin{proof}
+By induction on the structure of $\Sigma,\zeta,\zeta' \vdash \kappa$.
+For brevity, we define $f \defeq \langle \langle \pi;\pi, \pi' \rangle, \pi;\pi' \rangle$ in what follows.
+\begin{description}
+\item[KWF-Str]:~\\
+Apply the exchange lemma to the premise $\Sigma,\zeta,\zeta' \vdash d$ to get $\Sigma,\zeta'\zeta \vdash d$ 
+and $\sem{\Sigma,\zeta,\zeta' \vdash d} = f^* \sem{\Sigma,\zeta'\zeta \vdash d}$. Apply \begin{sc}KWF-Str\end{sc} to get $$\Sigma,\zeta',\zeta \vdash \mathit{KString}(d,\phi)$$
+Furthermore,we have\\~\\
+$\sem{\Sigma,\zeta,\zeta' \vdash \mathit{KString}(d,\phi)}_\sigma$\\
+$= (~(\mathcal P (X), \subseteq)~),~~\small{X \defeq \{ \{ \epsilon \mapsto s\} \in \mathit{Inst} \mid s \in \sem{\Sigma,\zeta,\zeta' \vdash d}_\sigma \wedge \mathit{chars}(s) \subseteq \phi \}}$\\
+$= (~(\mathcal P (X), \subseteq)~),~~\small{X \defeq \{ \{ \epsilon \mapsto s\} \in \mathit{Inst} \mid s \in (f^*\sem{\Sigma,\zeta',\zeta \vdash d})_\sigma \wedge \mathit{chars}(s) \subseteq \phi \}}$\\
+$= (~(\mathcal P (X), \subseteq)~),~~\small{X \defeq \{ \{ \epsilon \mapsto s\} \in \mathit{Inst} \mid s \in \sem{\Sigma,\zeta',\zeta \vdash d}_{f(\sigma)} \wedge \mathit{chars}(s) \subseteq \phi \}}$\\
+$= \sem{\Sigma,\zeta',\zeta \vdash \mathit{KString}(d,\phi)}_{f(\sigma)}$\\
+$= (f^* \sem{\Sigma,\zeta',\zeta \vdash \mathit{KString}(d,\phi)})_\sigma $
+\item[KWF-Tree]:~\\
+Similar to the above case.
+
+\item[KWF-TyFun]:~\\
+
+TODO
+
+\item[KWF-StrFun]:~\\
+
+TODO
+
+\end{description}
+
+\end{proof}
+
 \subsection*{Index substitution lemmas}
 
 \subsubsection*{Notation}
@@ -584,8 +620,13 @@ Jacobs Exercise 1.4.2 asks us to prove that if $u : I \to J$ is an iso in a fibr
 \end{proof}
 
 \begin{lemma}
-Let $p : \mathbb C \to \mathbb D$ be a fibration. Let $u,v : I \to J \in \mathbb D_1$ such that $u \cong v$.
+Let $p : \mathbb E \to \mathbb D$ be a fibration. Let $u,v : I \to J \in \mathbb D_1$ such that $u \cong v$. Then $u^* \cong v^*$. 
+\label{lemma:prescong} 
 \end{lemma}
+
+\begin{proof}
+Since $u \cong v$ we have isos $i : I \to I$ and $j : J \to J$ such that $i;u;j = v$. Then $u^* = \mathit{id}_{E_I};u^*;\mathit{id}_{E_J} \cong i^*;u^*;j^* \cong (i;u;j)^* = v^*$
+\end{proof}
 
 \begin{lemma}
 For all $\Sigma$, $\xi$, and $S$ with $\Sigma \vdash S$,  we have $$\langle \mathit{id}_{\sem \Sigma}, \sem{\Sigma \vdash S} \rangle \times \mathit{id}_{\sem{\xi}} \cong \langle \mathit{id}_{\sem{\Sigma,\xi}}, \sem{\Sigma,\xi \vdash S} \rangle$$
@@ -598,7 +639,7 @@ $= \langle \pi ; \langle \mathit{id}_{\sem{\Sigma}} , \sem{\Sigma \vdash S} \ran
 $= \langle \langle \pi, \pi;\sem{\Sigma \vdash S} \rangle, \pi' \rangle$\\~\\
 $= \langle \langle \pi, \sem{\Sigma,\zeta \vdash S} \rangle, \pi' \rangle$\\~\\
 $\cong \langle \langle \pi, \sem{\Sigma,\zeta \vdash S} \rangle, \pi' \rangle; \langle \langle \pi;\pi,\pi' \rangle, \pi;\pi' \rangle$\\~\\
-$= \langle \langle \pi, \pi' \rangle; \sem{\Sigma, \zeta \vdash \zeta} \rangle $\\~\\
+$= \langle \langle \pi, \pi' \rangle; \sem{\Sigma, \zeta \vdash S} \rangle $\\~\\
 $= \langle \mathit{id}, \sem{\Sigma,\zeta \vdash S} \rangle$
 
 \end{proof}
@@ -650,10 +691,13 @@ $~~~~~~~~~=$\\
 $(\langle \mathit{id}_{\sem{\Sigma}}, \sem{\Sigma \vdash S} \rangle^* \Pi_{\sem{\Sigma,\zeta},\sem{\zeta'}} \sem{\Sigma,\zeta,\zeta' \vdash \kappa})_\sigma$\\~\\
 $~~~~~~~~~\cong \text{ (By Beck-Chevalley)}$\\~\\
 $(\Pi_{\sem{\Sigma},\sem{\zeta'}} (\langle \mathit{id}_{\sem{\Sigma}}, \sem{\Sigma \vdash S} \rangle \times \mathit{id}_{\sem{\zeta'}})^* \sem{\Sigma, \zeta, \zeta' \vdash \kappa})_\sigma$\\~\\
-$~~~~~~~~~\cong (\text{ Because }f \cong g \Rightarrow f^* \cong g^*)$\\~\\
-$(\Pi_{\sem{\Sigma},\sem{\zeta'}} (\langle \mathit{id}_{\sem{\Sigma}}, \sem{\Sigma \vdash S} \rangle \times \mathit{id}_{\sem{\zeta'}})^* \sem{\Sigma, \zeta, \zeta' \vdash \kappa})_\sigma$
-$\Pi_{t \in \mathit{Strings}} ((\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle \times \mathit{id})^* \sem{\Sigma,\zeta,\zeta' \vdash \kappa})_{\sigma, t} $\\~\\
-$= \Pi_{t \in \mathit{Strings}} \sem{\Sigma,\zeta,\zeta' \vdash \kappa}_{(\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle \times \mathit{id} )(\sigma, t)}$\\~\\
+%$~~~~~~~~~\cong (\text{By lemmas } \ref{lemma:subswap} \text{ and } \ref{lemma:prescong})$\\~\\  
+$\Pi_{t \in \mathit{Strings}} \sem{\Sigma,\zeta,\zeta' \vdash \kappa}_{(\langle \mathit{id}, \sem{\Sigma,\zeta' \vdash S} \rangle; \langle \langle \pi;\pi,\pi' \rangle;\pi;\pi' \rangle)(\sigma, t)}$\\~\\ 
+$= \Pi_{t \in \mathit{Strings}} \langle \langle \pi;\pi,\pi' \rangle;\pi;\pi' \rangle^* \sem{\Sigma,\zeta,\zeta' \vdash \kappa}_{(\langle \mathit{id}, \sem{\Sigma,\zeta' \vdash S} \rangle)(\sigma, t)}$\\~\\
+$~~~~~~~~~ = \text{(By lemma } \ref{lemma:kwf-exchng})$\\~\\
+$\Pi_{t \in \mathit{Strings}} \sem{\Sigma,\zeta',\zeta \vdash \kappa}_{(\langle \mathit{id}, \sem{\Sigma,\zeta' \vdash S} \rangle)(\sigma, t)}$\\~\\
+
+
 $= \Pi_{t \in \mathit{Strings}} \sem{\Sigma,\zeta,\zeta' \vdash \kappa}_{\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle(\sigma),t}$\\~\\
 $= (\Pi_{\sem{\Sigma,\zeta},\sem{\zeta'}} \sem{\Sigma,\zeta,\zeta' \vdash \kappa} )_{\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle(\sigma),t}$\\~\\
 =~todo: this is wrong... I need to swap $\zeta$ and $\zeta'$ above so that I can substitute $S$ for $\zeta$.
