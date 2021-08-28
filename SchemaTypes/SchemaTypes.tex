@@ -22,6 +22,8 @@
 \usetikzlibrary{cd}
  
 \newtheorem{lemma}{Lemma}
+\newtheorem{definition}{Definition}
+\newtheorem{remark}{Remark}
 
 %example: \limit{j \in J}{F_j}
 \newcommand{\limit}[2]{\underset{\overset{\longleftarrow}{#1}}{\text{lim}}~#2}
@@ -32,7 +34,6 @@
 \newcommand{\capdot}{~\stackinset{c}{}{c}{}{\scalebox{0.8}{$\ast$}}{$\cap$}~}
 \newcommand{\bigcapdot}{\mathop{\stackinset{c}{}{c}{}{\scalebox{0.8}{$\ast$}}{$\bigcap$}}}
 
-\newtheorem{remark}{Remark}
 
 \newcommand{\vrt}[2]{
 \pile{
@@ -133,6 +134,12 @@ $q$ (coeffect constraint)  & $::=$ & $(S_1,\ldots,S_n).[\phi]$ & ~ \\~\\
 $A$ (coeffect) & $\subseteq$ & $q$ & ~ 
 \end{tabular}
 
+\section*{Index contexts}
+
+All index variables $\zeta$ have the same interpretation, as the set of all strings: $\sem{\zeta} \defeq \mathit{Strings}$.
+
+An index context is interpreted inductively as a set: $\sem{\Sigma,\zeta} \defeq \sem{\Sigma} \times \sem{\zeta}$ and $\sem{\emptyset} \defeq 1$ where $1$ is a singleton set $\{ \ast \}$. We will often treat an element of an index context $\sigma \in \sem{\zeta_1,\ldots,\zeta_n}$ as a function from the set of index variables $\{ \zeta_1, \ldots, \zeta_n \}$ to the set $\mathit{Strings}$, writing $\sigma(\zeta_i)$ for the projection of $\sigma$'s component corresponding to $\sem{\zeta_i}$. 
+
 \section*{Index well-formedness}
 
 \begin{mathpar}
@@ -144,7 +151,7 @@ $A$ (coeffect) & $\subseteq$ & $q$ & ~
   {~}
   {\Sigma \vdash s}
 \end{mathpar}
-The interpretation $\sem{\Sigma}$ of an index context $\Sigma = \zeta_1, \ldots, \zeta_n$ is the set of all functions from $\{ \zeta_1, \ldots, \zeta_n \}$ to the set of strings. The interpretation $\sem{\Sigma \vdash S}$ of a well-formed index judgment is a $\sem{\Sigma}$-indexed family of strings, i.e., viewing the set $\mathit{Strings}$ as a discrete category, it is an object of $\mathit{Fam}(\mathit{Strings})_{\sem{\Sigma}}$ defined as follows:
+The interpretation $\sem{\Sigma \vdash S}$ of a well-formed index judgment is a $\sem{\Sigma}$-indexed family of strings, i.e., viewing the set $\mathit{Strings}$ as a discrete category, it is an object of $\mathit{Fam}(\mathit{Strings})_{\sem{\Sigma}}$ defined as follows:
 \begin{mathpar}
 \sem{\Sigma \vdash \zeta} \doteq (\sigma(\zeta))_{\sigma \in \sem{\Sigma}}
 \and
@@ -276,7 +283,7 @@ In what follows, let $\pi_{\Sigma,\zeta} : \sem{\Sigma,\zeta} \to \sem{\Sigma}$ 
 	\arrow["{\pi^*_{\sem{\Sigma',\zeta}}}"', curve={height=18pt}, from=1-3, to=3-3]
 	\arrow["{\Pi_{\sem{\Sigma',\zeta}}}"', curve={height=18pt}, from=3-3, to=1-3]
 \end{tikzcd}\]
-the canonical transformation $f^* \Pi_{\sem{\Sigma,\zeta}} \Rightarrow \Pi_{\sem{\Sigma',\zeta}} (f \times \mathit{id})^*$ is an isomorphism.
+the canonical transformation $f^* \Pi_{\sem{\Sigma},\sem{\zeta}} \Rightarrow \Pi_{\sem{\Sigma'},\sem{\zeta}} (f \times \mathit{id})^*$ is an isomorphism.
 
 The \emph{canonical transformation} is obtained as follows. First, from the well known fact that for all fibrations we have $u^*v^* \cong (u;v)^*$ we obtain $$(f \times \mathit{id})^*\pi^*_{\sem{\Sigma,\zeta}} \cong ((f \times \mathit{id});\pi_{\sem{\Sigma,\zeta}})^* = (\langle \pi_{\Sigma',\zeta} f, \pi'_{\Sigma',\zeta} \mathit{id} \rangle;\pi_{\sem{\Sigma,\zeta}})^* = (\pi_{\Sigma',\zeta};f)^* = \pi_{\sem{\Sigma',\zeta}}^* f^*$$
 Then, the canonical transformation is the transpose of 
@@ -462,35 +469,62 @@ $= D_{\Sigma} A (\sem{\Sigma \vdash \Gamma})$
 
 \subsection*{Index exchange lemmas}
 
+\begin{definition}
+We write $\pi_n$ as an abbreviation for $$\pi_{\sem{\zeta_n,\ldots,\zeta_{2}},\sem{\zeta_1}} : \sem{\zeta_n,\ldots,\zeta_{2}} \times \sem{\zeta_1} \to \sem{\zeta_n,\ldots,\zeta_{2}}$$ and $\pi'_n$ for $$\pi'_{\sem{\zeta_n,\ldots,\zeta_{2}},\sem{\zeta_1}} : \sem{\zeta_n,\ldots,\zeta_{2}} \times \sem{\zeta_1} \to \sem{\zeta_1}$$ We define a family of functions $$\mathit{swap}_{n,i} : \sem{\zeta_n,\ldots,\zeta_{i+1},\zeta_i,\ldots,\zeta_1} \to \sem{\zeta_n,\ldots,\zeta_i,\zeta_{i+1},\ldots,\zeta_1}$$ as $$\mathit{swap}_{n,1} \defeq \langle \langle \pi_n; \pi_{n-1}, \pi_n' \rangle, \pi_n;\pi_{n-1}' \rangle$$ and for $1 < i < n$, $$\mathit{swap}_{n,i} \defeq \langle \pi_n;\mathit{swap}_{(n-1),(i-1)}, \pi_n' \rangle$$
+We write $|\Sigma|$ for the number of variables contained in index context $\Sigma$.
+\end{definition}
+
 \begin{lemma}
-If $\Sigma,\zeta,\zeta' \vdash \kappa$ then $\Sigma,\zeta',\zeta \vdash \kappa$ and $$\sem{\Sigma,\zeta,\zeta' \vdash \kappa} = \langle \langle \pi;\pi, \pi' \rangle, \pi;\pi' \rangle^* \sem{\Sigma,\zeta',\zeta \vdash \kappa}$$
+For $1 \leq i < n$, if $$\zeta_n,\ldots,\zeta_{i+1},\zeta_i,\ldots,\zeta_1 \vdash \kappa$$ then $$\zeta_n,\ldots,\zeta_{i},\zeta_{i+1},\ldots,\zeta_1 \vdash \kappa$$ and $$\sem{\zeta_n,\ldots,\zeta_{i},\zeta_{i+1},\ldots,\zeta_1 \vdash \kappa} = \mathit{swap}_{n,i}^* \sem{\zeta_n,\ldots,\zeta_{i+1},\zeta_i,\ldots,\zeta_1 \vdash \kappa}$$
 \label{lemma:kwf-exchng}
 \end{lemma}
  
 \begin{proof}
-By induction on the structure of $\Sigma,\zeta,\zeta' \vdash \kappa$.
-For brevity, we define $f \defeq \langle \langle \pi;\pi, \pi' \rangle, \pi;\pi' \rangle$ in what follows.
+By induction on the structure of $\zeta_n,\ldots,\zeta_{i+1},\zeta_i,\ldots,\zeta_1 \vdash \kappa$.
+For brevity, we write $f$ for $swap_{n,i}$ and $\cdots \zeta_{i+1},\zeta_i \cdots$ for $\zeta_n,\ldots,\zeta_{i+1},\zeta_{i},\ldots,\zeta_1$ in what follows.
 \begin{description}
 \item[KWF-Str]:~\\
-Apply the exchange lemma to the premise $\Sigma,\zeta,\zeta' \vdash d$ to get $\Sigma,\zeta'\zeta \vdash d$ 
-and $\sem{\Sigma,\zeta,\zeta' \vdash d} = f^* \sem{\Sigma,\zeta'\zeta \vdash d}$. Apply \begin{sc}KWF-Str\end{sc} to get $$\Sigma,\zeta',\zeta \vdash \mathit{KString}(d,\phi)$$
+Apply the exchange lemma to the premise $\cdots \zeta_{i},\zeta_{i+1} \cdots \vdash d$ to get $$\cdots \zeta_{i+1},\zeta_{i} \cdots \vdash d$$ and $$\sem{\cdots\zeta_i,\zeta_{i+1}\cdots \vdash d} = f^* \sem{\cdots\zeta_{i+1},\zeta_i\cdots \vdash d}$$ Apply \begin{sc}KWF-Str\end{sc} to get $$\cdots\zeta_{i},\zeta_{i+1}\cdots \vdash \mathit{KString}(d,\phi)$$
 Furthermore,we have\\~\\
-$\sem{\Sigma,\zeta,\zeta' \vdash \mathit{KString}(d,\phi)}_\sigma$\\
-$= (~(\mathcal P (X), \subseteq)~),~~\small{X \defeq \{ \{ \epsilon \mapsto s\} \in \mathit{Inst} \mid s \in \sem{\Sigma,\zeta,\zeta' \vdash d}_\sigma \wedge \mathit{chars}(s) \subseteq \phi \}}$\\
-$= (~(\mathcal P (X), \subseteq)~),~~\small{X \defeq \{ \{ \epsilon \mapsto s\} \in \mathit{Inst} \mid s \in (f^*\sem{\Sigma,\zeta',\zeta \vdash d})_\sigma \wedge \mathit{chars}(s) \subseteq \phi \}}$\\
-$= (~(\mathcal P (X), \subseteq)~),~~\small{X \defeq \{ \{ \epsilon \mapsto s\} \in \mathit{Inst} \mid s \in \sem{\Sigma,\zeta',\zeta \vdash d}_{f(\sigma)} \wedge \mathit{chars}(s) \subseteq \phi \}}$\\
-$= \sem{\Sigma,\zeta',\zeta \vdash \mathit{KString}(d,\phi)}_{f(\sigma)}$\\
-$= (f^* \sem{\Sigma,\zeta',\zeta \vdash \mathit{KString}(d,\phi)})_\sigma $
+$\sem{\cdots \zeta_{i},\zeta_{i+1} \cdots \vdash \mathit{KString}(d,\phi)}_\sigma$\\~\\
+$= (~(\mathcal P (X), \subseteq)~),~~\small{X \defeq \{ \{ \epsilon \mapsto s\} \in \mathit{Inst} \mid s \in \sem{\cdots \zeta_{i},\zeta_{i+1} \cdots \vdash d}_\sigma \wedge \mathit{chars}(s) \subseteq \phi \}}$\\~\\
+$= (~(\mathcal P (X), \subseteq)~),~~\small{X \defeq \{ \{ \epsilon \mapsto s\} \in \mathit{Inst} \mid s \in (f^*\sem{\cdots\zeta_{i+1},\zeta_i,\cdots \vdash d})_\sigma \wedge \mathit{chars}(s) \subseteq \phi \}}$\\~\\
+$= (~(\mathcal P (X), \subseteq)~),~~\small{X \defeq \{ \{ \epsilon \mapsto s\} \in \mathit{Inst} \mid s \in \sem{\cdots \zeta_{i+1},\zeta_i \cdots \vdash d}_{f(\sigma)} \wedge \mathit{chars}(s) \subseteq \phi \}}$\\~\\
+$= \sem{\cdots,\zeta_{i+1},\zeta_i \cdots \vdash \mathit{KString}(d,\phi)}_{f(\sigma)}$\\~\\
+$= (f^* \sem{\cdots \zeta_{i+1},\zeta_i \cdots \vdash \mathit{KString}(d,\phi)})_\sigma $
 \item[KWF-Tree]:~\\
 Similar to the above case.
 
 \item[KWF-TyFun]:~\\
 
-TODO
+TODO: update this case
+
+Applying the IH gives $$\Sigma,\zeta',\zeta \vdash \kappa$$ $$\Sigma,\zeta',\zeta \vdash \kappa'$$ $$\sem{\Sigma,\zeta',\zeta \vdash \kappa} = f^*\sem{\Sigma,\zeta,\zeta' \vdash \kappa}$$ $$\sem{\Sigma,\zeta',\zeta \vdash \kappa} = f^*\sem{\Sigma,\zeta,\zeta' \vdash \kappa} $$
+Applying the exchange lemma for coeffect well-formedness judgments gives $$\Sigma,\zeta',\zeta \vdash A$$ $$\sem{\Sigma,\zeta',\zeta \vdash A} = f^*\sem{\Sigma,\zeta,\zeta' \vdash A} $$
+
+Applying \begin{sc}KWF-TyFun\end{sc} gives $\Sigma,\zeta',\zeta \vdash \kappa \overset{A}{\Rightarrow} \kappa'$. Furthermore, we have\\~\\
+$= (f^* \sem{\Sigma,\zeta,\zeta' \vdash \kappa \overset{A}{\Rightarrow} \kappa'})_\sigma$\\~\\
+$= \sem{\Sigma,\zeta,\zeta' \vdash \kappa \overset{A}{\Rightarrow} \kappa'}_{f(\sigma)}$\\~\\
+$= D_{\Sigma,\zeta,\zeta'} A(\sem{\Sigma,\zeta,\zeta' \vdash \kappa})_{f(\sigma)} \Rightarrow \sem{\Sigma,\zeta,\zeta' \vdash \kappa'}_{f(\sigma)}$\\~\\
+$= \sem{\Sigma,\zeta,\zeta' \vdash \kappa}_{f(\sigma)} \times \sem{\Sigma,\zeta,\zeta' \vdash A}_{f(\sigma)} \Rightarrow \sem{\Sigma,\zeta,\zeta' \vdash \kappa'}_{f(\sigma)}$\\~\\
+$= (f^* \sem{\Sigma,\zeta,\zeta' \vdash \kappa})_\sigma \times (f^*\sem{\Sigma,\zeta,\zeta' \vdash A})_{\sigma} \Rightarrow (f^* \sem{\Sigma,\zeta,\zeta' \vdash \kappa'})_\sigma$\\~\\
+$= \sem{\Sigma,\zeta',\zeta \vdash \kappa}_\sigma \times \sem{\Sigma,\zeta',\zeta \vdash A}_{\sigma} \Rightarrow \sem{\Sigma,\zeta',\zeta \vdash \kappa'}_\sigma$\\~\\
+$= D_{\Sigma,\zeta',\zeta} A(\sem{\Sigma,\zeta',\zeta \vdash \kappa})_\sigma \Rightarrow \sem{\Sigma,\zeta',\zeta \vdash \kappa'}_\sigma$\\~\\
+$\sem{\Sigma,\zeta',\zeta \vdash \kappa \overset{A}{\Rightarrow} \kappa'}$\\
 
 \item[KWF-StrFun]:~\\
 
-TODO
+Assume we have a proof of $\zeta_n,\ldots,\zeta_{i+1},\zeta_i,\ldots,\zeta_1 \vdash \forall \xi. \kappa$. Through $\alpha$-renaming, this is equivalent to proof of $\zeta_{n+1},\ldots,\zeta_{i+2},\zeta_{i+1},\ldots,\zeta_2 \vdash \forall \zeta_1. \kappa$. Its subproof concludes $\zeta_{n+1}, \ldots, \zeta_{i+2},\zeta_{i+1} \ldots, \zeta_1 \vdash \kappa$.  Applying the IH gives $$\zeta_{n+1},\ldots,\zeta_{i+1},\zeta_{i+2},\ldots,\zeta_1 \vdash \kappa$$ and, writing $f$ for $\mathit{swap}_{n+1,i+1}$, $$\sem{\zeta_{n+1},\ldots,\zeta_{i+1},\zeta_{i+2},\ldots,\zeta_1 \vdash \kappa} = f^* \sem{\zeta_{n+1},\ldots,\zeta_{i+2},\zeta_{i+1},\ldots,\zeta_1 \vdash \kappa}$$ Applying the \begin{sc}KWF-StrFun\end{sc} gives $$\zeta_{n+1},\ldots,\zeta_{i+1},\zeta_{i+2},\ldots,\zeta_2 \vdash \forall \zeta_1. \kappa $$
+
+Furthermore, writing $\cdots \zeta_{i+1},\zeta_{i+2},\cdots$ for $\zeta_{n+1},\ldots,\zeta_{i+1},\zeta_{i+2},\ldots,\zeta_2$, for $\sigma \in \sem{\cdots \zeta_{i+1},\zeta_{i+2} \cdots}$ we have\\~\\
+$\sem{\cdots \zeta_{i+1},\zeta_{i+2} \cdots \vdash \forall \zeta_1. \kappa}_\sigma$\\~\\
+$= (\Pi_{\sem{\cdots \zeta_{i+1},\zeta_{i+2} \cdots}, \sem{\zeta_1}} \sem{\cdots \zeta_{i+1},\zeta_{i+2} \cdots,\zeta_1 \vdash \kappa})_\sigma$\\~\\
+$= \Pi_{t \in \sem{\zeta_1}} \sem{\cdots \zeta_{i+1},\zeta_{i+2} \cdots,\zeta_1 \vdash \kappa}_{\sigma,t}$\\~\\
+$= \Pi_{t \in \sem{\zeta_1}} (f^* \sem{\cdots \zeta_{i+2},\zeta_{i+1} \cdots \zeta_1 \vdash \kappa})_{\sigma,t}$\\~\\
+$= (\Pi_{\sem{\cdots,\zeta_{i+1},\zeta_{i+2} \cdots},\sem{\zeta_1}} f^* \sem{\cdots \zeta_{i+2},\zeta_{i+1} \cdots,\zeta_1 \vdash \kappa} )_\sigma$\\~\\
+$= (\Pi_{\sem{\cdots,\zeta_{i+1},\zeta_{i+2} \cdots},\sem{\zeta_1}} (\mathit{swap}_{n,i} \times \mathit{id})^* \sem{\cdots \zeta_{i+2},\zeta_{i+1} \cdots,\zeta_1 \vdash \kappa} )_\sigma$\\~\\
+$= (\mathit{swap}_{n,i}^* \Pi_{\sem{\cdots \zeta_{i+2},\zeta_{i+1} \cdots},\sem{\zeta_1}} \sem{\cdots \zeta_{i+2},\zeta_{i+1} \cdots,\zeta_1 \vdash \kappa})_\sigma$\\~\\
+$= (\mathit{swap}_{n,i}^* \sem{\cdots \zeta_{i+2},\zeta_{i+1} \cdots \vdash \forall \zeta_1 . \kappa})_\sigma$
 
 \end{description}
 
