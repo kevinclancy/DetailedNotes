@@ -33,7 +33,7 @@
 \newcommand{\defeq}{\overset{\mathit{def}}{=}}
 \newcommand{\capdot}{~\stackinset{c}{}{c}{}{\scalebox{0.8}{$\ast$}}{$\cap$}~}
 \newcommand{\bigcapdot}{\mathop{\stackinset{c}{}{c}{}{\scalebox{0.8}{$\ast$}}{$\bigcap$}}}
-
+\newcommand{\scdots}{\scalebox{0.6}{$\cdots$}}
 
 \newcommand{\vrt}[2]{
 \pile{
@@ -497,20 +497,18 @@ Similar to the above case.
 
 \item[KWF-TyFun]:~\\
 
-TODO: update this case
+Applying the IH gives $$\cdots \zeta_i,\zeta_{i+1} \cdots \vdash \kappa$$ $$\cdots \zeta_i,\zeta_{i+1} \cdots \vdash \kappa'$$ $$\sem{\cdots \zeta_i,\zeta_{i+1} \cdots \vdash \kappa} = f^*\sem{\cdots \zeta_{i+1},\zeta_i \cdots \vdash \kappa}$$ $$\sem{\cdots \zeta_i,\zeta_{i+1} \cdots \vdash \kappa} = f^*\sem{\cdots \zeta_{i+1},\zeta_i \cdots \vdash \kappa} $$
+Applying the exchange lemma for coeffect well-formedness judgments gives $$\cdots \zeta_{i},\zeta_{i+1} \cdots \vdash A$$ $$\sem{\cdots \zeta_i,\zeta_{i+1} \cdots \vdash A} = f^*\sem{\cdots \zeta_{i+1},\zeta_i \cdots \vdash A} $$
 
-Applying the IH gives $$\Sigma,\zeta',\zeta \vdash \kappa$$ $$\Sigma,\zeta',\zeta \vdash \kappa'$$ $$\sem{\Sigma,\zeta',\zeta \vdash \kappa} = f^*\sem{\Sigma,\zeta,\zeta' \vdash \kappa}$$ $$\sem{\Sigma,\zeta',\zeta \vdash \kappa} = f^*\sem{\Sigma,\zeta,\zeta' \vdash \kappa} $$
-Applying the exchange lemma for coeffect well-formedness judgments gives $$\Sigma,\zeta',\zeta \vdash A$$ $$\sem{\Sigma,\zeta',\zeta \vdash A} = f^*\sem{\Sigma,\zeta,\zeta' \vdash A} $$
-
-Applying \begin{sc}KWF-TyFun\end{sc} gives $\Sigma,\zeta',\zeta \vdash \kappa \overset{A}{\Rightarrow} \kappa'$. Furthermore, we have\\~\\
-$= (f^* \sem{\Sigma,\zeta,\zeta' \vdash \kappa \overset{A}{\Rightarrow} \kappa'})_\sigma$\\~\\
-$= \sem{\Sigma,\zeta,\zeta' \vdash \kappa \overset{A}{\Rightarrow} \kappa'}_{f(\sigma)}$\\~\\
-$= D_{\Sigma,\zeta,\zeta'} A(\sem{\Sigma,\zeta,\zeta' \vdash \kappa})_{f(\sigma)} \Rightarrow \sem{\Sigma,\zeta,\zeta' \vdash \kappa'}_{f(\sigma)}$\\~\\
-$= \sem{\Sigma,\zeta,\zeta' \vdash \kappa}_{f(\sigma)} \times \sem{\Sigma,\zeta,\zeta' \vdash A}_{f(\sigma)} \Rightarrow \sem{\Sigma,\zeta,\zeta' \vdash \kappa'}_{f(\sigma)}$\\~\\
-$= (f^* \sem{\Sigma,\zeta,\zeta' \vdash \kappa})_\sigma \times (f^*\sem{\Sigma,\zeta,\zeta' \vdash A})_{\sigma} \Rightarrow (f^* \sem{\Sigma,\zeta,\zeta' \vdash \kappa'})_\sigma$\\~\\
-$= \sem{\Sigma,\zeta',\zeta \vdash \kappa}_\sigma \times \sem{\Sigma,\zeta',\zeta \vdash A}_{\sigma} \Rightarrow \sem{\Sigma,\zeta',\zeta \vdash \kappa'}_\sigma$\\~\\
-$= D_{\Sigma,\zeta',\zeta} A(\sem{\Sigma,\zeta',\zeta \vdash \kappa})_\sigma \Rightarrow \sem{\Sigma,\zeta',\zeta \vdash \kappa'}_\sigma$\\~\\
-$\sem{\Sigma,\zeta',\zeta \vdash \kappa \overset{A}{\Rightarrow} \kappa'}$\\
+Applying \begin{sc}KWF-TyFun\end{sc} gives $\cdots \zeta_i,\zeta_{i+1} \cdots \vdash \kappa \overset{A}{\Rightarrow} \kappa'$. Furthermore, we have\\~\\
+$= (f^* \sem{\scdots \zeta_{i+1},\zeta_i \scdots \vdash \kappa \overset{A}{\Rightarrow} \kappa'})_\sigma$\\~\\
+$= \sem{\scdots \zeta_{i+1},\zeta_i \scdots \vdash \kappa \overset{A}{\Rightarrow} \kappa'}_{f(\sigma)}$\\~\\
+$= D_{(\cdots \zeta_{i+1},\zeta_i \cdots)} A(\sem{\cdots \zeta_{i+1},\zeta_i \cdots \vdash \kappa})_{f(\sigma)} \Rightarrow \sem{\cdots \zeta_{i+1},\zeta_i \cdots \vdash \kappa'}_{f(\sigma)}$\\~\\
+$= \sem{\scdots \zeta_{i+1},\zeta_i \scdots \vdash \kappa}_{f(\sigma)} \times \sem{\scdots \zeta_{i+1},\zeta_i \scdots \vdash A}_{f(\sigma)} \Rightarrow \sem{\scdots \zeta_{i+1},\zeta_i \scdots \vdash \kappa'}_{f(\sigma)}$\\~\\
+$= (f^* \sem{\scdots \zeta_{i+1},\zeta_i \scdots \vdash \kappa})_\sigma \times (f^*\sem{\scdots \zeta,\zeta' \scdots \vdash A})_{\sigma} \Rightarrow (f^* \sem{\scdots \zeta_{i+1},\zeta_i \scdots \vdash \kappa'})_\sigma$\\~\\
+$= \sem{\scdots \zeta_{i},\zeta_{i+1} \scdots \vdash \kappa}_\sigma \times \sem{\scdots \zeta_i,\zeta_{i+1} \scdots \vdash A}_{\sigma} \Rightarrow \sem{\scdots \zeta_i,\zeta_{i+1} \scdots \vdash \kappa'}_\sigma$\\~\\
+$= D_{(\scdots \zeta_i,\zeta_{i+1} \scdots)} A(\sem{\scdots \zeta_{i},\zeta_{i+1} \scdots \vdash \kappa})_\sigma \Rightarrow \sem{\scdots \zeta_{i},\zeta_{i+1} \scdots \vdash \kappa'}_\sigma$\\~\\
+$\sem{\scdots \zeta_i,\zeta_{i+1} \scdots \vdash \kappa \overset{A}{\Rightarrow} \kappa'}_\sigma$\\
 
 \item[KWF-StrFun]:~\\
 
