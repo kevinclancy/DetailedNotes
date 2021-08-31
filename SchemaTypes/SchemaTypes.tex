@@ -715,25 +715,21 @@ $= \sem{\Sigma \vdash \kappa[S/\zeta] \overset{A[S/\zeta]}{\Rightarrow} \kappa'[
 $= \sem{\Sigma \vdash (\kappa \overset{A}{\Rightarrow} \kappa')[S/\zeta] }_\sigma$
 
 \item[Case \sc{KWF-StrFun}]:~\\
-The premise for proving $\Sigma,\zeta \vdash \forall \zeta'.\kappa$ is $\Sigma,\zeta,\zeta' \vdash \kappa$. Exchanging $\zeta$ and $\zeta'$ gives $\Sigma,\zeta',\zeta \vdash \kappa$. (The proof should be of the same height.) Applying the IH gives $\Sigma,\zeta' \vdash \kappa[S/\zeta]$. Applying \begin{sc}KWF-StrFun\end{sc} gives $\Sigma \vdash \forall \zeta'. \kappa[S/\zeta]$ i.e.
+The premise for proving $\Sigma,\zeta \vdash \forall \zeta'.\kappa$ is $\Sigma,\zeta,\zeta' \vdash \kappa$. Exchanging $\zeta$ and $\zeta'$ gives $\Sigma,\zeta',\zeta \vdash \kappa$. (The proof should be of the same height.) Applying the IH gives $\Sigma,\zeta' \vdash \kappa[S/\zeta]$ and $$\langle \mathit{id}, \sem{\Sigma,\zeta' \vdash S} \rangle^* \sem{\Sigma,\zeta',\zeta \vdash \kappa} \cong \sem{\Sigma,\zeta' \vdash \kappa[S/\zeta]}$$ Applying \begin{sc}KWF-StrFun\end{sc} gives $\Sigma \vdash \forall \zeta'. \kappa[S/\zeta]$ i.e.
 $$\Sigma \vdash (\forall \zeta'. \kappa)[S/\zeta]$$
 Furthermore, we have\\~\\
-$(\langle \mathit{id}_{\sem{\Sigma}}, \sem{\Sigma \vdash S} \rangle^* \sem{\Sigma,\zeta \vdash \forall \zeta'. \kappa})_\sigma$\\
-$~~~~~~~~~=$\\
-$(\langle \mathit{id}_{\sem{\Sigma}}, \sem{\Sigma \vdash S} \rangle^* \Pi_{\sem{\Sigma,\zeta},\sem{\zeta'}} \sem{\Sigma,\zeta,\zeta' \vdash \kappa})_\sigma$\\~\\
-$~~~~~~~~~\cong \text{ (By Beck-Chevalley)}$\\~\\
-$(\Pi_{\sem{\Sigma},\sem{\zeta'}} (\langle \mathit{id}_{\sem{\Sigma}}, \sem{\Sigma \vdash S} \rangle \times \mathit{id}_{\sem{\zeta'}})^* \sem{\Sigma, \zeta, \zeta' \vdash \kappa})_\sigma$\\~\\
+$(\langle \mathit{id}_{\sem{\Sigma}}, \sem{\Sigma \vdash S} \rangle^* \sem{\Sigma,\zeta \vdash \forall \zeta'. \kappa})_\sigma$\\~\\
+$= (\langle \mathit{id}_{\sem{\Sigma}}, \sem{\Sigma \vdash S} \rangle^* \Pi_{\sem{\Sigma,\zeta},\sem{\zeta'}} \sem{\Sigma,\zeta,\zeta' \vdash \kappa})_\sigma$\\~\\
+$\cong (\Pi_{\sem{\Sigma},\sem{\zeta'}} (\langle \mathit{id}_{\sem{\Sigma}}, \sem{\Sigma \vdash S} \rangle \times \mathit{id}_{\sem{\zeta'}})^* \sem{\Sigma, \zeta, \zeta' \vdash \kappa})_\sigma$\\~\\
 %$~~~~~~~~~\cong (\text{By lemmas } \ref{lemma:subswap} \text{ and } \ref{lemma:prescong})$\\~\\  
-$\Pi_{t \in \mathit{Strings}} \sem{\Sigma,\zeta,\zeta' \vdash \kappa}_{(\langle \mathit{id}, \sem{\Sigma,\zeta' \vdash S} \rangle; \langle \langle \pi;\pi,\pi' \rangle;\pi;\pi' \rangle)(\sigma, t)}$\\~\\ 
-$= \Pi_{t \in \mathit{Strings}} \langle \langle \pi;\pi,\pi' \rangle;\pi;\pi' \rangle^* \sem{\Sigma,\zeta,\zeta' \vdash \kappa}_{(\langle \mathit{id}, \sem{\Sigma,\zeta' \vdash S} \rangle)(\sigma, t)}$\\~\\
-$~~~~~~~~~ = \text{(By lemma } \ref{lemma:kwf-exchng})$\\~\\
-$\Pi_{t \in \mathit{Strings}} \sem{\Sigma,\zeta',\zeta \vdash \kappa}_{(\langle \mathit{id}, \sem{\Sigma,\zeta' \vdash S} \rangle)(\sigma, t)}$\\~\\
-
-
-$= \Pi_{t \in \mathit{Strings}} \sem{\Sigma,\zeta,\zeta' \vdash \kappa}_{\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle(\sigma),t}$\\~\\
-$= (\Pi_{\sem{\Sigma,\zeta},\sem{\zeta'}} \sem{\Sigma,\zeta,\zeta' \vdash \kappa} )_{\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle(\sigma),t}$\\~\\
-=~todo: this is wrong... I need to swap $\zeta$ and $\zeta'$ above so that I can substitute $S$ for $\zeta$.
-
+$= \Pi_{t \in \mathit{Strings}} \sem{\Sigma,\zeta,\zeta' \vdash \kappa}_{(\langle \mathit{id}, \sem{\Sigma,\zeta' \vdash S} \rangle; \mathit{swap}_{n,1})(\sigma, t)}$\\~\\ 
+$= \Pi_{t \in \mathit{Strings}} (\mathit{swap}_{n,1}^* \sem{\Sigma,\zeta,\zeta' \vdash \kappa})_{(\langle \mathit{id}, \sem{\Sigma,\zeta' \vdash S} \rangle)(\sigma, t)}$\\~\\
+$\cong \Pi_{t \in \mathit{Strings}} \sem{\Sigma,\zeta',\zeta \vdash \kappa}_{\langle \mathit{id}, \sem{\Sigma,\zeta' \vdash S} \rangle(\sigma, t)}$\\~\\
+$= \Pi_{t \in \mathit{Strings}} (\langle \mathit{id}, \sem{\Sigma,\zeta' \vdash S} \rangle^* \sem{\Sigma,\zeta',\zeta \vdash \kappa})_{\sigma,t}$\\~\\
+$= \Pi_{t \in \mathit{Strings}} (\sem{\Sigma,\zeta' \vdash \kappa[S/\zeta]})_{\sigma,t}$\\~\\
+$= (\Pi_{\sem{\Sigma},\sem{\zeta'}} \sem{\Sigma,\zeta' \vdash \kappa[S/\zeta]})_\sigma$\\~\\
+$= \sem{\Sigma \vdash \forall \zeta'. \kappa[S/\zeta]}$\\~\\
+$= \sem{\Sigma \vdash (\forall \zeta'. \kappa)[S/\zeta]}$
 \end{description}
 \end{proof}
 
