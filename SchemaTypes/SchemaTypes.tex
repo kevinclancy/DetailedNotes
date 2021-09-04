@@ -138,7 +138,7 @@ $A$ (coeffect) & $\subseteq$ & $q$ & ~
 
 All index variables $\zeta$ have the same interpretation, as the set of all strings: $\sem{\zeta} \defeq \mathit{Strings}$.
 
-An index context is interpreted inductively as a set: $\sem{\Sigma,\zeta} \defeq \sem{\Sigma} \times \sem{\zeta}$ and $\sem{\emptyset} \defeq 1$ where $1$ is a singleton set $\{ \ast \}$. We will often treat an element of an index context $\sigma \in \sem{\zeta_1,\ldots,\zeta_n}$ as a function from the set of index variables $\{ \zeta_1, \ldots, \zeta_n \}$ to the set $\mathit{Strings}$, writing $\sigma(\zeta_i)$ for the projection of $\sigma$'s component corresponding to $\sem{\zeta_i}$. 
+An index context is interpreted inductively as a set: $\sem{\Sigma,\zeta} \defeq \sem{\Sigma} \times \sem{\zeta}$ and $\sem{\emptyset} \defeq 1$ where $1$ is a singleton set $\{ \ast \}$. We will often treat an element of an index context $\sigma \in \sem{\zeta_1,\ldots,\zeta_n}$ as a function from the set of index variables $\{ \zeta_1, \ldots, \zeta_n \}$ to the set $\mathit{Strings}$, writing $\sigma(\zeta_i)$ for the projection of $\sigma$'s component corresponding to $\zeta_i$. 
 
 \section*{Index well-formedness}
 
@@ -172,9 +172,9 @@ The interpretation $\sem{\Sigma \vdash S}$ of a well-formed index judgment is a 
 
 The interpretation $\sem{\Sigma \vdash d}$ of a discriminator well-formedness judgment is a $\sem{\Sigma}$-indexed family of sets of strings, i.e., viewing $\mathcal P(\mathit{Strings})$ as a thin category ordered by set inclusion, $\sem{\Sigma \vdash d}$ is an object of $\mathit{Fam}(\mathcal P(\mathit{Strings}))_{\sem{\Sigma}}$. 
 \begin{mathpar}
-\sem{\Sigma \vdash \mathit{Prefix}~S} \doteq (\{ t \mid \sem{\Sigma \vdash S}_\sigma \text{ is a prefix of } t \})_{\sigma \in \sem{\Sigma}}
+\sem{\Sigma \vdash \mathit{Prefix}~S} \defeq (\{ t \mid \sem{\Sigma \vdash S}_\sigma \text{ is a prefix of } t \})_{\sigma \in \sem{\Sigma}}
 \and
-\sem{\Sigma \vdash \mathit{Literal}~S} \doteq (\{ \sem{\Sigma \vdash S}_\sigma \})_{\sigma \in \sem{\Sigma}}
+\sem{\Sigma \vdash \mathit{Literal}~S} \defeq (\{ \sem{\Sigma \vdash S}_\sigma \})_{\sigma \in \sem{\Sigma}}
 \end{mathpar}
 
 For $A,B \in \mathcal P(\mathit{Strings})$, there is at most one arrow (set inclusion) with domain $A$ and 
@@ -201,18 +201,41 @@ codomain $B$; we write this arrow as $i_{A,B}$.
 Above, $s' \sqsubseteq s$ means ``$s'$ is a prefix of $s$''. 
 The interpretation $\sem{\Sigma \vdash d \leq d'}$ of a subsumption judgment is an arrow of $\mathit{Fam}(\mathcal P(\mathit{Strings}))_{\sem{\Sigma}}$ with domain $\sem{\Sigma \vdash d}$ and codomain $\sem{\Sigma \vdash d'}$. 
 
+\section*{Discriminator disjointness}
+
+We introduce a system for proving \emph{discriminator disjointness judgments} of the form $\Sigma \vdash \mbf{disj}~d_1~d_2$:
+\begin{mathpar}
+\inferrule
+  {s \neq t}
+  {\Sigma \vdash \mbf{disj}~(\mathit{DLiteral}~s)~(\mathit{DLiteral}~t)}
+\and
+\inferrule
+  {s \not \sqsubseteq t \\ t \not \sqsubseteq s}
+  {\Sigma \vdash \mbf{disj}~(\mathit{DPrefix}~s)~(\mathit{DPrefix}~t)}
+\and
+\inferrule
+  {s \not \sqsubseteq t}
+  {\Sigma \vdash \mbf{disj}~(\mathit{DPrefix}~s)~(\mathit{DLiteral}~t)}
+\and
+\inferrule
+  {s \not \sqsubseteq t}
+  {\Sigma \vdash \mbf{disj}~(\mathit{DLiteral}~t)~(\mathit{DPrefix}~s)}
+\end{mathpar}
+Here $s \not \sqsubseteq t$ means ``$s$ is not a prefix of $t$''. A judgment $\Sigma \vdash \mathbf{disj}~d_1~d_2$ is interpreted in the obvious way as a family $(p_\sigma)_{\sigma \in \Sigma}$, where for $\sigma \in \Sigma$, $p_\sigma$ is a proof that $\sem{\Sigma \vdash d_1}_\sigma \cap \sem{\Sigma \vdash d_2}_\sigma = \emptyset$. 
+
+
 \section*{Multiplicities}
 
 A multiplicity is intepreted as a subset of $\mathbb N$.\\~\\
 \begin{tabular}{lll}
-$\sem{one}$ & $\doteq$ & $\{ 1 \}$ \\
-$\sem{opt}$ & $\doteq$ & $\{ 0, 1 \}$ \\
-$\sem{set}$ & $\doteq$ & $\mathbb N$
+$\sem{one}$ & $\defeq$ & $\{ 1 \}$ \\
+$\sem{opt}$ & $\defeq$ & $\{ 0, 1 \}$ \\
+$\sem{set}$ & $\defeq$ & $\mathbb N$
 \end{tabular}
 \section*{Database instances}
 
-Given lists of strings $\rho$ and $\theta$, we write $\rho \cdot \theta$ for the list obtained by concatenating $\theta$ to the right of $\rho$. A \emph{database instance} is a partial function $f : \mathit{Strings}^{\star} \rightharpoonup \mathit{Strings}$ from lists of strings to strings. We write $\mathit{Inst}$ for the set of database instances. For a database instance $f$ and a list of strings $\rho$, we write $f \! \mid_\rho$ for the database instance defined such that for all lists of strings $\theta$ we have $$f \! \mid_\rho \! (\theta) \doteq f(\rho \cdot \theta)$$ We call a list of strings a \emph{node}. We say that database $f$ is \emph{active} at node $\rho$ if $f \! \mid_\rho$ is defined somewhere. We write the list of strings consisting of $s_1, \ldots, s_n$ as $[s_1,\ldots,s_n]$. For database instances $f$ we define the notation $$\mathit{keys}(f) \doteq \{ s \in \mathit{Strings} \mid f \text{ is active at } [s] \}$$ Furthermore, for sets of strings $X$ we define
-$$f \# X \doteq | \mathit{keys}(f) \cap X |$$ 
+Given lists of strings $\rho$ and $\theta$, we write $\rho \cdot \theta$ for the list obtained by concatenating $\theta$ to the right of $\rho$. A \emph{database instance} is a partial function from lists of strings to strings. We write $\mathit{Inst}$ for the set of database instances. For a database instance $f$ and a list of strings $\rho$, we write $f \! \mid_\rho$ for the database instance defined such that for all lists of strings $\theta$ we have $$f \! \mid_\rho \! (\theta) \defeq f(\rho \cdot \theta)$$ We call a list of strings a \emph{node}. We say that database $f$ is \emph{active} at node $\rho$ if $f \! \mid_\rho$ is defined somewhere. We write the list of strings consisting of $s_1, \ldots, s_n$ as $[s_1,\ldots,s_n]$. For database instances $f$ we define the notation $$\mathit{keys}(f) \defeq \{ s \in \mathit{Strings} \mid f \text{ is active at } [s] \}$$ Furthermore, for sets of strings $X$ we define
+$$f \# X \defeq | \mathit{keys}(f) \cap X |$$ 
 
 
 \section*{Coeffect Well-formedness}
@@ -220,20 +243,19 @@ $$f \# X \doteq | \mathit{keys}(f) \cap X |$$
 The judgment $\Sigma \vdash A$ means that the coeffect $A$ is well-formed under index context $\Sigma$,
 in the sense that for each $(S_1,\ldots,S_n).[\phi] \in A$ we have $\Sigma \vdash S_i^{~i \in 1..n}$.
 
-The interpretation $\sem{\Sigma \vdash A}$ is a $\sem{\Sigma}$-indexed family of posets of database instances, defined as $$\sem{\Sigma \vdash A} \doteq (I_\sigma, \leq_\sigma)_{\sigma \in \sem{\Sigma}}$$ where $$I_\sigma \doteq \sdisp{\bigcap_{(S_1,\ldots,S_n).[\phi] \in A} \{ f \in \mathit{Inst} \mid \forall s \in \mathit{keys}(f \! \mid_{[\sem{\Sigma \vdash S_1}_\sigma, \ldots, \sem{\Sigma \vdash S_n}_\sigma]}).~\mathit{chars}(s) \subseteq \phi \}}_{\sigma \in \sem{\Sigma}}$$ and for $f,g \in I_{\sigma}$ we have
-$$f \leq_\sigma g \overset{\cdot}{\Leftrightarrow} (\forall \rho \in \mathit{Strings}^\star.~f(\rho) \text{ is defined} \Rightarrow g(\rho) \text{ is defined})$$
+The interpretation $\sem{\Sigma \vdash A}$ is a $\sem{\Sigma}$-indexed family of posets of database instances, defined as $$\sem{\Sigma \vdash A} \defeq (I_\sigma, \leq_\sigma)_{\sigma \in \sem{\Sigma}}$$ where $$I_\sigma \defeq \sdisp{\bigcap_{(S_1,\ldots,S_n).[\phi] \in A} \{ f \in \mathit{Inst} \mid \forall s \in \mathit{keys}(f \! \mid_{[\sem{\Sigma \vdash S_1}_\sigma, \ldots, \sem{\Sigma \vdash S_n}_\sigma]}).~\mathit{chars}(s) \subseteq \phi \}}_{\sigma \in \sem{\Sigma}}$$ and for $f,g \in I_{\sigma}$ we have
+$$f \leq_\sigma g \overset{\mathit{def}}{\Leftrightarrow} (\forall \rho \in \mathit{Strings}^\star.~f(\rho) \text{ is defined} \Rightarrow g(\rho) \text{ is defined})$$
  
 \section*{Coeffect composition}
 
 For all $\Sigma$ and all $A$ and $B$ with $\Sigma \vdash A$ and $\Sigma \vdash B$ we define $A \capdot B$ as\\~\\
 $(A - B)~\cup~(B - A)~\cup$\\
-$\{ (S_1,\ldots,S_n).[\phi_1 \cap \phi_2] \mid (S_1,\ldots,S_n).[\phi_1] \in A \wedge (S_1,\ldots,S_n).[\phi_2] \in B \}$ 
-
+$\{ (S_1,\ldots,S_n).[\phi_1 \cap \phi_2] \mid (S_1,\ldots,S_n).[\phi_1] \in A \wedge (S_1,\ldots,S_n).[\phi_2] \in B \}$ \\~\\
 Clearly, $\Sigma \vdash A$ and $\Sigma \vdash B$ implies $\Sigma \vdash A \capdot B$. 
 \section*{Fibred graded comonads}
  
-For each $\Sigma$, we define a graded comonad $D_{\Sigma}$ on the category $\mathit{Fam}(\mbf{Posets})_{\sem{\Sigma}}$ of $\sem{\Sigma}$-indexed families of posets. The scalar coeffect structure is $$( \{ A \mid \text{the judgment } \Sigma \vdash A \text{ is provable} \}, \capdot, \capdot, \emptyset, \emptyset, \subseteq)$$ For objects $(X_\sigma)_{\sigma \in \sem{\Sigma}}$ of the fibre $\mathit{Fam}(\mbf{Posets})_{\sem{\Sigma}}$, we define $$D_{\Sigma} A(~(X_\sigma)_{\sigma \in \sem{\Sigma}}~) \doteq (X_\sigma \times \sem{\Sigma \vdash A}_\sigma)_{\sigma \in \sem{\Sigma}}$$ For arrows $(f_\sigma : X_\sigma \to Y_\sigma)_{\sigma \in \sem{\Sigma}}$ of the fibre $\mathit{Fam}(\mbf{Posets})_{\sem{\Sigma}}$ we define $$D_{\Sigma} A(~(f_\sigma)_{\sigma \in \sem{\Sigma}}~) \doteq (~(x_\sigma, a_\sigma) \mapsto (f_\sigma(x_\sigma),a_\sigma)~)_{\sigma \in \sem{\Sigma}}$$ Its counit $\epsilon$ is defined as $$(\epsilon_{\emptyset})_X \doteq (x,a) \mapsto x
-$$ Its comultiplication $\delta$, for coeffect scalars $A$ and $B$, is defined as $$(\delta_{A,B})_X \doteq (x,a \capdot b) \mapsto ((x, a), b)$$ 
+For each $\Sigma$, we define a graded comonad $D_{\Sigma}$ on the category $\mathit{Fam}(\mbf{Posets})_{\sem{\Sigma}}$ of $\sem{\Sigma}$-indexed families of posets. The scalar coeffect structure is $$( \{ A \mid \text{the judgment } \Sigma \vdash A \text{ is provable} \}, \capdot, \capdot, \emptyset, \emptyset, \subseteq)$$ For objects $(X_\sigma)_{\sigma \in \sem{\Sigma}}$ of the fibre $\mathit{Fam}(\mbf{Posets})_{\sem{\Sigma}}$, we define $$D_{\Sigma} A(~(X_\sigma)_{\sigma \in \sem{\Sigma}}~) \defeq (X_\sigma \times \sem{\Sigma \vdash A}_\sigma)_{\sigma \in \sem{\Sigma}}$$ For arrows $(f_\sigma : X_\sigma \to Y_\sigma)_{\sigma \in \sem{\Sigma}}$ of the fibre $\mathit{Fam}(\mbf{Posets})_{\sem{\Sigma}}$ we define $$D_{\Sigma} A(~(f_\sigma)_{\sigma \in \sem{\Sigma}}~) \defeq (~(x_\sigma, a_\sigma) \mapsto (f_\sigma(x_\sigma),a_\sigma)~)_{\sigma \in \sem{\Sigma}}$$ Its counit $\epsilon$ is defined as $$(\epsilon_{\emptyset})_X \defeq (x,a) \mapsto x
+$$ Its comultiplication $\delta$, for coeffect scalars $A$ and $B$, is defined as $$(\delta_{A,B})_X \defeq (x,a \capdot b) \mapsto ((x, a), b)$$ 
 It's easy to see that $(D_{\Sigma}, \epsilon, \delta)$ forms a graded comonad. The following diagram commutes because duplication followed by projection is the identity.
 
 \[\begin{tikzcd}
@@ -264,9 +286,7 @@ For coeffect scalars $\Sigma \vdash A$ and kinding contexts $\Sigma \vdash \Gamm
 
 \section*{Substitution Functors}
 
-Given a function $u : I \to J$, we write $u^* : \mathit{Fam}(\mbf{Posets})_J \to \mathit{Fam}(\mbf{Posets})_I$ for the substitution functor induced by $u$; i.e., for an $J$-indexed family of posets $\sdisp{P_j}_{j \in J}$ we have $$u^* (\sdisp{P_j}_{j \in J}) = \sdisp{ P_{u(i)} }_{i \in I}$$ and for a $J$-indexed family of monotone functions $(f_j : P_j \to Q_j)_{j \in J}$ we have $$u^*(\sdisp{f_j}_{j \in J}) = \sdisp{f_{u(i)}}_{i \in I}$$
-
-We overload the notation $u^*$ to other forms of set-indexed families. For example, we can also use $u^* : \mathit{Fam}(\mathit{Strings})_J \to \mathit{Fam}(\mathit{Strings})_I$ to reindex $J$-indexed families of strings, considering the set $\mathit{Strings}$ as a discrete category. 
+Given a category $\mathbb C$ and a function $u : I \to J$, we write $u^* : \mathit{Fam}(\mbf{\mathbb C})_J \to \mathit{Fam}(\mathbb C)_I$ for the substitution functor induced by $u$; i.e., for an $J$-indexed family of $\mathbb C$-objects $\sdisp{P_j}_{j \in J}$ we have $$u^* (\sdisp{P_j}_{j \in J}) = \sdisp{ P_{u(i)} }_{i \in I}$$ and for a $J$-indexed family of $\mathbb C$-arrows $(f_j : P_j \to Q_j)_{j \in J}$ we have $$u^*(\sdisp{f_j}_{j \in J}) = \sdisp{f_{u(i)}}_{i \in I}$$
 
 \section*{Simple Products}
 
@@ -285,7 +305,7 @@ In what follows, let $\pi_{\Sigma,\zeta} : \sem{\Sigma,\zeta} \to \sem{\Sigma}$ 
 \end{tikzcd}\]
 the canonical transformation $f^* \Pi_{\sem{\Sigma},\sem{\zeta}} \Rightarrow \Pi_{\sem{\Sigma'},\sem{\zeta}} (f \times \mathit{id})^*$ is an isomorphism.
 
-The \emph{canonical transformation} is obtained as follows. First, from the well known fact that for all fibrations we have $u^*v^* \cong (u;v)^*$ we obtain $$(f \times \mathit{id})^*\pi^*_{\sem{\Sigma,\zeta}} \cong ((f \times \mathit{id});\pi_{\sem{\Sigma,\zeta}})^* = (\langle \pi_{\Sigma',\zeta} f, \pi'_{\Sigma',\zeta} \mathit{id} \rangle;\pi_{\sem{\Sigma,\zeta}})^* = (\pi_{\Sigma',\zeta};f)^* = \pi_{\sem{\Sigma',\zeta}}^* f^*$$
+The \emph{canonical transformation} is obtained as follows. First, from the well known fact that for every fibration and all arrows $u : I \to J, v : J \to K$ of the fibration's base category we have $u^*v^* \cong (u;v)^*$ we obtain $$(f \times \mathit{id})^*\pi^*_{\sem{\Sigma,\zeta}} \cong ((f \times \mathit{id});\pi_{\sem{\Sigma,\zeta}})^* = (\langle \pi_{\Sigma',\zeta} f, \pi'_{\Sigma',\zeta} \mathit{id} \rangle;\pi_{\sem{\Sigma,\zeta}})^* = (\pi_{\Sigma',\zeta};f)^* = \pi_{\sem{\Sigma',\zeta}}^* f^*$$
 Then, the canonical transformation is the transpose of 
 $$\pi^* f^* \Pi \overset{\cong}{\longrightarrow} (f \times \mathit{id})^* \pi^* \Pi \overset{(f \times \mathit{id})^* \epsilon}{\longrightarrow} (f \times \mathit{id})^*$$
 
@@ -318,11 +338,11 @@ TODO: finish this... some of it can be found in Jacobs Lemma 1.9.2.
 The interpretation $\sem{\Sigma \vdash \kappa}$ of a kind well-formedness judgment is a $\sem{\Sigma}$-indexed family of posets, defined as follows.
 
 \begin{tabular}{lll}
-$\sem{\Sigma \vdash \mathit{KString}(d,\phi)}$ & $\doteq \sdisp{~(\mathcal P(X_\sigma), \subseteq)~}_{\sigma \in \sem{\Sigma}}$ & $\text{where } X_\sigma \doteq \{~\{ \epsilon \mapsto s \} \in \mathit{Inst} \mid s \in \sem{\Sigma \vdash d}_{\sigma} ~\wedge$ \\
+$\sem{\Sigma \vdash \mathit{KString}(d,\phi)}$ & $\defeq \sdisp{~(\mathcal P(X_\sigma), \subseteq)~}_{\sigma \in \sem{\Sigma}}$ & $\text{where } X_\sigma \defeq \{~\{ \epsilon \mapsto s \} \in \mathit{Inst} \mid s \in \sem{\Sigma \vdash d}_{\sigma} ~\wedge$ \\
  & &~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~$\mathit{chars}(s) \subseteq \phi \}$ \\
-$\sem{\Sigma \vdash \mathit{KTree}(d)}$ & $\doteq \sdisp{~(\mathcal P(Y_\sigma), \subseteq)~}_{\sigma \in \sem{\Sigma}}$ & $\text{where } Y_\sigma \doteq \{ f \in \mathit{Inst} \mid f(\epsilon) \in \sem{\Sigma \vdash d}_{\sigma} \}$ \\
-$\sem{\Sigma \vdash \kappa \overset{A}{\Rightarrow} \kappa'}$ & $\doteq D_{\Sigma} A(\sem{\Sigma \vdash \kappa}) \Rightarrow \sem{\Sigma \vdash \kappa'}$\\
-$\sem{\Sigma \vdash \forall \zeta. \kappa}$ & $\doteq \Pi_{\sem{\Sigma},\sem{\zeta}} \sem{\Sigma,\zeta \vdash \kappa} $ & 
+$\sem{\Sigma \vdash \mathit{KTree}(d)}$ & $\defeq \sdisp{~(\mathcal P(Y_\sigma), \subseteq)~}_{\sigma \in \sem{\Sigma}}$ & $\text{where } Y_\sigma \defeq \{ f \in \mathit{Inst} \mid f(\epsilon) \in \sem{\Sigma \vdash d}_{\sigma} \}$ \\
+$\sem{\Sigma \vdash \kappa \overset{A}{\Rightarrow} \kappa'}$ & $\defeq D_{\Sigma} A(\sem{\Sigma \vdash \kappa}) \Rightarrow \sem{\Sigma \vdash \kappa'}$\\
+$\sem{\Sigma \vdash \forall \zeta. \kappa}$ & $\defeq \Pi_{\sem{\Sigma},\sem{\zeta}} \sem{\Sigma,\zeta \vdash \kappa} $ & 
 \end{tabular}
 
 \section*{Subkinding}
@@ -355,7 +375,7 @@ $\subseteq \{ f \in \mathit{Inst} \mid f(\epsilon) \in \sem{\Sigma \vdash d'}_{\
 
 \section*{Kinding}
 
-In what follows, we define $\ast \doteq \mathit{KTree}(\mathit{Prefix}~\epsilon)$, where $\epsilon$ is the empty string, so that all proper types have kind $\ast$. We define $\star \doteq \mathit{KString}(\mathit{Prefix}~\epsilon, \mathit{Chars})$, so that all string types have kind $\star$.
+In what follows, we define $\ast \defeq \mathit{KTree}(\mathit{Prefix}~\epsilon)$, where $\epsilon$ is the empty string, so that all proper types have kind $\ast$. We define $\star \defeq \mathit{KString}(\mathit{Prefix}~\epsilon, \mathit{Chars})$, so that all string types have kind $\star$.
 
 \begin{mathpar}
 \inferrule[TyVar]
@@ -363,18 +383,18 @@ In what follows, we define $\ast \doteq \mathit{KTree}(\mathit{Prefix}~\epsilon)
   {\Sigma \mid x_1 :: \kappa_1, \ldots, x_n :: \kappa_n \vdash x_i :: \kappa_i}
 \and
 \inferrule[Tuple]
-  {\Sigma \mid \Gamma@A_i \vdash \tau_i :: \kappa_i^{~i \in 1..n} \\ 
-   \Sigma \vdash \kappa_i <:: \mathit{KString}(d_i,\phi_i)^{~i \in 1..n} \\
-   c_i \not \in \phi_i^{~i \in 1..n} }
-  {\Sigma \mid \Gamma@(\bigcapdot_{i \in 1..n} A_i) \vdash \mathit{tuple} \{ s_i : \tau_i : c_i^{~i \in 1..n}\} :: \mathit{KString}(d_1, (\bigcup_{i \in 1..n} \phi_i) \cup \{ c_1, \ldots, c_n \})}
+  {\Sigma \mid \Gamma@A_i \vdash \tau_i :: \mathit{KString}(d_i,\phi_i)^{~i \in 1..n} \\ 
+   c \not \in \phi_i^{~i \in 1..n} }
+  {\Sigma \mid \Gamma@(\bigcapdot_{i \in 1..n} A_i) \vdash \mathit{tuple}~c~\{ s_i : \tau_i^{~i \in 1..n}\} :: \mathit{KString}(d_1, (\bigcup_{i \in 1..n} \phi_i) \cup \{ c_1, \ldots, c_n \})}
 \and
 \inferrule[DisjUnion]
-  {\Sigma \mid \Gamma@A_i \vdash \tau_i :: \mathit{KTree}(d_i)^{~i \in 1..n} \\ \mathit{disjoint} \{ d_i^{~i \in 1..n} \} }
+  {\Sigma \mid \Gamma@A_i \vdash \tau_i :: \mathit{KTree}(d_i) \\ \Sigma \vdash \mbf{disj}~d_i~d_j~^{i,j \in 1..n~i \neq j} }
   {\Sigma \mid \Gamma@(\bigcapdot_{i \in 1..n} A_i) \vdash \biguplus_{i \in 1..n} \tau_i :: \mathit{KTree}(\mathit{merge}~\{ d_i^{~i \in 1..n} \})}
 \and
 \inferrule[Record]
   {\Sigma \mid \Gamma@A \vdash \tau :: \mathit{KString}(d,\phi) \\ 
-    \Sigma \mid \Gamma@B_i \vdash \tau_i :: \iota_i^{~i \in 1..n} \\ \Sigma \vdash \iota_i <:: \star^{~i \in 1..n} \\ 
+    \Sigma \mid \Gamma@B_i \vdash \tau_i :: \mathit{KString}(d_i,\phi_i)^{~i \in 1..n} \\
+    \Sigma \vdash \mbf{disj}~d_i~d_j~^{i,j \in 1..n~i \neq j} \\ 
     \Sigma \mid \Gamma@A_i \vdash \tau_i' :: \kappa_i^{~i \in 1..n} \\ \Sigma \vdash \kappa_i <:: \ast^{~i \in 1..n}}
   {\Sigma \mid \Gamma@(A \capdot \bigcapdot_{i \in 1..n} A_i \capdot B_i) \vdash \tau.\{[\tau_i] :^{m_i} \tau_i'^{~i \in 1..n}\} :: \mathit{KTree}(d)}
 \and
@@ -392,7 +412,7 @@ In what follows, we define $\ast \doteq \mathit{KTree}(\mathit{Prefix}~\epsilon)
 \and
 \inferrule[TyApp]
   {\Sigma \mid \Gamma @ A \vdash \tau :: \kappa \overset{C}{\Rightarrow} \iota \\ 
-   \Sigma \mid \Gamma @ B \vdash \tau' :: \kappa}
+   \Sigma \mid \Gamma @ B \vdash \tau' :: \kappa' \\ \Sigma \vdash \kappa' <:: \kappa}
   {\Sigma \mid \Gamma @ (A \capdot B \capdot C) \vdash \tau~\tau' :: \iota}
 \and
 \inferrule[StrApp]
@@ -401,41 +421,33 @@ In what follows, we define $\ast \doteq \mathit{KTree}(\mathit{Prefix}~\epsilon)
 
 \end{mathpar}
 We write $\Sigma \vdash \Gamma$ to mean that $\Sigma \vdash \kappa$ for all $(x : \kappa) \in \Gamma$.
-When $\Gamma = x_1 : \kappa_1, \ldots, x_n : \kappa_n$, we define the interpretation $\sem{\Sigma \vdash \Gamma} \doteq \sem{\Sigma \vdash \kappa_1} \times \cdots \times \sem{\Sigma \vdash \kappa_n}$, where products in $\mathit{Fam}(\mbf{Posets})$ are taken pointwise.
-We will prove that $\Sigma \mid \Gamma @ A \vdash \tau :: \kappa$ implies that $\Sigma \vdash \Gamma$, $\Sigma \vdash \kappa$, and $\Sigma \vdash A$. The interpretation $$\sem{\Sigma \mid \Gamma @ A \vdash \tau :: \kappa}$$ of a kinding judgment is a morphism of the fibre category $\mathit{Fam}(\mbf{Posets})_{\sem{\Sigma}}$ from $D_{\Sigma} A(\sem{\Sigma \vdash \Gamma})$ to $\sem{\Sigma \vdash \kappa}$.
+When $\Gamma = x_1 : \kappa_1, \ldots, x_n : \kappa_n$, we define the interpretation $\sem{\Sigma \vdash \Gamma} \defeq \sem{\Sigma \vdash \kappa_1} \times \cdots \times \sem{\Sigma \vdash \kappa_n}$, where products in $\mathit{Fam}(\mbf{Posets})$ are taken pointwise.
+We will prove that $\Sigma \mid \Gamma @ A \vdash \tau :: \kappa$ implies each of $\Sigma \vdash \Gamma$, $\Sigma \vdash \kappa$, and $\Sigma \vdash A$. The interpretation $$\sem{\Sigma \mid \Gamma @ A \vdash \tau :: \kappa}$$ of a kinding judgment is a morphism of the fibre category $\mathit{Fam}(\mbf{Posets})_{\sem{\Sigma}}$ from $D_{\Sigma} A(\sem{\Sigma \vdash \Gamma})$ to $\sem{\Sigma \vdash \kappa}$.
 
 \begin{mathpar}
-%\inferrule[Tuple]
-%  {\sem{\Sigma \mid \Gamma@A_i \vdash \tau_i :: \kappa_i} = f_i : D_{\Sigma} A_i(\sem{\Sigma \vdash \Gamma}) \to \sem{\Sigma \vdash \kappa_i}^{~i \in 1..n} \\ 
-%   \sem{\Sigma \vdash \kappa_i <:: \mathit{KString}(d_i,\phi_i)} = g_i : \sem{\Sigma \vdash \kappa_i} \to \sem{\Sigma \vdash \mathit{KString}(d_i,\phi_i)}^{~i \in 1..n} \\
-%   c_i \not \in \phi_i^{~i \in 1..n} }
-%  {\Sigma \mid \Gamma@(\bigcup_{i \in 1..n} A_i) \vdash \mathit{tuple} \{ s_i : \tau_i : c_i^{~i \in 1..n}\} :: \mathit{KString}(d_1, (\bigcup_{i \in 1..n} \phi_i) \cup \{ c_1, \ldots, c_n \})}
-%\and
-%\inferrule[DisjUnion]
-%  {\Sigma \mid \Gamma@A_i \vdash \tau_i :: \mathit{KTree}(d_i)^{~i \in 1..n} \\ \mathit{disjoint} \{ d_i^{~i \in 1..n} \} }
-%  {\Sigma \mid \Gamma@(\bigcup_{i \in 1..n} A_i) \vdash \biguplus_{i \in 1..n} \tau_i :: \mathit{KTree}(\mathit{merge}~\{ d_i^{~i \in 1..n} \})}
-%\and
 \inferrule[TyVar]
   {i \in 1..n}
-  {\sem{\Sigma \mid x_1:\kappa, \ldots, x_n :: \kappa_n \vdash x_i :: \kappa_i} \doteq \pi_{\sem{\Sigma \vdash \kappa_1},\ldots,\sem{\Sigma \vdash \kappa_n}}^i}
+  {\sem{\Sigma \mid x_1:\kappa, \ldots, x_n :: \kappa_n \vdash x_i :: \kappa_i} \defeq \pi_{\sem{\Sigma \vdash \kappa_1},\ldots,\sem{\Sigma \vdash \kappa_n}}^i}
 \and
 \inferrule[Record]
   {\sem{\Sigma \mid \Gamma@A \vdash \tau :: \mathit{KString}(d,\phi)} = f \\ 
-   \sem{\Sigma \mid \Gamma@B_i \vdash \tau_i :: \iota_i} = g_i^{~i \in 1..n} \\ \sem{\Sigma \vdash \iota_i <:: \star} = k_i^{~i \in 1..n} \\ 
-    \sem{\Sigma \mid \Gamma@A_i \vdash \tau_i' :: \kappa_i} = h_i^{~i \in 1..n} \\ \sem{\Sigma \vdash \kappa_i <:: \ast} = j_i^{~i \in 1..n}}
-  {\sem{\Sigma \mid \Gamma@(A \capdot \bigcapdot_{i \in 1..n} A_i \capdot B_i) \vdash \tau.\{[\tau_i] :^{m_i} \tau_i'^{~i \in 1..n}\} :: \mathit{KTree}(d)}_\sigma (\gamma,a) \doteq \\ \{ g \in \mathit{Inst} \mid (g(\epsilon) \in f_\sigma(\gamma,a)) \wedge \\ (\forall s \in (g_{i \sigma};j_{i \sigma})(\gamma,a).~g \! \mid_{[s]} \in (h_{i \sigma};k_{i \sigma})(\gamma,a))^{i \in 1 ..n} \wedge \\ (g \# (g_{i \sigma};j_{i \sigma})(\gamma,a) \in \sem{m_i})^{i \in 1..n} \} }
+   \sem{\Sigma \mid \Gamma@B_i \vdash \tau_i :: \mathit{KString}(d_i,\phi_i)} = k_i^{~i \in 1..n} \\ 
+    \sem{\Sigma \mid \Gamma@A_i \vdash \tau_i' :: \kappa_i} = h_i^{~i \in 1..n} \\ 
+    \sem{\Sigma \vdash \kappa_i <:: \ast} = j_i^{~i \in 1..n} \\ 
+    \sem{\Sigma \vdash \mbf{disj}~d_i~d_j} = X_{(i,j)}~^{i,j \in 1..n~i \neq j} }
+  {\sem{\Sigma \mid \Gamma@(A \capdot \bigcapdot_{i \in 1..n} A_i \capdot B_i) \vdash \tau.\{[\tau_i] :^{m_i} \tau_i'^{~i \in 1..n}\} :: \mathit{KTree}(d)}_\sigma (\gamma,a) \defeq \\ \{ g \in \mathit{Inst} \mid (g(\epsilon) \in f_\sigma(\gamma,a)) \wedge (\forall s \in k_{i \sigma}(\gamma,a).~g \! \mid_{[s]} \in (h_{j \sigma};j_{i \sigma})(\gamma,a))^{i \in 1 ..n} \wedge \\ (g \# k_{i \sigma}(\gamma,a) \in \sem{m_i})^{i \in 1..n} \} }
 \and
 \inferrule[Path]
   {\sem{\Sigma \vdash S_i} = f_i^{~i \in 1..n}}
-  {\sem{\Sigma \mid \Gamma@(\{ (S_1,\ldots,S_n).[\phi] \}) \vdash (S_1,\ldots,S_n).[\phi] :: \mathit{KString}(\mathit{Prefix}~\epsilon,\phi)}_{\sigma}(\gamma,a) \doteq \\ \{ s \in \mathit{Strings} \mid a([f_{1 \sigma}(\gamma),\ldots,f_{n \sigma}(\gamma),s]) \text{ is defined} \}}
+  {\sem{\Sigma \mid \Gamma@(\{ (S_1,\ldots,S_n).[\phi] \}) \vdash (S_1,\ldots,S_n).[\phi] :: \mathit{KString}(\mathit{Prefix}~\epsilon,\phi)}_{\sigma}(\gamma,a) \defeq \\ \{ s \in \mathit{Strings} \mid a([f_{1 \sigma}(\gamma),\ldots,f_{n \sigma}(\gamma),s]) \text{ is defined} \}}
 \and
 \inferrule[StrAbs]
   {\sem{\Sigma, \zeta \mid \Gamma @ \emptyset \vdash \tau :: \kappa} = f : D_{\Sigma,\zeta}\emptyset(\sem{\Sigma,\zeta \vdash \Gamma}) \to \sem{\Sigma,\zeta \vdash \kappa}}
-  {\sem{\Sigma \mid \Gamma @ \emptyset \vdash \lambda \zeta. \tau :: \forall \zeta. \kappa} \doteq f^\flat : D_{\Sigma} \emptyset(\sem{\Sigma \vdash \Gamma}) \to \sem{\Sigma \vdash \forall \zeta. \kappa)}}
+  {\sem{\Sigma \mid \Gamma @ \emptyset \vdash \lambda \zeta. \tau :: \forall \zeta. \kappa} \defeq f^\flat : D_{\Sigma} \emptyset(\sem{\Sigma \vdash \Gamma}) \to \sem{\Sigma \vdash \forall \zeta. \kappa)}}
 \and
 \inferrule[TyAbs]
   {\sem{\Sigma \mid \Gamma,\alpha :: \kappa @ A \vdash \tau :: \kappa'} = f : D_{\Sigma} A(\sem{\Sigma \vdash \Gamma,\alpha :: \kappa}) \to \sem{\Sigma \vdash \kappa'}}
-  {\sem{\Sigma \mid \Gamma @ \emptyset \vdash \lambda (\alpha :: \kappa).\tau :: \kappa \overset{A}{\Rightarrow} \kappa'} \doteq \Lambda(m_{\Sigma,A,\Gamma,\kappa};f) : D_{\Sigma} \emptyset(\sem{\Sigma \vdash \Gamma}) \to \sem{\Sigma \vdash \kappa \overset{A}{\Rightarrow} \kappa'}}
+  {\sem{\Sigma \mid \Gamma @ \emptyset \vdash \lambda (\alpha :: \kappa).\tau :: \kappa \overset{A}{\Rightarrow} \kappa'} \defeq \Lambda(m_{\Sigma,A,\Gamma,\kappa};f) : D_{\Sigma} \emptyset(\sem{\Sigma \vdash \Gamma}) \to \sem{\Sigma \vdash \kappa \overset{A}{\Rightarrow} \kappa'}}
 \and
 \inferrule[TyApp]
   {\sem{\Sigma \mid \Gamma @ A \vdash \tau :: \kappa \overset{C}{\Rightarrow} \iota} = f : D_\Sigma A \sem{\Sigma \vdash \Gamma} \to (D_\Sigma C \sem{\Sigma \vdash \kappa} \Rightarrow \sem{\Sigma \vdash \iota}) \\ 
@@ -445,7 +457,7 @@ We will prove that $\Sigma \mid \Gamma @ A \vdash \tau :: \kappa$ implies that $
 \and
 \inferrule[StrApp]
   {\sem{\Sigma \mid \Gamma @ A \vdash \tau :: \forall \zeta. \kappa} = f : D_{\Sigma}A(\sem{\Sigma \vdash \Gamma}) \to \sem{\Sigma \vdash \forall \zeta. \kappa} \\ \sem{\Sigma \vdash S} = g : \sem{\Sigma} \to \mathit{Strings}}
-  {\sem{\Sigma \mid \Gamma @ A \vdash \tau~[S] :: \kappa[S/\zeta]} \doteq \langle id_{\sem{\Sigma}}, g \rangle^*(f^\sharp) : D_{\Sigma} A(\sem{\Sigma \vdash \Gamma}) \to \langle id_{\Sigma}, g \rangle^* \sem{\Sigma,\zeta \vdash \kappa}}
+  {\sem{\Sigma \mid \Gamma @ A \vdash \tau~[S] :: \kappa[S/\zeta]} \defeq \langle id_{\sem{\Sigma}}, g \rangle^*(f^\sharp) : D_{\Sigma} A(\sem{\Sigma \vdash \Gamma}) \to \langle id_{\Sigma}, g \rangle^* \sem{\Sigma,\zeta \vdash \kappa}}
 
 \end{mathpar}
 
@@ -495,7 +507,7 @@ $= (f^* \sem{\cdots \zeta_{i+1},\zeta_i \cdots \vdash \mathit{KString}(d,\phi)})
 \item[KWF-Tree]:~\\
 Similar to the above case.
 
-\item[KWF-TyFun]:~\\
+\item[KWF-TyFun]:~\\ 
 
 Applying the IH gives $$\cdots \zeta_i,\zeta_{i+1} \cdots \vdash \kappa$$ $$\cdots \zeta_i,\zeta_{i+1} \cdots \vdash \kappa'$$ $$\sem{\cdots \zeta_i,\zeta_{i+1} \cdots \vdash \kappa} = f^*\sem{\cdots \zeta_{i+1},\zeta_i \cdots \vdash \kappa}$$ $$\sem{\cdots \zeta_i,\zeta_{i+1} \cdots \vdash \kappa} = f^*\sem{\cdots \zeta_{i+1},\zeta_i \cdots \vdash \kappa} $$
 Applying the exchange lemma for coeffect well-formedness judgments gives $$\cdots \zeta_{i},\zeta_{i+1} \cdots \vdash A$$ $$\sem{\cdots \zeta_i,\zeta_{i+1} \cdots \vdash A} = f^*\sem{\cdots \zeta_{i+1},\zeta_i \cdots \vdash A} $$
@@ -607,73 +619,17 @@ $= \sdisp{\bigcap_{(S_1,\ldots,S_n).[\phi] \in A[S/\zeta]} \{ f \in \mathit{Inst
 $= \sem{\Sigma \vdash A[S/\zeta]}_\sigma$
 \end{proof}~\\
 
-\begin{lemma}
-For all $\Sigma$, $\xi \not \in \Sigma$, and $S$ with $\Sigma \vdash S$ we have $\Sigma,\xi \vdash S$ and $$\sem{\Sigma,\xi \vdash S} = \pi_{\sem{\Sigma}, \sem{\xi}}^*\sem{\Sigma \vdash S}$$
-\label{lemma:weakiwf}
-\end{lemma}
-\begin{proof}
-By cases.
-\begin{description}
-\item[Case IWF-Var:]~\\
-By the premise of \begin{sc}IWF-Var\end{sc}, $\zeta \in \Sigma$. Hence $\zeta \in \Sigma,\xi$, and so applying \begin{sc}IWF-Var\end{sc} gives $\Sigma,\xi \vdash \zeta$. For $\rho \in \sem{\Sigma,\xi}$ we have
-$$(\pi_{\sem{\Sigma}, \sem{\xi}}^*\sem{\Sigma \vdash \zeta})_\rho = \sem{\Sigma \vdash \zeta}_{\pi(\rho)} = \pi(\rho)(\zeta) = \rho(\zeta) = \sem{\Sigma,\xi \vdash \zeta}_{\rho}$$
-
-\item[Case IWF-Lit:]~\\
-
-Apply \begin{sc}IWF-Lit\end{sc} to get $\Sigma,\xi \vdash s$. For $\rho \in \sem{\Sigma,\xi}$ we have $$(\pi_{\sem{\Sigma},\sem{\xi}}^* \sem{\Sigma \vdash s})_\rho = \sem{\Sigma \vdash s}_{\pi(\rho)} = s = \sem{\Sigma,\xi \vdash s}_\rho$$
-
-\end{description}
-\end{proof}
-
-\begin{remark}
-Recall that the interpretation $\sem{\Sigma \vdash S}$ is a $\sem{\Sigma}$-indexed family of strings. Fibrational connotations aside, this is the same thing as a function from $\sem{\Sigma}$ to the set of strings; the notation $\sem{\Sigma \vdash S}_\sigma$ is an application of this function to $\sigma$.\\~\\
-Applying a substitution functor $\pi^* \sem{\Sigma \vdash S}$ gives us the family $(\sem{\Sigma \vdash S}_{\pi(\sigma)})_{\sigma \in \sem{\Sigma}}$. Thus in the fibration $\mathit{Fam}(\mathit{Strings})$, substitution is precomposition: $$\pi^* \sem{\Sigma \vdash S} = \pi;\sem{\Sigma \vdash S}$$ With this we can rephrase Lemma \ref{lemma:weakiwf} as $$\sem{\Sigma,\xi \vdash S} = \pi_{\sem{\Sigma},\sem{\xi}};\sem{\Sigma \vdash S}$$  
-\end{remark}
 
 \begin{lemma}
-Let $p : \mathbb E \to \mathbb D$ be a fibration and let $i : I \to I \in \mathbb D_1$ be an iso. Then $i^* \cong \mathit{id}_{\mathbb E_I}$. 
-\end{lemma}
-
-\begin{proof}
-Jacobs Exercise 1.4.2 asks us to prove that if $u : I \to J$ is an iso in a fibration's base category, then its cartesian lifting $\overline{u}(X) : u^*(X) \to X$ is also an iso. Naturality is easy to see from the following diagram
-
-\[\begin{tikzcd}
-	{i^*(X)} &&&&& X \\
-	& {i^*(Y)} &&&&& Y \\
-	\\
-	& I &&&& I
-	\arrow["i", from=4-2, to=4-6]
-	\arrow["{i^*(f)}"', dashed, from=1-1, to=2-2]
-	\arrow["{\overline{i}(Y)}"', from=2-2, to=2-7]
-	\arrow["{\overline{i}(X)}", from=1-1, to=1-6]
-	\arrow["f", from=1-6, to=2-7]
-\end{tikzcd}\]
-
-\end{proof}
-
-\begin{lemma}
-Let $p : \mathbb E \to \mathbb D$ be a fibration. Let $u,v : I \to J \in \mathbb D_1$ such that $u \cong v$. Then $u^* \cong v^*$. 
-\label{lemma:prescong} 
-\end{lemma}
-
-\begin{proof}
-Since $u \cong v$ we have isos $i : I \to I$ and $j : J \to J$ such that $i;u;j = v$. Then $u^* = \mathit{id}_{E_I};u^*;\mathit{id}_{E_J} \cong i^*;u^*;j^* \cong (i;u;j)^* = v^*$
-\end{proof}
-
-\begin{lemma}
-For all $\Sigma$, $\xi$, and $S$ with $\Sigma \vdash S$,  we have $$\langle \mathit{id}_{\sem \Sigma}, \sem{\Sigma \vdash S} \rangle \times \mathit{id}_{\sem{\xi}} \cong \langle \mathit{id}_{\sem{\Sigma,\xi}}, \sem{\Sigma,\xi \vdash S} \rangle$$
+For all $\Sigma$, $\xi$, and $S$ with $\Sigma \vdash S$,  we have $$\langle \mathit{id}, \sem{\Sigma,\xi \vdash S} \rangle = \langle \langle \pi, \sem{\Sigma,\zeta \vdash S} \rangle, \pi' \rangle; \mathit{swap}_{n,1}$$
 \label{lemma:subswap}
 \end{lemma}
 
 \begin{proof}~\\~\\
-$\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle \times \mathit{id}$\\~\\
-$= \langle \pi ; \langle \mathit{id}_{\sem{\Sigma}} , \sem{\Sigma \vdash S} \rangle \times \mathit{id}_{\sem{\zeta}}$\\~\\
-$= \langle \langle \pi, \pi;\sem{\Sigma \vdash S} \rangle, \pi' \rangle$\\~\\
-$= \langle \langle \pi, \sem{\Sigma,\zeta \vdash S} \rangle, \pi' \rangle$\\~\\
-$\cong \langle \langle \pi, \sem{\Sigma,\zeta \vdash S} \rangle, \pi' \rangle; \langle \langle \pi;\pi,\pi' \rangle, \pi;\pi' \rangle$\\~\\
+$\langle \mathit{id}, \sem{\Sigma,\zeta \vdash S} \rangle$\\~\\
 $= \langle \langle \pi, \pi' \rangle; \sem{\Sigma, \zeta \vdash S} \rangle $\\~\\
-$= \langle \mathit{id}, \sem{\Sigma,\zeta \vdash S} \rangle$
-
+$= \langle \langle \pi, \sem{\Sigma,\zeta \vdash S} \rangle, \pi' \rangle; \langle \langle \pi;\pi,\pi' \rangle, \pi;\pi' \rangle$\\~\\
+$= \langle \langle \pi, \sem{\Sigma,\zeta \vdash S} \rangle, \pi' \rangle; swap_{n,1}$
 \end{proof}
 
 \begin{lemma}
@@ -832,22 +788,20 @@ By induction on the proof $\Sigma,\zeta \mid \Gamma @ A \vdash \tau :: \kappa$.
 \item[Case \sc{Record}]:~\\
 The inductive hypothesis gives~\\~\\ 1.) $$\Sigma \mid \Gamma[S/\zeta] @ A[S/\zeta] \vdash \tau[S/\zeta] :: \mathit{KString}([S/\zeta]d,\phi)$$ 2.)
 \begin{center}
-$\sem{\Sigma \mid \Gamma[S/\zeta]@A[S/\zeta] @ A[S/\zeta] \vdash \tau[S/\zeta] :: KString([S/\zeta]d,\phi)}$\\$= \langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^* \sem{\Sigma,\zeta \mid \Gamma @ A \vdash \tau :: \mathit{KString}(d,\phi)}$
+$\sem{\Sigma \mid \Gamma[S/\zeta]@A[S/\zeta] @ A[S/\zeta] \vdash \tau[S/\zeta] :: KString([S/\zeta]d,\phi)}$\\$=$\\ 
+$\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^* \sem{\Sigma,\zeta \mid \Gamma @ A \vdash \tau :: \mathit{KString}(d,\phi)}$
 \end{center}
 3.)\\
-$$\Sigma \mid \Gamma[S/\zeta] @ B_i[S/\zeta] \vdash \tau_i[S/\zeta] :: \iota_i[S/\zeta]^{~i \in 1..n}$$
+$$\Sigma \mid \Gamma[S/\zeta] @ B_i[S/\zeta] \vdash \tau_i[S/\zeta] :: \mathit{KString}(d_i[S/\zeta],\phi_i)^{~i \in 1..n}$$
 4.)
 \begin{center}
-$\sem{\Sigma \mid \Gamma[S/\zeta] @ B_i[S/\zeta] \vdash \tau_i[S/\zeta] :: \iota_i[S/\zeta]}$\\
-$= \langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^* \sem{\Sigma,\zeta \mid \Gamma @ B_i \vdash \tau_i :: \iota_i}$
+$\sem{\Sigma \mid \Gamma[S/\zeta] @ B_i[S/\zeta] \vdash \tau_i[S/\zeta] :: \mathit{KString}(d_i[S/\zeta],\phi_ii)}$\\
+$=$\\ 
+$\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^* \sem{\Sigma,\zeta \mid \Gamma @ B_i \vdash \tau_i :: \mathit{KString}(d_i,\phi_i)}$
 \end{center}
 5.)
 $$\Sigma \mid \Gamma[S/\zeta ]@ A_i[S/\zeta] \vdash \tau_i'[S/\zeta] :: \kappa_i[S/\zeta]^{~i \in 1..n}$$
-Applying Lemma \ref{SK-Subst2} gives
-$$\Sigma \vdash \iota_i[S/\zeta] <:: \star^{~i \in 1..n}$$
-and 
-$$\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^* \sem{\Sigma,\zeta \vdash \iota_i <:: \star} = \sem{\Sigma \vdash \iota_i[S/\zeta] <:: \star}^{~i \in 1..n}$$
-Applying Lemma \ref{SK-Subst3} gives
+After applying the IH, we apply Lemma \ref{SK-Subst3} to get
 $$\Sigma \vdash \kappa_i[S/\zeta] <:: \ast^{~i \in 1..n}$$ 
 and
 $$\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^* \sem{\Sigma,\zeta \vdash \kappa_i <:: \ast} = \sem{\Sigma \vdash \kappa_i[S/\zeta] <:: \ast}^{~i \in 1..n}$$
@@ -858,23 +812,27 @@ $$\Sigma \mid \Gamma[S/\zeta] @ (A \capdot \bigcapdot_{i \in 1..n} A_i \capdot B
 and furthermore,
 \begin{center}
 \begin{tabular}{l}
-$(\langle \mathit{id}, \sem{\Gamma \vdash S} \rangle^* \sem{\Sigma,\zeta \mid \Gamma @ A \capdot \bigcapdot_{i \in 1..n} (A_i \capdot B_i) \vdash \tau.\{ [\tau_i] :^{m_i} \tau_i' \} :: \mathit{KTree(d)} })_\sigma (\gamma,a)$ \\~\\
-$= \sem{\Sigma,\zeta \mid \Gamma @ A \capdot \bigcapdot_{i \in 1..n} (A_i \capdot B_i) \vdash \tau.\{ [\tau_i] :^{m_i} \tau_i' \} :: \mathit{KTree(d)} }_{\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle(\sigma)}(\gamma,a)$ \\~\\
+$(\langle \mathit{id}, \sem{\Gamma \vdash S} \rangle^* \sem{\Sigma,\zeta \mid \Gamma @ (A \capdot \bigcapdot_{i \in 1..n} A_i \capdot B_i) \vdash \tau.\{ [\tau_i] :^{m_i} \tau_i' \} :: \mathit{KTree(d)} })_\sigma (\gamma,a)$ \\~\\
+$= \sem{\Sigma,\zeta \mid \Gamma @ (A \capdot \bigcapdot_{i \in 1..n} A_i \capdot B_i) \vdash \tau.\{ [\tau_i] :^{m_i} \tau_i' \} :: \mathit{KTree(d)} }_{\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle(\sigma)}(\gamma,a)$ \\~\\
+
 $= \{ g \in \mathit{Inst} \mid$ \\
 $~~~~~~g(\epsilon) \in \sem{\Sigma,\zeta \mid \Gamma @ A \vdash \tau :: \mathit{KString(d,\phi)}}_{\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle(\sigma)}(\gamma,a)~\wedge$ \\
-$~~~~~~\forall s \in (\sem{\Sigma,\zeta \mid \Gamma @ B_i \vdash \tau_i :: \iota_i}_{\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle(\sigma)};\sem{\Sigma,\zeta \vdash \iota_i <:: \star}_{\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle(\sigma)})(\gamma,a).$\\
-$~~~~~~~~g \! \mid_{[s]} \in (\sem{\Sigma,\zeta \mid \Gamma @ A_i \vdash \tau_i' :: \kappa}_{\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle(\sigma)};\sem{\Sigma,\zeta \vdash \kappa_i <:: \ast}_{\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle(\sigma)})(\gamma,a)^{~i \in 1..n}~\wedge$\\
-$~~~~~~g \# (\sem{\Sigma,\zeta \mid \Gamma @ B_i \vdash \tau_i :: \iota_i}_{\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle(\sigma)};\sem{\Sigma,\zeta \vdash \iota_i <:: \star}_{\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle(\sigma)})(\gamma,a) \in \sem{m_i}^{~i \in 1..n} \}$\\~\\
+$~~~~~~\forall s \in \sem{\Sigma,\zeta \mid \Gamma @ B_i \vdash \tau_i :: \mathit{KString}(d_i,\phi_i)}_{\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle(\sigma)}(\gamma,a).$\\
+$~~~~~~~~g \! \mid_{[s]} \in (\sem{\Sigma,\zeta \mid \Gamma @ A_i \vdash \tau_i' :: \kappa_i};\sem{\Sigma,\zeta \vdash \kappa_i <:: \ast})_{\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle(\sigma)}(\gamma,a)^{~i \in 1..n}~\wedge$\\
+$~~~~~~g \# \sem{\Sigma,\zeta \mid \Gamma @ B_i \vdash \tau_i :: \mathit{KString}(d_i,\phi_i)}_{\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle(\sigma)}(\gamma,a) \in \sem{m_i}^{~i \in 1..n} \}$\\~\\
+
 $= \{ g \in \mathit{Inst} \mid$ \\
 $~~~~~~g(\epsilon) \in \langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^* \sem{\Sigma,\zeta \mid \Gamma @ A \vdash \tau :: \mathit{KString(d,\phi)}}_{\sigma}(\gamma,a)~\wedge$ \\
-$~~~~~~\forall s \in (\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^* \sem{\Sigma,\zeta \mid \Gamma @ B_i \vdash \tau_i :: \iota_i}_{\sigma};\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^* \sem{\Sigma,\zeta \vdash \iota_i <:: \star}_{\sigma})(\gamma,a).$\\
-$~~~~~~~~g \! \mid_{[s]} \in (\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^* \sem{\Sigma,\zeta \mid \Gamma @ A_i \vdash \tau_i' :: \kappa}_{\sigma};\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^* \sem{\Sigma,\zeta \vdash \kappa_i <:: \ast}_{\sigma})(\gamma,a)^{~i \in 1..n}~\wedge$\\
-$~~~~~~g \# (\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^* \sem{\Sigma,\zeta \mid \Gamma @ B_i \vdash \tau_i :: \iota_i}_{\sigma};\sem{\Sigma,\zeta \vdash \iota_i <:: \star}_{\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle(\sigma)})(\gamma,a) \in \sem{m_i}^{~i \in 1..n} \}$ \\~\\
+$~~~~~~\forall s \in (\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^* \sem{\Sigma,\zeta \mid \Gamma @ B_i \vdash \tau_i :: \mathit{KString}(d_i,\phi_i)})_\sigma(\gamma,a).$\\
+$~~~~~~~~g \! \mid_{[s]} \in (\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^* \sem{\Sigma,\zeta \mid \Gamma @ A_i \vdash \tau_i' :: \kappa};\sem{\Sigma,\zeta \vdash \kappa_i <:: \ast})_\sigma(\gamma,a)^{~i \in 1..n}~\wedge$\\
+$~~~~~~g \# (\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^* \sem{\Sigma,\zeta \mid \Gamma @ B_i \vdash \tau_i :: \iota_i})_{\sigma}(\gamma,a) \in \sem{m_i}^{~i \in 1..n} \}$ \\~\\
+
 $= \{ g \in \mathit{Inst} \mid$ \\
 $~~~~~~g(\epsilon) \in \sem{\Sigma \mid \Gamma[S/\zeta] @ A[S/\zeta] \vdash \tau[S/\zeta] :: \mathit{KString(d[S/\zeta],\phi)}}_{\sigma}(\gamma,a)~\wedge$ \\
-$~~~~~~\forall s \in (\sem{\Sigma \mid \Gamma[S/\zeta] @ B_i[S/\zeta] \vdash \tau_i[S/\zeta] :: \iota_i[S/\zeta]}_{\sigma};\sem{\Sigma \vdash \iota_i[S/\zeta] <:: \star}_{\sigma})(\gamma,a).$\\
-$~~~~~~~~g \! \mid_{[s]} \in (\sem{\Sigma \mid \Gamma[S/\zeta] @ A_i[S/\zeta] \vdash \tau_i'[S/\zeta] :: \kappa[S/\zeta]}_{\sigma};\sem{\Sigma \vdash \kappa_i[S/\zeta] <:: \ast}_{\sigma})(\gamma,a)^{~i \in 1..n}~\wedge$\\
-$~~~~~~g \# (\sem{\Sigma \mid \Gamma[S/\zeta] @ B_i[S/\zeta] \vdash \tau_i[S/\zeta] :: \iota_i[S/\zeta]}_{\sigma};\sem{\Sigma \vdash \iota_i[S/\zeta] <:: \star}_{\sigma})(\gamma,a) \in \sem{m_i}^{~i \in 1..n} \}$\\~\\
+$~~~~~~\forall s \in \sem{\Sigma \mid \Gamma[S/\zeta] @ B_i[S/\zeta] \vdash \tau_i[S/\zeta] :: \mathit{KString}(d_i[S/\zeta],\phi_i)}_{\sigma}(\gamma,a).$\\
+$~~~~~~~~g \! \mid_{[s]} \in (\sem{\Sigma \mid \Gamma[S/\zeta] @ A_i[S/\zeta] \vdash \tau_i'[S/\zeta] :: \kappa[S/\zeta]};\sem{\Sigma \vdash \kappa_i[S/\zeta] <:: \ast})_{\sigma}(\gamma,a)^{~i \in 1..n}~\wedge$\\
+$~~~~~~g \# (\sem{\Sigma \mid \Gamma[S/\zeta] @ B_i[S/\zeta] \vdash \tau_i[S/\zeta] :: \mathit{KString}(d_i,\phi_i)[S/\zeta]})_\sigma(\gamma,a) \in \sem{m_i}^{~i \in 1..n} \}$\\~\\
+ 
 $= \sem{\Sigma \mid \Gamma[S/\zeta] @ (A \capdot \bigcapdot_{i \in 1..n} (A_i \capdot B_i))[S/\zeta] \vdash (\tau.\{ [\tau_i] :^{m_i} \tau'_i \})[S/\zeta] :: \mathit{KTree}(d)[S/\zeta]  }_{\sigma}(\gamma,a)  $
 \end{tabular}
 \end{center}
