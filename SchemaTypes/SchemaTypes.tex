@@ -909,18 +909,32 @@ $= (\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^* \langle \mathit{id}, \s
 $= ((\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle; \langle \mathit{id}, \sem{\Sigma,\zeta \vdash T} \rangle)^* \sem{\Sigma,\zeta \mid \Gamma @ A \vdash \tau :: \forall \xi. \kappa}^\sharp)_\sigma$\\~\\
 $= ((\langle \langle \mathit{id}, \sem{\Sigma \vdash S} \rangle, \langle \mathit{id}, \sem{\Sigma \vdash S} \rangle;\sem{\Sigma,\zeta \vdash T} \rangle)^* \sem{\Sigma,\zeta \mid \Gamma @ A \vdash \tau :: \forall \xi. \kappa}^\sharp)_\sigma$\\~\\
 $= ((\langle \langle \mathit{id}, \sem{\Sigma \vdash S} \rangle, \langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^*\sem{\Sigma,\zeta \vdash T} \rangle)^* \sem{\Sigma,\zeta \mid \Gamma @ A \vdash \tau :: \forall \xi. \kappa}^\sharp)_\sigma$\\~\\
-$= (\langle \langle \mathit{id}, \sem{\Sigma \vdash S} \rangle, \sem{\Sigma \vdash T[S/\zeta]} \rangle^* \sem{\Sigma,\zeta \vdash \tau :: \forall \xi. \kappa}^\sharp)_\sigma$\\~\\
-$= (\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle;\langle \mathit{id}, \pi;\sem{\Sigma \vdash T[S/\zeta]} \rangle)^* \sem{\Sigma,\zeta \vdash \tau :: \forall \xi. \kappa}^\sharp)_\sigma$\\~\\
-$= (\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle;\langle \mathit{id}, \sem{\Sigma,\xi \vdash T[S/\zeta]} \rangle)^* \sem{\Sigma,\zeta \vdash \tau :: \forall \xi. \kappa}^\sharp)_\sigma$\\~\\
+$= (\langle \langle \mathit{id}, \sem{\Sigma \vdash S} \rangle, \sem{\Sigma \vdash T[S/\zeta]} \rangle^* \sem{\Sigma,\zeta \mid \Gamma @ A \vdash \tau :: \forall \xi. \kappa}^\sharp)_\sigma$\\~\\
+$= (\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle;\langle \mathit{id}, \pi;\sem{\Sigma \vdash T[S/\zeta]} \rangle)^* \sem{\Sigma,\zeta \mid \Gamma @ A \vdash \tau :: \forall \xi. \kappa}^\sharp)_\sigma$\\~\\
+$= (\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle;\langle \mathit{id}, \sem{\Sigma,\xi \vdash T[S/\zeta]} \rangle)^* \sem{\Sigma,\zeta \mid \Gamma @ A \vdash \tau :: \forall \xi. \kappa}^\sharp)_\sigma$\\~\\
+$= \sem{\Sigma,\zeta \mid \Gamma @ A \vdash \tau :: \forall \xi. \kappa}^\sharp_{\sigma, \sem{\Sigma \vdash S}_\sigma, \sem{\Sigma \vdash T[S/\zeta]}_\sigma}$\\~\\
+$= f~~~\text{where } f(x) \defeq (~\sem{\Sigma,\zeta \mid \Gamma @ A \vdash \tau :: \forall \xi. \kappa}_{\sigma, \sem{\Sigma \vdash S}}(x)~)_{\sem{\Sigma \vdash T[S/\zeta]}_\sigma}$\\~\\
+$= f~~~~\text{where } f(x) \defeq (~\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^* \sem{\Sigma,\zeta \mid \Gamma @ A \vdash \tau :: \forall \xi. \kappa}(x)~)_{\sem{\Sigma \vdash T[S/\zeta]}_\sigma}$\\~\\
+$= f~~~~\text{where } f(x) \defeq (~\sem{\Sigma \mid \Gamma[S/\zeta] @ A[S/\zeta] \vdash \tau[S/\zeta] :: \forall \xi. \kappa[S/\zeta]}_\sigma(x)~)_{\sem{\Sigma \vdash T[S/\zeta]}_\sigma}$\\~\\
+$= \sem{\Sigma \mid \Gamma[S/\zeta] @ A[S/\zeta] \vdash \tau[S/\zeta] :: \forall \xi. \kappa[S/\zeta]}^\sharp_{\sigma,\sem{\Sigma \vdash T[S/\zeta]}_\sigma}$\\~\\
+$= (\langle \mathit{id}, \sem{\Sigma \vdash T[S/\zeta]} \rangle^* \sem{\Sigma \mid \Gamma[S/\zeta] @ A[S/\zeta] \vdash \tau[S/\zeta] :: \forall \xi. \kappa[S/\zeta]}^\sharp)_\sigma$\\~\\
+$= (\langle \mathit{id}, \sem{\Sigma \vdash T[S/\zeta]} \rangle^* \sem{\Sigma \mid \Gamma[S/\zeta] @ A[S/\zeta] \vdash \tau[S/\zeta] :: \forall \xi. \kappa[S/\zeta]}^\sharp)_\sigma$\\~\\
+$= \sem{\Sigma \mid \Gamma[S/\zeta] @ A[S/\zeta] \vdash \tau[S/\zeta]~[T[S/\zeta]] :: \kappa[S/\zeta][T/\xi]}_\sigma$\\~\\
+$= \sem{\Sigma \mid \Gamma[S/\zeta] @ A[S/\zeta] \vdash (\tau~[T])[S/\zeta] :: \kappa[T/\xi][S/\zeta]}_\sigma$
+
+%$= (\langle \mathit{id}, \sem{\Sigma,\xi \vdash T[S/\zeta]} \rangle^* \sem{\Sigma,\zeta \mid \Gamma @ A \vdash \tau :: \forall \xi. \kappa}^\sharp)_{\sigma,\sem{\Sigma \vdash S}_\sigma}$\\~\\
+%$= \sem{\Sigma,\zeta \mid \Gamma @ A \vdash \tau :: \forall \xi. \kappa}^\sharp_{\langle \mathit{id}, \sem{\Sigma,\xi \vdash T[S/\zeta]} \rangle(\sigma,\sem{\Sigma \vdash S}_\sigma)}$\\~\\
+
+%$= (\sem{\Sigma,\zeta \mid \Gamma @ A \vdash \tau :: \forall \xi. \kappa}_{\sigma,\sem{\Sigma \vdash S}_\sigma})_{\sem{\Sigma \vdash T[S/\zeta]}_\sigma}$\\~\\
 
 
 
-$= \sem{\Sigma,\zeta \vdash \tau~[T] :: \kappa[T/\xi]}_{\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle(\sigma)}$\\~\\
-$= (\langle \mathit{id}, \sem{\Sigma,\zeta \vdash T} \rangle^* \sem{\Sigma,\zeta \mid \Gamma @ A \vdash \tau :: \forall \xi. \kappa}^\sharp)_{\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle(\sigma)}$\\~\\
-$= \sem{\Sigma \mid \Gamma[S/\zeta] \vdash \tau[S/\zeta]~[T[S/\zeta]] :: \kappa[T/\xi][S/\zeta]}$
+%$= \sem{\Sigma,\zeta \vdash \tau~[T] :: \kappa[T/\xi]}_{\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle(\sigma)}$\\~\\
+%$= (\langle \mathit{id}, \sem{\Sigma,\zeta \vdash T} \rangle^* \sem{\Sigma,\zeta \mid \Gamma @ A \vdash \tau :: \forall \xi. \kappa}^\sharp)_{\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle(\sigma)}$\\~\\
+%$= \sem{\Sigma \mid \Gamma[S/\zeta] \vdash \tau[S/\zeta]~[T[S/\zeta]] :: \kappa[T/\xi][S/\zeta]}$
 
 
-Noting that since $\Sigma \vdash S$ and $\zeta,\xi \not \in \Sigma$ we have $\kappa[T/\xi][S/\zeta] = \kappa[S/\zeta][T/\xi]$, we get
+%Noting that since $\Sigma \vdash S$ and $\zeta,\xi \not \in \Sigma$ we have $\kappa[T/\xi][S/\zeta] = \kappa[S/\zeta][T/\xi]$, we get
 %$$\Sigma \mid \Gamma[S/\zeta] @ A[S/\zeta] \vdash \tau[S/\zeta] :: \kappa[S/\zeta][T/\xi]$$
 %and
 %$$\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^* \sem{\Sigma,\zeta \mid \Gamma @ A \vdash \tau :: \forall \xi. \kappa} = \sem{\Sigma \mid \Gamma[S/\zeta] @ A[S/\zeta] \vdash \tau[S/\zeta] :: \kappa[S/\zeta][T/\xi]}$$
