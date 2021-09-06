@@ -234,7 +234,7 @@ $\sem{set}$ & $\defeq$ & $\mathbb N$
 \end{tabular}
 \section*{Database instances}
 
-Given lists of strings $\rho$ and $\theta$, we write $\rho \cdot \theta$ for the list obtained by concatenating $\theta$ to the right of $\rho$. A \emph{database instance} is a partial function from lists of strings to strings. We write $\mathit{Inst}$ for the set of database instances. For a database instance $f$ and a list of strings $\rho$, we write $f \! \mid_\rho$ for the database instance defined such that for all lists of strings $\theta$ we have $$f \! \mid_\rho \! (\theta) \defeq f(\rho \cdot \theta)$$ We call a list of strings a \emph{node}. We say that database $f$ is \emph{active} at node $\rho$ if $f \! \mid_\rho$ is defined somewhere. We write the list of strings consisting of $s_1, \ldots, s_n$ as $[s_1,\ldots,s_n]$. For database instances $f$ we define the notation $$\mathit{keys}(f) \defeq \{ s \in \mathit{Strings} \mid f \text{ is active at } [s] \}$$ Furthermore, for sets of strings $X$ we define
+Given lists of strings $\rho$ and $\theta$, we write $\rho \cdot \theta$ for the list obtained by concatenating $\theta$ to the right of $\rho$. A \emph{database instance} is a partial function from lists of strings to strings. We write $\mathit{Inst}$ for the set of database instances. For a database instance $f$ and a list of strings $\rho$, we write $f \! \mid_\rho$ for the database instance defined such that for all lists of strings $\theta$ we have $$f \! \mid_\rho \! (\theta) \defeq f(\rho \cdot \theta)$$ We call a list of strings a \emph{node}. We say that database $f$ is \emph{active} at node $\rho$, written $a \downarrow \downarrow \rho$, if $f \! \mid_\rho$ is defined somewhere. We write the list of strings consisting of $s_1, \ldots, s_n$ as $[s_1,\ldots,s_n]$. For database instances $f$ we define the notation $$\mathit{keys}(f) \defeq \{ s \in \mathit{Strings} \mid f \text{ is active at } [s] \}$$ Furthermore, for sets of strings $X$ we define
 $$f \# X \defeq | \mathit{keys}(f) \cap X |$$ 
 
 
@@ -439,7 +439,7 @@ We will prove that $\Sigma \mid \Gamma @ A \vdash \tau :: \kappa$ implies each o
 \and
 \inferrule[Path]
   {\sem{\Sigma \vdash S_i} = f_i^{~i \in 1..n}}
-  {\sem{\Sigma \mid \Gamma@(\{ (S_1,\ldots,S_n).[\phi] \}) \vdash (S_1,\ldots,S_n).[\phi] :: \mathit{KString}(\mathit{Prefix}~\epsilon,\phi)}_{\sigma}(\gamma,a) \defeq \\ \{ s \in \mathit{Strings} \mid a([f_{1 \sigma}(\gamma),\ldots,f_{n \sigma}(\gamma),s]) \text{ is defined} \}}
+  {\sem{\Sigma \mid \Gamma@(\{ (S_1,\ldots,S_n).[\phi] \}) \vdash (S_1,\ldots,S_n).[\phi] :: \mathit{KString}(\mathit{Prefix}~\epsilon,\phi)}_{\sigma}(\gamma,a) \defeq \\ \{ s \in \mathit{Strings} \mid a \downarrow \downarrow [f_{1 \sigma}(\gamma),\ldots,f_{n \sigma}(\gamma),s] \}}
 \and
 \inferrule[StrAbs]
   {\sem{\Sigma, \zeta \mid \Gamma @ \emptyset \vdash \tau :: \kappa} = f : D_{\Sigma,\zeta}\emptyset(\sem{\Sigma,\zeta \vdash \Gamma}) \to \sem{\Sigma,\zeta \vdash \kappa}}
@@ -538,6 +538,16 @@ $= (\mathit{swap}_{n,i}^* \sem{\cdots \zeta_{i+2},\zeta_{i+1} \cdots \vdash \for
 
 \end{description}
 
+\end{proof}
+
+\begin{lemma}
+If $\zeta_n,\ldots,\zeta_{i+1},\zeta_i,\ldots,\zeta_1 \mid \Gamma@A \vdash \tau :: \kappa$ then $\zeta_n,\ldots,\zeta_{i},\zeta_{i+1},\ldots,\zeta_1 \mid \Gamma@A \vdash \tau :: \kappa$ and $$\sem{\zeta_n,\ldots,\zeta_{i},\zeta_{i+1},\ldots,\zeta_1 \mid \Gamma@A \vdash \tau :: \kappa} = \mathit{swap}_{n,i}^* \sem{\zeta_n,\ldots,\zeta_{i+1},\zeta_i,\ldots,\zeta_1 \mid \Gamma@A \vdash \tau :: \kappa}$$
+\label{K-exchng}
+\end{lemma}
+
+\begin{proof}
+Again, we write $\cdots \zeta_{i+1},\zeta_i$ for...
+TODO
 \end{proof}
 
 \subsection*{Index substitution lemmas}
@@ -805,6 +815,9 @@ After applying the IH, we apply Lemma \ref{SK-Subst3} to get
 $$\Sigma \vdash \kappa_i[S/\zeta] <:: \ast^{~i \in 1..n}$$ 
 and
 $$\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^* \sem{\Sigma,\zeta \vdash \kappa_i <:: \ast} = \sem{\Sigma \vdash \kappa_i[S/\zeta] <:: \ast}^{~i \in 1..n}$$
+and we apply Lemma \ref{DISJ-Subst} to get $$\Sigma \vdash \mbf{disj}~d_i[S/\zeta]~d_j[S/\zeta]^{~i,j \in 1..n~i \neq j}$$
+and
+$$\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^* \sem{\Sigma,\zeta \vdash \mbf{disj}~d_i~d_j} = \sem{\Sigma \vdash \mbf{disj}~d_i[S/\zeta]~d_j[S/\zeta]}^{~i,j \in 1..n~i \neq j}$$ 
 Applying \begin{sc}Record\end{sc} then gives 
 $$\Sigma \mid \Gamma[S/\zeta] @ (A[S/\zeta] \capdot \bigcapdot_{i \in 1.. n} A_i[S/\zeta] \capdot B_i[S/\zeta]) \vdash \tau[S/\zeta].\{ [\tau_i[S/\zeta] :^{m_i} \tau_i'[S/\zeta]^{~i \in 1..n} \} :: \mathit{KTree}(d[S/\zeta])$$
 that is,
@@ -849,25 +862,73 @@ $(\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^* \sem{\Sigma,\zeta \vdash 
 $= \sem{\Sigma,\zeta \vdash \Gamma @ \{ (S_1, \ldots, S_n).[\phi] \} \vdash (S_1, \ldots, S_n).[\phi] :: \mathit{KString(\mathit{Prefix}~\epsilon,\phi)}}_{\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle(\sigma)}(\gamma,a)$\\~\\
 $= \{ s \in \mathit{Strings} \mid a([\sem{\Sigma,\zeta \vdash S_1}_{\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle}, \ldots, \sem{\Sigma,\zeta \vdash S_n}_{\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle}, s])\}$\\~\\
 $= \{ s \in \mathit{Strings} \mid$ \\
-$~~~~~~~~~~~~~a([\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^*\sem{\Sigma,\zeta \vdash S_1}_\sigma, \ldots, \langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^*\sem{\Sigma,\zeta \vdash S_n}_\sigma, s])\}$\\~\\
-$= \{ s \in \mathit{Strings} \mid a([\sem{\Sigma \vdash S_1[S/\zeta]}_\sigma, \ldots, \sem{\Sigma \vdash S_n[S/\zeta]}_\sigma, s])\}$\\~\\
+$~~~~~~~~a \downarrow \downarrow [\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^*\sem{\Sigma,\zeta \vdash S_1}_\sigma, \ldots, \langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^*\sem{\Sigma,\zeta \vdash S_n}_\sigma, s]\}$\\~\\
+$= \{ s \in \mathit{Strings} \mid a \downarrow \downarrow [\sem{\Sigma \vdash S_1[S/\zeta]}_\sigma, \ldots, \sem{\Sigma \vdash S_n[S/\zeta]}_\sigma, s] \}$\\~\\
 $= \sem{\Sigma \mid \Gamma[S/\zeta] @ A[S/\zeta] \vdash (S_1[S/\zeta], \ldots S_n[S/\zeta]).[\phi] :: \mathit{KString}(\mathit{Prefix}~\epsilon,\phi)}_{\sigma}(\gamma, a)$\\~\\
 $= \sem{\Sigma \mid \Gamma[S/\zeta] @ A[S/\zeta] \vdash ((S_1, \ldots S_n).[\phi])[S/\zeta] :: (\mathit{KString}(\mathit{Prefix}~\epsilon,\phi))[S/\zeta]}_\sigma(\gamma,a)$
 
-
 \item[Case \begin{sc}StrAbs\end{sc}]:~\\
+Our assumption is a proof that $\Sigma,\zeta \mid \Gamma @ \emptyset \vdash \lambda \xi. \tau :: \forall \xi. \kappa$. Its top-level form must be an application of \begin{sc}StrAbs\end{sc} with premise $$\Sigma,\zeta,\xi \mid \Gamma @ \emptyset \vdash \tau :: \kappa$$ Applying lemma \ref{K-exchng} to the premise gives a same-height proof that $$\Sigma,\xi,\zeta \mid \emptyset \vdash \tau :: \kappa$$ such that $$\sem{\Sigma,\xi,\zeta \mid \Gamma @ \emptyset \vdash \tau :: \kappa} = \mathit{swap}_{n,1}^*\sem{\Sigma,\zeta,\xi \mid \Gamma @ \emptyset \vdash \tau :: \kappa}$$ Applying the IH gives a proof of $$\Sigma,\xi \mid \Gamma[S/\zeta] @ \emptyset \vdash \tau[S/\zeta] :: \forall \xi. \kappa[S/\zeta]$$ such that $$\sem{\Sigma,\xi \mid \Gamma[S/\zeta] @ \emptyset \vdash \tau[S/\zeta] :: \kappa[S/\zeta]} = \langle \mathit{id}, \sem{\Sigma,\xi \vdash S} \rangle^* \sem{\Sigma,\xi,\zeta \mid \Gamma @ \emptyset \vdash \tau :: \kappa}$$ Applying \begin{sc}TyAbs\end{sc} gives $$\Sigma \mid \Gamma[S/\zeta] @ \emptyset \vdash \lambda \xi. \tau[S/\zeta] :: \kappa[S/\zeta]$$  
 
-TODO.
+Furthermore, we have\\~\\
+$\sem{\Sigma,\xi \mid \Gamma[S/\zeta] @ \emptyset \vdash \tau[S/\zeta] :: \kappa[S/\zeta]}$\\~\\
+$= \langle \mathit{id}_{\sem{\Sigma,\xi}}, \sem{\Sigma,\xi \vdash S} \rangle^* \sem{\Sigma,\xi,\zeta \mid \Gamma @ \emptyset \vdash \tau :: \kappa}$\\~\\
+$= \langle \mathit{id}_{\sem{\Sigma,\xi}}, \sem{\Sigma,\xi \vdash S} \rangle^* \mathit{swap}_{n,1}^*\sem{\Sigma,\zeta,\xi \mid \Gamma @ \emptyset \vdash \tau :: \kappa}$\\~\\
+$= (\langle \mathit{id}_{\sem{\Sigma,\xi}}, \sem{\Sigma,\xi \vdash S} \rangle;\mathit{swap}_{n,1})^* \sem{\Sigma,\zeta,\xi \mid \Gamma @ \emptyset \vdash \tau :: \kappa}$\\~\\
+$= (\langle \mathit{id}_{\sem{\Sigma,\xi}}, \sem{\Sigma,\xi \vdash S} \rangle;\langle \langle \pi;\pi, \pi' \rangle, \pi;\pi' \rangle)^* \sem{\Sigma,\zeta,\xi \mid \Gamma @ \emptyset \vdash \tau :: \kappa}$\\~\\
+$= (\langle \mathit{id}_{\sem{\Sigma,\xi}}, \pi;\sem{\Sigma \vdash S} \rangle;\langle \langle \pi;\pi, \pi' \rangle, \pi;\pi' \rangle)^* \sem{\Sigma,\zeta,\xi \mid \Gamma @ \emptyset \vdash \tau :: \kappa}$\\~\\
+$= (\langle \mathit{id}_{\sem{\Sigma}}, \sem{\Sigma \vdash S} \rangle \times \mathit{id}_{\sem{\xi}})^* \sem{\Sigma,\zeta,\xi \mid \Gamma @ \emptyset \vdash \tau :: \kappa}$\\~\\ 
+and therefore\\~\\
+$(\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^* \sem{\Sigma,\zeta \mid \Gamma @ \emptyset \vdash \lambda \xi. \tau :: \forall \xi. \kappa})_\sigma$\\~\\
+$= (\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^* \Pi_{\sem{\Sigma,\zeta}, \sem{\xi}} \sem{\Sigma,\zeta,\xi \mid \Gamma @ \emptyset \vdash \tau :: \kappa})_\sigma$\\~\\
+$= (\Pi_{\sem{\Sigma},\sem{\xi}} (\langle \mathit{id}_{\sem{\Sigma}}, \sem{\Sigma \vdash S} \rangle \times \mathit{id}_{\sem{\xi}})^* \sem{\Sigma,\zeta,\xi \mid \Gamma @ \emptyset \vdash \tau :: \kappa})_\sigma$\\~\\
+$= \Pi_{t \in \sem{\xi}}((\langle \mathit{id}_{\sem{\Sigma}}, \sem{\Sigma \vdash S} \rangle \times \mathit{id}_{\sem{\xi}})^* \sem{\Sigma,\zeta,\xi \mid \Gamma @ \emptyset \vdash \tau :: \kappa})_{\sigma,t}$\\~\\
+$= \Pi_{t \in \sem{\xi}} \sem{\Sigma, \xi \mid \Gamma[S/\zeta] @ \emptyset \vdash \tau[S/\zeta] :: \kappa[S/\zeta]}_{\sigma, t}$\\~\\
+$= \sem{\Sigma,\xi \mid \Gamma[S/\zeta] @ \emptyset \vdash \tau[S/\zeta] :: \kappa[S/\zeta]}^{\flat}_\sigma$\\~\\
+$= \sem{\Sigma \mid \Gamma[S/\zeta] @ \emptyset \vdash \lambda \xi. \tau[S/\zeta] :: \forall \xi. \kappa[S/\zeta]}_\sigma$
 
-\item[Case \sc{TyAbs}]:~\\
+\item[Case \sc{StrApp}]:~\\
+Our assumption is a proof that $\Sigma,\zeta \mid \Gamma @ A \vdash \tau~[T] :: \kappa[T/\xi]$. Its premises are 
+$$\Sigma,\zeta \mid \Gamma @ A \vdash \tau :: \forall \xi. \kappa$$ 
+and
+$$\Sigma,\zeta \vdash T$$
+Applying the IH gives 
+$$\Sigma \mid \Gamma[S/\zeta] @ A[S/\zeta] \vdash \tau[S/\zeta] :: \forall \xi. \kappa[S/\zeta]$$
+and
+$$\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^* \sem{\Sigma,\zeta \mid \Gamma @ A \vdash \tau :: \forall \xi. \kappa} = \sem{\Sigma \mid \Gamma[S/\zeta] @ A[S/\zeta] \vdash \tau[S/\zeta] :: \forall \xi. \kappa[S/\zeta]}$$
 
-TODO.
+Applying Lemma \ref{SWF-Subst} gives 
+$$\Sigma \vdash T[S/\zeta]$$
+and
+$$\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^* \sem{\Sigma,\zeta \vdash T} = \sem{\Sigma \vdash T[S/\zeta]}$$
 
+Applying \begin{sc}StrApp\end{sc} then gives $\Sigma \mid \Gamma[S/\zeta] @ A[S/\zeta] \vdash \tau[S/\zeta]~[T] :: \kappa[S/\zeta][T/\xi]$.\\~\\
+Furthermore, we have\\~\\
+$(\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^* \sem{\Sigma,\zeta \mid \Gamma @ A \vdash \tau~[T] :: \kappa[T/\xi]})_\sigma$\\~\\
+$= (\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^* \langle \mathit{id}, \sem{\Sigma,\zeta \vdash T} \rangle^* \sem{\Sigma,\zeta \mid \Gamma @ A \vdash \tau :: \forall \xi. \kappa}^\sharp)_\sigma$\\~\\
+$= ((\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle; \langle \mathit{id}, \sem{\Sigma,\zeta \vdash T} \rangle)^* \sem{\Sigma,\zeta \mid \Gamma @ A \vdash \tau :: \forall \xi. \kappa}^\sharp)_\sigma$\\~\\
+$= ((\langle \langle \mathit{id}, \sem{\Sigma \vdash S} \rangle, \langle \mathit{id}, \sem{\Sigma \vdash S} \rangle;\sem{\Sigma,\zeta \vdash T} \rangle)^* \sem{\Sigma,\zeta \mid \Gamma @ A \vdash \tau :: \forall \xi. \kappa}^\sharp)_\sigma$\\~\\
+$= ((\langle \langle \mathit{id}, \sem{\Sigma \vdash S} \rangle, \langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^*\sem{\Sigma,\zeta \vdash T} \rangle)^* \sem{\Sigma,\zeta \mid \Gamma @ A \vdash \tau :: \forall \xi. \kappa}^\sharp)_\sigma$\\~\\
+$= (\langle \langle \mathit{id}, \sem{\Sigma \vdash S} \rangle, \sem{\Sigma \vdash T[S/\zeta]} \rangle^* \sem{\Sigma,\zeta \vdash \tau :: \forall \xi. \kappa}^\sharp)_\sigma$\\~\\
+$= (\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle;\langle \mathit{id}, \pi;\sem{\Sigma \vdash T[S/\zeta]} \rangle)^* \sem{\Sigma,\zeta \vdash \tau :: \forall \xi. \kappa}^\sharp)_\sigma$\\~\\
+$= (\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle;\langle \mathit{id}, \sem{\Sigma,\xi \vdash T[S/\zeta]} \rangle)^* \sem{\Sigma,\zeta \vdash \tau :: \forall \xi. \kappa}^\sharp)_\sigma$\\~\\
+
+
+
+$= \sem{\Sigma,\zeta \vdash \tau~[T] :: \kappa[T/\xi]}_{\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle(\sigma)}$\\~\\
+$= (\langle \mathit{id}, \sem{\Sigma,\zeta \vdash T} \rangle^* \sem{\Sigma,\zeta \mid \Gamma @ A \vdash \tau :: \forall \xi. \kappa}^\sharp)_{\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle(\sigma)}$\\~\\
+$= \sem{\Sigma \mid \Gamma[S/\zeta] \vdash \tau[S/\zeta]~[T[S/\zeta]] :: \kappa[T/\xi][S/\zeta]}$
+
+
+Noting that since $\Sigma \vdash S$ and $\zeta,\xi \not \in \Sigma$ we have $\kappa[T/\xi][S/\zeta] = \kappa[S/\zeta][T/\xi]$, we get
+%$$\Sigma \mid \Gamma[S/\zeta] @ A[S/\zeta] \vdash \tau[S/\zeta] :: \kappa[S/\zeta][T/\xi]$$
+%and
+%$$\langle \mathit{id}, \sem{\Sigma \vdash S} \rangle^* \sem{\Sigma,\zeta \mid \Gamma @ A \vdash \tau :: \forall \xi. \kappa} = \sem{\Sigma \mid \Gamma[S/\zeta] @ A[S/\zeta] \vdash \tau[S/\zeta] :: \kappa[S/\zeta][T/\xi]}$$
 \item[Case \sc{TyApp}]:~\\
 
 TODO.
 
-\item[Case \sc{StrApp}]:~\\
+\item[Case \sc{TyAbs}]:~\\
 
 TODO.
 
