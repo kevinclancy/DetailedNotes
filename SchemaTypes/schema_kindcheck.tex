@@ -1,0 +1,190 @@
+\documentclass[sigplan,10pt,review,anonymous]{acmart}
+\settopmatter{printfolios=true,printccs=false,printacmref=true}
+\bibliographystyle{ACM-Reference-Format}
+
+\usepackage{listings}
+\usepackage{xcolor}
+
+\lstset{
+  basicstyle=\small\ttfamily,
+  columns=fullflexible,
+  keepspaces=true,
+}
+
+\newcommand{\blu}[1]{\textbf{\color{blue}{#1}}}
+\newcommand{\defeq}{\overset{\mathit{def}}{=}}
+
+\title{Indexed Kind Checking for Hierarchical Database Schemas}
+\author{Kevin Clancy}
+
+
+\begin{document}
+
+%\category{D.3.3}{Test 1}
+%\terms{Languages}
+\keywords{Indexed types, Database schemas, Dependent types}
+\ccsdesc[100]{Networks˜Network reliability}
+
+
+\begin{abstract}
+
+Types are an appropriate tool for describing the structure of hierarchical databases. But two common database structure idioms, \emph{foreign keys} and \emph{secondary indices} cannot be expressed using standard type systems. We present a lanaguage in which a database schema is described using a type layered over a dependently sorted index language. The index language consists of keys and relations on keys. Multiple occurrences of the same index-level relation inside of a schema establish a correlation between two distinct portions of a database instance; both secondary indices and foreign keys can be specified in this manner.
+
+%We present a lanaguage in which a database schema is described using a type layered over a dependently sorted index language of keys and relations on keys. A dictionary type constructor binds a sequence of $n$ index variables corresponding to a sequence of $n$ nested keys. It also includes a proposition, typically an application of an $n$-ary predicate on keys, which determines the exact set of key sequences that a database instance must contain. We a reconfiguration by including the same predicate in multiple dictionary types.
+
+
+\end{abstract}
+
+\maketitle
+
+\section{Introduction}
+
+Programmers increasingly choose document database systems, such as DynamoDB, due to their high performance and intuitive hierarchical structure. Schemas for such databases are often intentionally omitted under the premise that they inhibit rapid iteration. However, we disagree with this premise. We believe that the arguments in favor of database schemas are analogous to those in favor of static types in programming langauges. 
+
+The type syntax of a standard programming lanaguage such as Typescript is, for the most part, an appropriate tool to describe the structure of modern hierarchical databases. However, two common features of hierarchical databases lie beyond the reach of standard type systems. First, a database may store \emph{foreign keys}: values used to refer to entities stored elsewhere in the database. Second, a database may replicate a dataset in multiple configurations, or \emph{secondary indices}, to accomodate multiple access patterns in an efficient, spatially local manner. 
+
+The prevalence of foreign keys in hierarchical databases constrasts sharply against the in-memory data structures one typically finds in general purpose lanaguages. A pointer in a language such as C++ is not a foreign key, because statically our concern is the type of referenced data rather than its location. In contrast, consider an e-commerce database which records purchases performed by customers. Each purchase refers to the credit card used for payment; however, this card is not drawn from a global pool of all cards, but instead the pool of cards owned by the customer which made the purchase. 
+
+Secondary indices are also common and useful database structure beyond the reach of traditional type systems. Consider this example demonstrating the utility of secondary indices. An e-commerce company wishes to issue a recall on a product. To do so, it must obtain a list of all customers that have purchased an item known to be defective; to compute this list efficiently, the set of all customers which purchased each item must be stored in nearby addresses. At another time, a customer may wish to obtain a list of all items he has purchased from the site; to perform this operation efficiently, we must store the set of all of a customer's purchased items in nearby addresses. These two requirements are at odds if our database merely stores a single collection of all purchases processed. However, if we redundantly store customer-to-item and item-to-customers map, we can satisfy both requirements at once. Such redundant data structures are called secondary indices.
+
+In practice, foreign keys often refer to deleted entities. Such a foreign key is a time-bomb which will raise an exception the next time the data is accessed. Secondary indices can become out-of-sync due to programmer errors. A formal schema language including notions of foreign keys and indices could be compiled to validation routines to detect these errors. 
+
+\begin{itemize}   
+\item We develop a schema language for hierarchical databases with the ability to express foreign keys and secondary indices. 
+\item blah blah blah denotational semantics (and operational)
+\end{itemize}
+
+Since we are working with two distinct concepts which are both typically referred to as \emph{indices} -- indices in the sense of database indices and indices in the sense of indexed type checking -- we refer to database secondary indices as \emph{reconfigurations} in the sequel.
+
+%Likewise, we don't have 
+%Chronicles indexing on pg 9040.
+
+
+%\pagebreak
+
+
+\section{Example}
+
+
+%The schema begins with some predicate declarations. On the first line, 
+%``\verb!(ItemId : str -> prop) =>!'' binds a predicate scoped over the rest of the schema fragment. 
+%This forms an index-to-type abstraction mapping each unary predicate on strings to a schema.  
+
+%NewMiscStudy pg 9047 describes chronicles indices.
+
+\subsection{Foreign Keys}
+
+\begin{figure}
+
+\begin{lstlisting}[escapeinside=`']
+
+`$\bigvee \!\!$' `$\lambda \!\!$' (`\blu{ItemId : str -> prop}').
+`$\bigvee \!\!$' `$\lambda \!\!$' (`\blu{CustId : str -> prop}').
+`$\bigvee \!\!$' `$\lambda \!\!$' (`\blu{PurchaseId : str -> prop}').
+`$\bigvee \!\!$' `$\lambda \!\!$' (`\blu{CardType : str -> prop}').
+`$\bigvee \!\!$' `$\lambda \!\!$' (`\blu{CardId : (x:str) -> prf (CustId x) -> str -> prop}').
+
+type Card = {
+  billingAddr : str
+  cardType    : { `\blu{x : str}' | `\blu{CardType x}' }
+}
+
+type Purchase = `$\lambda$(\blu{cust : str}).$\lambda$(\blu{prf (CustId cust)}).' {
+  itemId : { `\blu{x : str}' | `\blu{ItemId x}' }, 
+  cardId : { `\blu{x : str}' | `\blu{CardId cust x}' }
+}
+
+type Customer = `$\lambda$(\blu{cust : str}).$\lambda$(\blu{prf (CustId cust)}).' { 
+  purchases : { 
+    [`\blu{p : str}'] : `\blu{PurchaseId p}' > Purchase `\blu{cust}' 
+  },
+  cards     : { 
+    [`\blu{card : str}'] : `\blu{CardId cust card}' > Card 
+  }
+}
+
+{
+  cardTypes : { [`\blu{x : str}'] : `\blu{CardType x}' > "*" }
+  customers : { [`\blu{x : str}'] : `\blu{CustId x}' > Customer `\blu{x}'}
+}
+\end{lstlisting}
+
+\caption{Schema for e-commerce database with foreign keys}
+\label{fig:ecommerce}
+\end{figure}
+
+The purpose of a schema is to identify a set of database instances, so before examining our first schema we briefly define some formalisms for describing database instances. We consider \emph{database instances} (also called \emph{instances}) as partial mappings from lists of strings to strings. Given a database instance $f$, and a list of strings $\sigma$, we obtain $f |_\sigma$, \emph{the restriction of $f$ to $\sigma$}, defined for lists $\sigma'$ as $f |_\sigma(\sigma') \defeq f(\sigma + \! \! +~\sigma')$, where $\sigma + \! \! +~ \sigma'$ is the concatenation of $\sigma$ and $\sigma'$. By an abuse of language, we say ``$f$ maps $\sigma$ to $f |_{\sigma}$''. We write $[s_1, \ldots, s_n]$ for the list containing the $n$ strings $s_1,\ldots,s_n$. 
+
+Figure \ref{fig:ecommerce} shows a schema fragment for an e-commerce database. It begins by declaring five predicates: first four unary predicates for item ids, customer ids, purchase ids, and card types. Finally, it declares a ternary predicate for card ids. The predicate variables and their classifiers have been bolded and colored blue to indicate that they are part of the \emph{index language}. This simple language defines conceptual entities such as predicates and relations, divorced from the physical details of where these entities are stored. The index langauge is layered beneath our schema language, i.e. schemas may depend on indices but not vice versa. 
+
+Lines ??-??, use the record type constructor to define a subschema denoting the set of instances representing credit cards; these are the instances which map the list [``addr''] to any string and the list [``cardType''] to any string satisfying the \lstinline[mathescape]{$\blu{CardType}$} predicate. 
+
+%The field \emph{cardId} is an instance of a foreign key. In this schema language, foreign keys don't refer directly to locations in the database; instead, they refer to index-level unary predicates. By separating conceptual sets (index-level predicates) from their physical  
+
+Lines ??-?? define an index-to-type operator called \emph{Purchase}, which maps a string \lstinline[mathescape]{$\blu{cust}$} and a proof that \lstinline[mathescape]{$\blu{cust}$} satisfies the \lstinline[mathescape]{$\blu{CustId}$} predicate to a type denoting the set of instances representing purchases made by customer \lstinline[mathescape]{$\blu{cust}$}. In the application \lstinline[mathescape]{$\blu{CardId cust card}$}, the second argument to CardId is missing. This is because it is a proof; since any two proofs of the same proposition are interchangeable, we apply proofs implicitly to reduce visual clutter. 
+
+On lines ??-?? define a index-to-type operator \lstinline{Customer} mapping a string \lstinline[mathescape]{$\blu{cust}$} and a proof that \lstinline[mathescape]{$\blu{CustId cust}$} holds to a type denoting the set of instances representing customers with id \lstinline[mathescape]{$\blu{cust}$}. Such instances map all lists [``purchases'', \lstinline[mathescape]{$\blu{p}$}] such that \lstinline[mathescape]{$\blu{purchaseId p}$} holds to instances of type \lstinline[mathescape]{Purchase $\blu{cust}$}. They also map all lists [``cards'', \lstinline[mathescape]{$\blu{card}$}] such that \lstinline[mathescape]{$\blu{CardId cust card}$} holds to instances of type \lstinline{Card}.
+
+Finally, lines ??-?? define the schema using a record type. An instance satisfies this schema whenever: 
+\begin{enumerate}
+\item It maps [``cardTypes''] to a subinstance that stores the set of all card types by mapping each \lstinline[mathescape]{Purchase $\blu{x}$} satisfying the \lstinline[mathescape]{$\blu{CardType}$} predicate to the string \lstinline[mathescape]{"*"}
+\item It maps [``customers''] to a dictionary that maps every \lstinline[mathescape]{$\blu{x}$} satisfying the \lstinline[mathescape]{$\blu{CustId}$} predicate to a subschema of type \lstinline[mathescape]{Customer $\blu{x}$}. 
+\end{enumerate}
+
+%The code \lstinline[mathescape]{$\lambda (\blu{ItemId : str -> prop})/$} on the first line is an abstraction mapping indices of sort \lstinline[mathescape]{$\blu{str -> prop}$} to the type whose syntax occupies the remaining lines of the figure. A type denotes a set of database instances.
+
+\begin{figure} 
+
+\begin{small}
+\begin{lstlisting}[escapeinside=`']
+`$\bigvee \!\!$' (`\blu{ItemId : str -> prop}') =>
+`$\bigvee \!\!$' (`\blu{CustId : str -> prop}') =>
+`$\bigvee \!\!$' (`\blu{Purchased : \\ \hspace{1cm} (x : str) -> prf (CustId x) -> \\ \hspace{1cm} (y : str) -> prf (ItemId y) -> prop)}' =>
+
+{ 
+  custToItem : { 
+    [`\blu{c,i : str}'] : `\blu{CustId c}, 
+                           \blu{ItemId i}, 
+                           \blu{Purchased c i}' > "*" 
+  }
+  itemToCust : { 
+    [`\blu{i,c : str}'] : `\blu{CustId c}, 
+                           \blu{ItemId i}, 
+                           \blu{Purchased c i}' > "*"
+  }
+}
+\end{lstlisting}
+
+\end{small}
+\caption{Reconfigurations (secondary indices) in an e-commerce database}
+\label{fig:ecommerce-indices}
+\Description[Secondary indices]{Secondary indices in an e-commerce database}
+\end{figure}
+
+%\begin{figure}
+
+%\begin{small}
+
+%\begin{tabular}{l}
+%(``Alonzo Church'', ``Purchases'', ``0'', ``itemId'') $\mapsto$ ``Sony Digital Paper'' \\
+%(``Alonzo Church'', ``Purchases'', ``0'', ``cardId'') $\mapsto$ ``Alonzo's Card''\\
+%(``Alonzo Church'', ``Cards'', ``Alonzo's Card'', ``Addr'') $\mapsto$ ``12 Main St''\\
+%(``Alonzo Church'', ``Cards'', ``Alonzo's Card'', ``Type'') $\mapsto$ ``Visa''\\~\\
+
+%(``Alan Turing'', ``Cards'', ``Alan's Card'', ``Addr'') $\mapsto$ ``312 Some Rd''\\
+%(``Alan Turing'', ``Cards'', ``Alan's Card'', ``Type'') $\mapsto$ ``Mastercard''\\
+%\end{tabular}
+
+%\end{small}
+
+%\end{figure}
+
+%Hierarchical database schemas are often informally documented in wikis. These informal schemas can easily omit important details, 
+
+%We use a simplified model of hierachical databases. A \emph{location} is a list of strings, and a \emph{database instance} is a partial function from lists of strings to strings. Initially, it is totally undefined, and each store defines the database at a specific  
+
+%To demonstrate the benefits and pitfalls of hierarchical database schemas
+
+
+
+\end{document}

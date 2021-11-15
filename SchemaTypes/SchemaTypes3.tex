@@ -1,0 +1,281 @@
+\documentclass{article}
+ 
+\usepackage{amscd}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{stmaryrd}
+\usepackage{mathpartir}
+\usepackage{multicol}
+\usepackage{enumitem}
+\usepackage[section]{placeins} % float barriers
+\usepackage{natbib}
+\usepackage{xcolor} 
+\usepackage{bussproofs} 
+\usepackage{diagrams}
+\usepackage{tikz}
+\usepackage{tabu}
+\usepackage{quiver} 
+\usepackage{stackengine}
+
+\usetikzlibrary{cd}
+ 
+\newtheorem{lemma}{Lemma}
+\newtheorem{definition}{Definition}
+\newtheorem{remark}{Remark}
+
+\newcommand{\blu}[1]{\mathbf{\color{blue}{#1}}}
+\newcommand{\srtclass}[1]{\blu{| \! \! | \! \! |}~#1~\blu{| \! \! | \! \! |}} 
+
+%example: \limit{j \in J}{F_j}
+\newcommand{\limit}[2]{\underset{\overset{\longleftarrow}{#1}}{\text{lim}}~#2}
+\newcommand{\lims}[1]{\underset{\longleftarrow}{\text{lim}}~#1}
+\newcommand{\mbf}{\mathbf}
+\newcommand{\sem}[1]{\llbracket #1 \rrbracket}
+\newcommand{\defeq}{\overset{\mathit{def}}{=}}
+\newcommand{\defequiv}{\overset{\mathit{def}}{\Leftrightarrow}}
+\newcommand{\capdot}{~\stackinset{c}{}{c}{}{\scalebox{0.8}{$\ast$}}{$\cap$}~}
+\newcommand{\bigcapdot}{\mathop{\stackinset{c}{}{c}{}{\scalebox{0.8}{$\ast$}}{$\bigcap$}}}
+\newcommand{\scdots}{\scalebox{0.6}{$\cdots$}}
+\newcommand{\isdef}{\! \! \downarrow}
+\newcommand{\vrt}[2]{
+\pile{
+#1 \\
+\downarrow \\
+#2
+}
+}
+
+\newcommand{\sdisp}[1]{
+\left( #1 \right)
+}
+
+\newcommand{\ddisp}[3]{
+\left(
+\scriptsize
+\begin{tikzcd}
+#1 \ar[d, "\footnotesize{#2}"] \\
+#3
+\end{tikzcd}
+\normalsize
+\right)
+}
+
+\newcommand{\disp}[3]{
+\left(
+\tiny
+\begin{array}{c}
+#1 \\
+\downarrow\\
+#3
+\end{array}
+\begin{array}{l}
+~ \\
+#2 \\
+~
+\end{array}
+\normalsize
+\right)
+}
+
+\newcommand{\dispp}[3]{
+\tiny
+\begin{tikzcd}
+#1 \ar[d, "#2"] \\
+#3
+\end{tikzcd}
+\normalsize
+}
+
+\newcommand{\fm}[2]{
+\left(
+\tiny
+#1
+\normalsize
+\right)_{#2}
+}
+
+% give tables some extra space between rows and columns
+\renewcommand{\arraystretch}{1.4}
+
+\title{Schema Type Calculus}
+
+\begin{document}
+
+\maketitle
+
+\section*{Syntax}
+
+\begin{tabular}{llll}
+$\mathit{Chars}$ & $\doteq$ & the set of all characters \\
+$\mathit{TypeVars}$ & $\doteq$ & the set of all type variables \\
+$\mathit{IndexVars}$ & $\doteq$ & the set of all index variables \\
+$x,y,z$ & $\in$ & $\mathit{TypeVars}$ & ~ \\
+$\blu{a}, \blu{b}, \blu{P}$ & $\in$ & $\mathit{IndexVars}$ & ~ \\
+$\blu{c}$ & $\in$ & $\mathit{Chars}$ & (characters) \\
+$\blu{s},\blu{t}$ & $\in$ & $\mathit{Strings}$ & (where $\mathit{Strings} = \mathit{Chars}^{\star}$) \\~\\
+ & & \\
+$\blu{j},\blu{k}$ (index) & ::=  & $\blu{s}$ & (string literal) \\
+                          & $\mid$ & $\blu{j}~\blu{k}$ & (application) \\
+                          & $\mid$ & $\blu{a}$ & (index variable) \\~\\
+$\blu{C}$ (string classifiers) & ::= & $\blu{s}$ & (string singleton) \\
+                         & $\mid$ & $\blu{str}$ & (all strings) \\~\\
+$\blu{q},\blu{r}$ (sort) & ::= & $\blu{C}$ & (sort of strings satisfying $C$) \\
+                         & $\mid$ & $\blu{\textbf{prop}}$ & (proposition sort) \\
+                         & $\mid$ & $\blu{\textbf{prf}~\phi}$ & (proof sort) \\
+                         & $\mid$ & $\blu{(a : q) \Rightarrow r}$ & (dependent function sort) \\~\\
+$\kappa,\rho$ (kind) & $::=$ & $\ast$ & (kind of proper types) \\
+                     & $\mid$ & $\kappa \to \rho$ & (type-to-type operator)\\
+                     & $\mid$ & $\forall \blu{q}.~\kappa$ & (index-to-type operator) \\~\\
+$\tau,\sigma$ (type) & $::=$ & $\{[\blu{a : C}] : \tau \}$ & (dictionary type) \\ 
+       & $\mid$ & $\{ \blu{s}_i : \tau_i^{~i \in 1..n} \}$ & (record type) \\
+       & $\mid$ & $\langle \blu{C} \rangle$ & (string type) \\
+       & $\mid$ & $\lambda \blu{a : q} . \tau$ & (index-over-type abstraction) \\
+       & $\mid$ & $\lambda x : \kappa. \tau$ & (type-over-type abstraction) \\
+       & $\mid$ & $\bigvee \tau$ & (colimit) \\
+       & $\mid$ & $\tau~\sigma$ & (type application) \\
+       & $\mid$ & $\tau~[~\blu{j}~]$ & (index application)
+\end{tabular}
+
+\begin{tabular}{llll}
+$\blu{\Upsilon}$ (pre-index-context) & $::=$  & $\blu{\Upsilon,a : q}$ & (binding extension) \\
+                                     & $\mid$ & $\blu{\diamond}$ & (empty context) \\ ~\\
+$\Gamma$ (kind context) & $::=$ & $\Gamma,x : \kappa$ & (binding extension) \\
+                        & $\mid$ & $\diamond$ & (empty context) 
+\end{tabular}\\~\\~\\
+
+\section*{Sorting and Sort formation}
+\begin{mathpar}
+\inferrule
+  {~}
+  {\blu{\Upsilon \vdash s : s}}
+\and
+\inferrule
+  {~}
+  {\blu{\Upsilon,a : q, \Upsilon' \vdash a : q}}
+\and
+\inferrule
+  {\blu{\Upsilon \vdash j : (a : q) \to r} \\ \blu{\Upsilon \vdash k : q}}
+  {\blu{\Upsilon \vdash j~k : r[k/a]}}
+
+\and
+\inferrule
+  {~}
+  {\blu{\Upsilon \vdash s}}
+\and
+\inferrule
+  {\blu{\Upsilon \vdash q} \\ \blu{\Upsilon,a:q \vdash r}}
+  {\blu{\Upsilon \vdash (a : q) \Rightarrow r}}
+\and
+\inferrule
+  {\blu{\Upsilon \vdash j : \textbf{prop}}}
+  {\blu{\Upsilon \vdash \textbf{prf}~j}}
+\end{mathpar}
+
+\section*{Kinding}
+
+\begin{mathpar}
+\inferrule
+  {\blu{\Upsilon,a : C} \mid \Gamma \vdash \tau : \ast}
+  {\blu{\Upsilon} \mid \Gamma \vdash \{ [\blu{a : C}] : \tau \} : \ast}
+\and
+\inferrule
+  {\blu{\Upsilon} \mid \Gamma \vdash \tau_i : \ast^{~i \in 1..n}}
+  {\blu{\Upsilon} \mid \Gamma \vdash \{ \blu{s}_i : \tau_i^{~i \in 1..n} \} : \ast}
+\and
+\inferrule
+  {~}
+  {\blu{\Upsilon} \mid \Gamma \vdash \langle \blu{C} \rangle : \ast}
+\and
+\inferrule
+  {\blu{\Upsilon \vdash q} \\ \blu{\Upsilon,a : q} \mid \Gamma \vdash r : \kappa}
+  {\blu{\Upsilon} \mid \Gamma \vdash \lambda \blu{a : q} . r : \forall \blu{q} . \kappa}
+\and
+\inferrule
+  {\blu{\Upsilon} \mid \Gamma,x:\kappa \vdash \tau : \rho}
+  {\blu{\Upsilon} \mid \Gamma \vdash \lambda x : \kappa. \tau : \kappa \to \rho}
+\and
+\inferrule
+  {\blu{\Upsilon} \mid \Gamma \vdash \tau : \forall \blu{q}. \ast}
+  {\blu{\Upsilon} \mid \Gamma \vdash \bigvee \tau : \ast}
+\and
+\inferrule
+  {\blu{\Upsilon} \mid \Gamma \vdash \tau : \forall \blu{q}. \rho \\ \blu{\Upsilon \vdash j : q}}
+  {\blu{\Upsilon} \mid \Gamma \vdash \tau~[~\blu{j}~]: \rho}
+\and
+\inferrule
+  {\blu{\Upsilon} \mid \Gamma \vdash \tau : \kappa \to \rho \\ \blu{\Upsilon} \mid \Gamma \vdash \sigma : \kappa}
+  {\blu{\Upsilon} \mid \Gamma \vdash \tau~\sigma : \rho}
+\end{mathpar}
+
+In the examples in the ``paper'', $\{~[\blu{a : str}] : \blu{i,j} > \tau~\}$ is syntactic sugar for $\{~[\blu{a : str}] : \bigvee \lambda (\blu{a_1 : prf~i}). \bigvee \lambda (\blu{a_2 : prj~j}). \tau~\}$.
+
+\section*{Index-level Semantics}
+
+\subsection*{CwF}
+
+We define a CwF for interpreting the index language. Its category of contexts is $\mbf{Posets}$. For semantic contexts $P$, we define $\mathit{St}(P)$ (read the \emph{semantic sorts} of context P) as the collection of $P$-indexed families of posets. Such a family $\fm{Q_p}{p \in P}$ is a poset-indexed family rather than a set-indexed family; this means that for $p_1,p_2 \in P$ with $p_1 \leq p_2$ we have a chosen monotone injection $i_{p_1 \leq p_2} : Q_{p_1} \to Q_{p_2}$. We write semantic sorts in context $P$ using the symbols $X$ and $Y$, and for $X \in \mathit{St}(P)$, we write $X_p$ for $X$'s poset at component $p \in P$. 
+
+For semantic contexts $P$ and all $X \in \mathit{St}(P)$ we define $\mathit{In}(P, X)$ (the collection of \emph{index terms} of sort $X$ under context $P$) as the collection of all $P$-indexed families $(x_p \in X_p)_{p \in P}$ such that for $p_1 \leq_P p_2$ we have $i(x_{p_1}) \leq_{X_{p_2}} x_{p_2}$.
+
+For each monotone function $f : P \to Q$ we define a sort-level semantic substitution operator $- \{ f \} : \mathit{St}(Q) \to \mathit{St}(P)$ as 
+$$X \{ f \} \defeq \fm{X_{f(p)}}{p \in P}$$
+For $p_1 \leq p_2$ we have $f(p_1) \leq f(p_2)$ and so our chosen monotone injection is 
+$$i_{p_1 \leq p_2} : X\{ f \}_{p_1} \to X \{ f \}_{p_2} \defeq i_{f(p_1) \leq f(p_2)}$$
+
+For $X \in \mathit{St}(Q)$ a term-level semantic substution operator $- \{ f \} : \mathit{In}(Q,X) \to \mathit{In}(P, X \{ f \})$.
+
+Let $P$ be a semantic context and $X$ a semantic sort in context $P$. The comprehension $P . X$ is the poset of pairs $(p,x)$ with $p \in P$ and $x \in X_p$ such that 
+$$(p_1,x_1) \leq_{P.X} (p_2,x_2) \defequiv (p_1 \leq p_2) \wedge (i(x_1) \leq x_2)$$
+We have a monotone function $p(X) : P . X \to P$ defined as 
+$$p(X)(p,x) \defeq p$$
+and also a semantic index term $v(X) \in \mathit{In}(P.X, X \{ p(X) \})$ defined as
+$$v(X)_{(p,x)} \defeq x$$
+
+ 
+\subsection*{Quasi $\Pi$-sorts}
+
+Our model does not include full $\Pi$-types. Instead, we use a weaker notion called \emph{quasi $\Pi$-types}. Since classifiers of our index language are called \emph{sorts}, we refer to this concept as \emph{quasi $\Pi$-sorts}.
+
+\begin{definition}
+A CwF supports \emph{quasi $\Pi$-types} if for any two types $\sigma \in \mathit{Ty}(\Gamma)$ and $\tau \in \mathit{Ty}(\Gamma . \sigma)$ there is a type $\Pi(\sigma,\tau) \in \mathit{Ty}(\Gamma)$, and for each $N \in \mathit{Tm}(\Gamma, \Pi(\sigma,\tau))$ and $N \in \mathit{Tm}(\Gamma)$ there is a term $\mathit{App}_{\sigma, \tau}(M,N) \in \mathit{Tm}(\Gamma, \tau \{ \overline{N} \})$ such that
+$$\mathit{App}_{\sigma,\tau}(M,N) \{ f \} = \mathit{App}_{\sigma \{ f \}, \tau \{ q(f, \sigma) \}} (M \{ f \}, N \{ f \})$$
+\end{definition}
+
+Our model has quasi-$\Pi$-types (quasi-$\Pi$-sorts).
+
+%\begin{lemma}
+%Let $\fm{Q_p}{p \in P} \in \mathit{St}(P)$ and... 
+%\end{lemma}
+
+\subsection*{Examples}
+
+To give some intuition for the above setup, here are some example interpretations. The context $\blu{x : str}$ is interpreted as the discretely ordered poset of all strings. The sort formation judgment $\blu{x : str \vdash prop}$ is interpreted as 
+
+\begin{itemize}
+\item The constant string-indexed family of posets which maps each string to the Sierpinski poset $\mbf{2} \defeq \{ \mathit{known}, \mathit{unknown} \}$ where $\mathit{unknown} \leq \mathit{known}$.
+\item For each string $s$ the chosen monotone injection $i_{s \leq s}$ is $\mathit{id}_{\mbf{2}}$.  
+\end{itemize}
+ 
+The context $\blu{Customer : str \to prop,x:str}$ is interpreted as the componentwise-ordered poset of all pairs $(f,x)$ such that
+\begin{enumerate}
+\item $f$ is a monotone function from the discretely ordered set of all strings to the Sierpinski poset $\{ \mathit{known}, \mathit{unknown} \}$.
+\item $x$ is a string
+\end{enumerate}
+The sort formation judgment
+$$\blu{Customer : str \to prop,x:str} \vdash \blu{prop}$$ 
+is then interpreted as 
+
+\subsection*{Index language interpretation}
+
+\begin{itemize}
+\item $\sem{\blu{\diamond}} \defeq \top$
+\item $\sem{\blu{\Upsilon,a:q}} \defeq \sem{\blu{\Upsilon}}.\sem{\blu{\Upsilon};\blu{q}}$ if $x$ not in $\blu{\Upsilon}$, undefined otherwise.
+\item $\sem{\blu{\Upsilon}; \blu{(j : q) \Rightarrow p}} \defeq \Pi(\sem{\blu{\Upsilon};\blu{q}},\sem{\blu{\Upsilon,a:q};\blu{p}})$
+\item $\sem{\blu{\Upsilon}; \blu{\mathbf{prf}~j}} \defeq (~[ \sem{\blu{\Upsilon}; \blu{j}}_\upsilon = \mathit{known} ]~)_{\upsilon \in \sem{\blu{\Upsilon}}}\\ ~~~~~~~~~~~~~~~~~~~~(-)_{\upsilon \leq \upsilon'} \text{is the only possible choice}$
+\item $\sem{\blu{\Upsilon}; \blu{prop}} \defeq ( \{ \mathit{known}, \mathit{unknown} \} )_{\upsilon \in \sem{\blu{\Upsilon}}}  \\ ~~~~~~~~~~~~~~~~~~~~~(-)_{\upsilon \leq \upsilon'} \text{is the identity function}$
+\item $\sem{\blu{\Upsilon}; \blu{str}} \defeq (\text{the set of strings, ordered discretely})_{\upsilon \in \sem{\blu{\Upsilon}}} \\ ~~~~~~~~~~~~~~~~~~(-)_{\upsilon \leq \upsilon'} \text{is the identity function}$
+\end{itemize}
+
+\end{document}
