@@ -215,9 +215,13 @@ In the examples in the ``paper'', $\{~[\blu{a : str}] : \blu{i,j} > \tau~\}$ is 
 
 \subsection*{CwF}
 
-We define a CwF for interpreting the index language. Its category of contexts is $\mbf{Posets}$. For semantic contexts $P$, we define $\mathit{St}(P)$ (read the \emph{semantic sorts} of context P) as the collection of $P$-indexed families of posets. Such a family $\fm{Q_p}{p \in P}$ is a poset-indexed family rather than a set-indexed family; this means that for $p_1,p_2 \in P$ with $p_1 \leq p_2$ we have a chosen monotone injection $i_{p_1 \leq p_2} : Q_{p_1} \to Q_{p_2}$. We write semantic sorts in context $P$ using the symbols $X$ and $Y$, and for $X \in \mathit{St}(P)$, we write $X_p$ for $X$'s poset at component $p \in P$. 
+We define a CwF for interpreting the index language. Its category of contexts is $\mbf{Posets}$. For semantic contexts $P$, we define $\mathit{St}(P)$ (read the \emph{semantic sorts} of context P) as the collection of $P$-indexed families of posets. Such a family $\fm{Q_p}{p \in P}$ is a poset-indexed family rather than a set-indexed family; this means that for $p_1,p_2 \in P$ with $p_1 \leq p_2$ we have a chosen monotone injection $i_{p_1 \leq p_2} : Q_{p_1} \to Q_{p_2}$ such that for $p \in P$ we have $i_{p \leq p} = \mathit{id}_{Q_p}$ and for $p_1 \leq p_2 \leq p_3$ we have $i_{p_1 \leq p_3} = i_{p_2 \leq p_3} \circ i_{p_1 \leq p_2}$.
+A poset-indexed family of posets $\fm{Q_p}{p \in P}$ can itself be considered a poset whose elements are pairs $(p,q)$ with $p \in P, q \in Q_p$ and $(p,q) \leq (p',q') \Leftrightarrow (p \leq p') \wedge (i(q) \leq q')$. In particular, for $p \leq p'$ we have $(p, x) \leq (p', i(x))$ since by reflexivity we have $i(x) \leq i(x)$.
 
-For semantic contexts $P$ and all $X \in \mathit{St}(P)$ we define $\mathit{In}(P, X)$ (the collection of \emph{index terms} of sort $X$ under context $P$) as the collection of all $P$-indexed families $(x_p \in X_p)_{p \in P}$ such that for $p_1 \leq_P p_2$ we have $i(x_{p_1}) \leq_{X_{p_2}} x_{p_2}$.
+ We write semantic sorts in context $P$ using the symbols $X$ and $Y$, and for $X \in \mathit{St}(P)$, we write $X_p$ for $X$'s poset at component $p \in P$. 
+
+
+For semantic contexts $P$ and all $X \in \mathit{St}(P)$ we define $\mathit{In}(P, X)$ (the collection of \emph{index terms} of sort $X$ under context $P$) as the collection of all $P$-indexed families $(x_p \in X_p)_{p \in P}$ such that for $p_1 \leq_P p_2$ we have $i(x_{p_1}) \leq_{X_{p_2}} x_{p_2}$ i.e. $(p_1, x_{p_1}) \leq (p_2, x_{p_2})$.  
 
 For each monotone function $f : P \to Q$ we define a sort-level semantic substitution operator $- \{ f \} : \mathit{St}(Q) \to \mathit{St}(P)$ as 
 $$X \{ f \} \defeq \fm{X_{f(p)}}{p \in P}$$
@@ -243,8 +247,11 @@ A CwF supports \emph{quasi $\Pi$-types} if for any two types $\sigma \in \mathit
 $$\mathit{App}_{\sigma,\tau}(M,N) \{ f \} = \mathit{App}_{\sigma \{ f \}, \tau \{ q(f, \sigma) \}} (M \{ f \}, N \{ f \})$$
 \end{definition}
 
-Our model has quasi-$\Pi$-types (quasi-$\Pi$-sorts).
-
+Given $X \in \mathit{St}(P)$ and $Y \in \mathit{St}(P . X)$ we define the semantic sort $\Pi(X,Y) \in \mathit{St}(P)$ as 
+$$p \in P \mapsto \fm{Y_{(p,x)}}{x \in X_p}$$
+where above, the right-hand-side is a poset-indexed family of posets considered as a poset. Indeed, given $x \leq x' \in X_p$ we have $(p, i(x)) = (p,x) \leq (p,x')$ and hence a monotone injection $i : Y_{(p,x)} \to Y_{(p,x')}$.
+Furthermore, for $p \leq p' \in P$ we have $(p',i(x)) \leq (p$ choose the monotone injection $i : \fm{Y_{(p,x)}}{x \in X_p} \to \fm{Y_{(p',x')}}{x' \in X_{p'}}$ defined as 
+$$(x \in X_p, y \in Y_{(p,x)}) \mapsto (i_{p \leq p'}(x) \in X_{p'}, i_{(p,x) \leq (p',i(x))}(y) \in Y_{(p',i(x))})$$
 %\begin{lemma}
 %Let $\fm{Q_p}{p \in P} \in \mathit{St}(P)$ and... 
 %\end{lemma}
