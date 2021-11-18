@@ -220,8 +220,7 @@ A poset-indexed family of posets $\fm{Q_p}{p \in P}$ can itself be considered a 
 
  We write semantic sorts in context $P$ using the symbols $X$ and $Y$, and for $X \in \mathit{St}(P)$, we write $X_p$ for $X$'s poset at component $p \in P$. 
 
-
-For semantic contexts $P$ and all $X \in \mathit{St}(P)$ we define $\mathit{In}(P, X)$ (the collection of \emph{index terms} of sort $X$ under context $P$) as the collection of all $P$-indexed families $(x_p \in X_p)_{p \in P}$ such that for $p_1 \leq_P p_2$ we have $i(x_{p_1}) \leq_{X_{p_2}} x_{p_2}$ i.e. $(p_1, x_{p_1}) \leq (p_2, x_{p_2})$.  
+For semantic contexts $P$ and all $X \in \mathit{St}(P)$ we define $\mathit{In}(P, X)$ (the collection of \emph{semantic indices} of sort $X$ under context $P$) as the collection of all $P$-indexed families $(x_p \in X_p)_{p \in P}$ such that for $p_1 \leq_P p_2$ we have $i(x_{p_1}) \leq_{X_{p_2}} x_{p_2}$ i.e. $(p_1, x_{p_1}) \leq (p_2, x_{p_2})$. We write semantic indices using the symbols $M$ and $N$.
 
 For each monotone function $f : P \to Q$ we define a sort-level semantic substitution operator $- \{ f \} : \mathit{St}(Q) \to \mathit{St}(P)$ as 
 $$X \{ f \} \defeq \fm{X_{f(p)}}{p \in P}$$
@@ -238,19 +237,25 @@ and also a semantic index term $v(X) \in \mathit{In}(P.X, X \{ p(X) \})$ defined
 $$v(X)_{(p,x)} \defeq x$$
 
  
-\subsection*{Quasi $\Pi$-sorts}
+\subsection*{$\Pi$-types}
 
-Our model does not include full $\Pi$-types. Instead, we use a weaker notion called \emph{quasi $\Pi$-types}. Since classifiers of our index language are called \emph{sorts}, we refer to this concept as \emph{quasi $\Pi$-sorts}.
+To avoid naming conflicts, we restate the classical definition of semantic $\Pi$-types in our own terminology.
 
 \begin{definition}
-A CwF supports \emph{quasi $\Pi$-types} if for any two types $\sigma \in \mathit{Ty}(\Gamma)$ and $\tau \in \mathit{Ty}(\Gamma . \sigma)$ there is a type $\Pi(\sigma,\tau) \in \mathit{Ty}(\Gamma)$, and for each $N \in \mathit{Tm}(\Gamma, \Pi(\sigma,\tau))$ and $N \in \mathit{Tm}(\Gamma)$ there is a term $\mathit{App}_{\sigma, \tau}(M,N) \in \mathit{Tm}(\Gamma, \tau \{ \overline{N} \})$ such that
-$$\mathit{App}_{\sigma,\tau}(M,N) \{ f \} = \mathit{App}_{\sigma \{ f \}, \tau \{ q(f, \sigma) \}} (M \{ f \}, N \{ f \})$$
+A CwF supports semantic \emph{$\Pi$-sorts} if for any two sorts $X \in \mathit{St}(P)$ and $Y \in \mathit{St}(P . X)$ there is a sort $\Pi(X,Y) \in \mathit{St}(P)$, and for each $N \in \mathit{In}(P, \Pi(X,Y))$ and $N \in \mathit{In}(P,X)$ there exists a morphism
+$$\mathit{App}_{X, Y} : P.X.\Pi(X,Y)^+$$
+such that
+$$p(X) \circ \mathit{App}_{X,Y} = p(\Pi(X,Y))^+$$
+and for every semantic term $M \in \mathit{In}(P,X)$
+$$\mathit{App}_{P,X} \circ \overline{M \{ p(X) \}} = \overline{M}$$
+and, finally, for every morphism $f : B \to P$
+$$\mathit{App}_{X,Y} \circ q(q(f,X), \Pi(X,Y) \{ q(f, X) \}) = q(q(f,X), Y) \circ \mathit{App}_{X \{ f \}, Y \{ q(f, X) \} }$$
 \end{definition}
 
 Given $X \in \mathit{St}(P)$ and $Y \in \mathit{St}(P . X)$ we define the semantic sort $\Pi(X,Y) \in \mathit{St}(P)$ as 
 $$p \in P \mapsto \fm{Y_{(p,x)}}{x \in X_p}$$
 where above, the right-hand-side is a poset-indexed family of posets considered as a poset. Indeed, given $x \leq x' \in X_p$ we have $(p, i(x)) = (p,x) \leq (p,x')$ and hence a monotone injection $i : Y_{(p,x)} \to Y_{(p,x')}$.
-Furthermore, for $p \leq p' \in P$ we have $(p',i(x)) \leq (p$ choose the monotone injection $i : \fm{Y_{(p,x)}}{x \in X_p} \to \fm{Y_{(p',x')}}{x' \in X_{p'}}$ defined as 
+Furthermore, for $p \leq p' \in P$ we choose the monotone injection $i : \fm{Y_{(p,x)}}{x \in X_p} \to \fm{Y_{(p',x')}}{x' \in X_{p'}}$ defined as 
 $$(x \in X_p, y \in Y_{(p,x)}) \mapsto (i_{p \leq p'}(x) \in X_{p'}, i_{(p,x) \leq (p',i(x))}(y) \in Y_{(p',i(x))})$$
 %\begin{lemma}
 %Let $\fm{Q_p}{p \in P} \in \mathit{St}(P)$ and... 
@@ -283,6 +288,7 @@ is then interpreted as
 \item $\sem{\blu{\Upsilon}; \blu{\mathbf{prf}~j}} \defeq (~[ \sem{\blu{\Upsilon}; \blu{j}}_\upsilon = \mathit{known} ]~)_{\upsilon \in \sem{\blu{\Upsilon}}}\\ ~~~~~~~~~~~~~~~~~~~~(-)_{\upsilon \leq \upsilon'} \text{is the only possible choice}$
 \item $\sem{\blu{\Upsilon}; \blu{prop}} \defeq ( \{ \mathit{known}, \mathit{unknown} \} )_{\upsilon \in \sem{\blu{\Upsilon}}}  \\ ~~~~~~~~~~~~~~~~~~~~~(-)_{\upsilon \leq \upsilon'} \text{is the identity function}$
 \item $\sem{\blu{\Upsilon}; \blu{str}} \defeq (\text{the set of strings, ordered discretely})_{\upsilon \in \sem{\blu{\Upsilon}}} \\ ~~~~~~~~~~~~~~~~~~(-)_{\upsilon \leq \upsilon'} \text{is the identity function}$
+\item $\sem{\blu{\Upsilon}; \blu{App_{[a:q],p}(i,j)}} \defeq \mathit{App}_{\sem{\blu{\Upsilon;q}},\sem{\blu{\Upsilon,a:q;p}}}()$ \\ $~~~~~~~~~~~~~~~~~~(-)_{\upsilon \leq \upsilon'} \text{is the identity function}$
 \end{itemize}
 
 \end{document}
