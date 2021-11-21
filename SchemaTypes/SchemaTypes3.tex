@@ -22,6 +22,7 @@
 \usetikzlibrary{cd}
  
 \newtheorem{lemma}{Lemma}
+\newtheorem{thm}{Theorem}
 \newtheorem{definition}{Definition}
 \newtheorem{remark}{Remark}
 
@@ -117,7 +118,7 @@ $\blu{c}$ & $\in$ & $\mathit{Chars}$ & (characters) \\
 $\blu{s},\blu{t}$ & $\in$ & $\mathit{Strings}$ & (where $\mathit{Strings} = \mathit{Chars}^{\star}$) \\~\\
  & & \\
 $\blu{j},\blu{k}$ (index) & ::=  & $\blu{s}$ & (string literal) \\
-                          & $\mid$ & $\blu{j}~\blu{k}$ & (application) \\
+                          & $\mid$ & $\blu{App_{[a : q],p}(j,k)}$ & (index application) \\
                           & $\mid$ & $\blu{a}$ & (index variable) \\~\\
 $\blu{C}$ (string classifiers) & ::= & $\blu{s}$ & (string singleton) \\
                          & $\mid$ & $\blu{str}$ & (all strings) \\~\\
@@ -131,15 +132,15 @@ $\kappa,\rho$ (kind) & $::=$ & $\ast$ & (kind of proper types) \\
 $\tau,\sigma$ (type) & $::=$ & $\{[\blu{a : C}] : \tau \}$ & (dictionary type) \\ 
        & $\mid$ & $\{ \blu{s}_i : \tau_i^{~i \in 1..n} \}$ & (record type) \\
        & $\mid$ & $\langle \blu{C} \rangle$ & (string type) \\
-       & $\mid$ & $\lambda \blu{a : q} . \tau$ & (index-over-type abstraction) \\
-       & $\mid$ & $\lambda x : \kappa. \tau$ & (type-over-type abstraction) \\
+       & $\mid$ & $\lambda \blu{a : q} . \tau$ & (index-to-type abstraction) \\
+       & $\mid$ & $\lambda x : \kappa. \tau$ & (type-to-type abstraction) \\
        & $\mid$ & $\bigvee \tau$ & (colimit) \\
        & $\mid$ & $\tau~\sigma$ & (type application) \\
-       & $\mid$ & $\tau~[~\blu{j}~]$ & (index application)
+       & $\mid$ & $\tau~[~\blu{j}~]$ & (index-to-type application)
 \end{tabular}
 
 \begin{tabular}{llll}
-$\blu{\Upsilon}$ (pre-index-context) & $::=$  & $\blu{\Upsilon,a : q}$ & (binding extension) \\
+$\blu{\Upsilon}, \blu{\Psi}$ (pre-index-context) & $::=$  & $\blu{\Upsilon,a : q}$ & (binding extension) \\
                                      & $\mid$ & $\blu{\diamond}$ & (empty context) \\ ~\\
 $\Gamma$ (kind context) & $::=$ & $\Gamma,x : \kappa$ & (binding extension) \\
                         & $\mid$ & $\diamond$ & (empty context) 
@@ -157,7 +158,7 @@ $\Gamma$ (kind context) & $::=$ & $\Gamma,x : \kappa$ & (binding extension) \\
 \and
 \inferrule
   {\blu{\Upsilon \vdash j : (a : q) \to r} \\ \blu{\Upsilon \vdash k : q}}
-  {\blu{\Upsilon \vdash j~k : r[k/a]}}
+  {\blu{\Upsilon \vdash App_{[a : q],r}(j,k) : r[k/a]}}
 
 \and
 \inferrule
@@ -229,13 +230,30 @@ $$i_{p_1 \leq p_2} : X\{ f \}_{p_1} \to X \{ f \}_{p_2} \defeq i_{f(p_1) \leq f(
 
 For $X \in \mathit{St}(Q)$ a term-level semantic substution operator $- \{ f \} : \mathit{In}(Q,X) \to \mathit{In}(P, X \{ f \})$.
 
+\subsubsection*{Comprehensions}
+
 Let $P$ be a semantic context and $X$ a semantic sort in context $P$. The comprehension $P . X$ is the poset of pairs $(p,x)$ with $p \in P$ and $x \in X_p$ such that 
 $$(p_1,x_1) \leq_{P.X} (p_2,x_2) \defequiv (p_1 \leq p_2) \wedge (i(x_1) \leq x_2)$$
-We have a monotone function $p(X) : P . X \to P$ defined as 
-$$p(X)(p,x) \defeq p$$
-and also a semantic index term $v(X) \in \mathit{In}(P.X, X \{ p(X) \})$ defined as
-$$v(X)_{(p,x)} \defeq x$$
+We have a monotone function $\frak p(X) : P . X \to P$ defined as 
+$$\frak p(X)(p,x) \defeq p$$
+and also a semantic index term $\frak v_X \in \mathit{In}(P.X, X \{ \frak p(X) \})$ defined as
+$$\fm{\frak v_X}{ (p,x) } \defeq x$$
+\begin{lemma}
+Let $f : P \to Q$ be a monotone function, $X \in \mathit{St}(Q)$, and $M \in \mathit{In}(P, X \{ f \})$. Then there exists a unique morphism $\langle f, M \rangle_X : P \to Q.X$ satisfying $\frak p(X) \circ \langle f, M \rangle_X = f$ and $\frak v_{X}\{ \langle f, M \rangle_X \} = M$.  
+\end{lemma}
 
+\begin{proof}
+The morphism is
+$$p \overset{\langle f, M \rangle_X}{\mapsto} (f(p), M_{p})$$
+Clearly we have $\frak p(X) \circ \langle f, M \rangle_X = f$ since
+$$p \overset{\langle f, M \rangle_X}{\mapsto} (f(p), M_{p}) \overset{\frak p(X)}{\mapsto} f(p)$$
+Also, we have $\frak v_X \{ \langle f, M \rangle_X \} = M$ since
+$$\frak v_X \{ \langle f, M \rangle_X \}_p = (\frak v_X)_{\langle f , M \rangle_X(p)} = (\frak v_X)_{(f(p), M_p)} = M_p$$
+Also, $\langle f, M \rangle_X$ is monotone since if $p \leq p'$ we have
+$$\langle f, M \rangle_X (p) = (f(p), M_p) \leq (f(p'), M_{p'}) = \langle f, M \rangle_X (p')$$
+(Reminder: Since $M \in X \{ f \}$ we have $M_p \in X_{f(p)}$.)\\~\\
+TODO: prove uniqueness
+\end{proof}
  
 \subsection*{$\Pi$-types}
 
@@ -243,23 +261,28 @@ To avoid naming conflicts, we restate the classical definition of semantic $\Pi$
 
 \begin{definition}
 A CwF supports semantic \emph{$\Pi$-sorts} if for any two sorts $X \in \mathit{St}(P)$ and $Y \in \mathit{St}(P . X)$ there is a sort $\Pi(X,Y) \in \mathit{St}(P)$, and for each $N \in \mathit{In}(P, \Pi(X,Y))$ and $N \in \mathit{In}(P,X)$ there exists a morphism
-$$\mathit{App}_{X, Y} : P.X.\Pi(X,Y)^+$$
+$$ \mathit{App}_{X, Y} : P.X.\Pi(X,Y)^+ \to P.X.Y $$
 such that
 $$p(X) \circ \mathit{App}_{X,Y} = p(\Pi(X,Y))^+$$
 and for every semantic term $M \in \mathit{In}(P,X)$
 $$\mathit{App}_{P,X} \circ \overline{M \{ p(X) \}} = \overline{M}$$
 and, finally, for every morphism $f : B \to P$
-$$\mathit{App}_{X,Y} \circ q(q(f,X), \Pi(X,Y) \{ q(f, X) \}) = q(q(f,X), Y) \circ \mathit{App}_{X \{ f \}, Y \{ q(f, X) \} }$$
+$$\mathit{App}_{X,Y} \circ \frak q(\frak q(f,X), \Pi(X,Y) \{ \frak q(f, X) \}) = \frak q(\frak q(f,X), Y) \circ \mathit{App}_{X \{ f \}, Y \{ \frak q(f, X) \} }$$
 \end{definition}
+
+\begin{thm}
+Our CwF supports semantic $\Pi$-sorts.
+\end{thm}
+
+\begin{proof}
 
 Given $X \in \mathit{St}(P)$ and $Y \in \mathit{St}(P . X)$ we define the semantic sort $\Pi(X,Y) \in \mathit{St}(P)$ as 
 $$p \in P \mapsto \fm{Y_{(p,x)}}{x \in X_p}$$
 where above, the right-hand-side is a poset-indexed family of posets considered as a poset. Indeed, given $x \leq x' \in X_p$ we have $(p, i(x)) = (p,x) \leq (p,x')$ and hence a monotone injection $i : Y_{(p,x)} \to Y_{(p,x')}$.
 Furthermore, for $p \leq p' \in P$ we choose the monotone injection $i : \fm{Y_{(p,x)}}{x \in X_p} \to \fm{Y_{(p',x')}}{x' \in X_{p'}}$ defined as 
 $$(x \in X_p, y \in Y_{(p,x)}) \mapsto (i_{p \leq p'}(x) \in X_{p'}, i_{(p,x) \leq (p',i(x))}(y) \in Y_{(p',i(x))})$$
-%\begin{lemma}
-%Let $\fm{Q_p}{p \in P} \in \mathit{St}(P)$ and... 
-%\end{lemma}
+
+\end{proof}
 
 \subsection*{Examples}
 
@@ -284,11 +307,92 @@ is then interpreted as
 \begin{itemize}
 \item $\sem{\blu{\diamond}} \defeq \top$
 \item $\sem{\blu{\Upsilon,a:q}} \defeq \sem{\blu{\Upsilon}}.\sem{\blu{\Upsilon};\blu{q}}$ if $x$ not in $\blu{\Upsilon}$, undefined otherwise.
-\item $\sem{\blu{\Upsilon}; \blu{(j : q) \Rightarrow p}} \defeq \Pi(\sem{\blu{\Upsilon};\blu{q}},\sem{\blu{\Upsilon,a:q};\blu{p}})$
+\item $\sem{\blu{\Upsilon}; \blu{(j : q) \Rightarrow r}} \defeq \Pi(\sem{\blu{\Upsilon};\blu{q}},\sem{\blu{\Upsilon,a:q};\blu{r}})$
 \item $\sem{\blu{\Upsilon}; \blu{\mathbf{prf}~j}} \defeq (~[ \sem{\blu{\Upsilon}; \blu{j}}_\upsilon = \mathit{known} ]~)_{\upsilon \in \sem{\blu{\Upsilon}}}\\ ~~~~~~~~~~~~~~~~~~~~(-)_{\upsilon \leq \upsilon'} \text{is the only possible choice}$
 \item $\sem{\blu{\Upsilon}; \blu{prop}} \defeq ( \{ \mathit{known}, \mathit{unknown} \} )_{\upsilon \in \sem{\blu{\Upsilon}}}  \\ ~~~~~~~~~~~~~~~~~~~~~(-)_{\upsilon \leq \upsilon'} \text{is the identity function}$
 \item $\sem{\blu{\Upsilon}; \blu{str}} \defeq (\text{the set of strings, ordered discretely})_{\upsilon \in \sem{\blu{\Upsilon}}} \\ ~~~~~~~~~~~~~~~~~~(-)_{\upsilon \leq \upsilon'} \text{is the identity function}$
-\item $\sem{\blu{\Upsilon}; \blu{App_{[a:q],p}(i,j)}} \defeq \mathit{App}_{\sem{\blu{\Upsilon;q}},\sem{\blu{\Upsilon,a:q;p}}}()$ \\ $~~~~~~~~~~~~~~~~~~(-)_{\upsilon \leq \upsilon'} \text{is the identity function}$
+\item $\sem{\blu{\Upsilon}; \blu{App_{[a:q],r}(i,j)}} \defeq \mathit{App}_{\sem{\blu{\Upsilon;q}},\sem{\blu{\Upsilon,a:q;r}}} \circ \langle \overline{\sem{\blu{\Upsilon ; i}}}, \sem{\blu{\Upsilon ; j}}^+ \rangle_{\sem{\blu{\Upsilon ; \blu{(a : q) \to r}}}^+}$
+\item $\sem{\blu{\Upsilon,a \! : \! q}~;~\blu{a}} \defeq \frak{v}_{\sem{\blu{\Upsilon,a:q}}}$
+\item $\sem{\blu{\Upsilon};\blu{s}} \defeq \fm{s}{\upsilon \in \sem{\blu{\Upsilon}}}$
 \end{itemize}
+
+\subsection*{Soundness}
+
+For $f : P \to Q$ and $X \in \mathit{St}(Q)$, a context morphism $\frak q(f,X) : P.X \{ f \} \to Q . X$ called the weakening of $f$ by $X$ is defined by 
+$$\frak{q}(f,X) = \langle f \circ \frak{p}(X \{ f \}), \frak {v}_{\sigma \{ f \}} \rangle_{X}$$
+
+For pre-contexts $\blu{\Upsilon},\blu{\Psi}$ and pre-sorts $\blu{q},\blu{r}$ we define the expression 
+$$\mbf{P}(\blu{\Upsilon} ; \blu{q} ; \blu{\diamond}) \defeq \frak {p}(\sem{\blu{\Upsilon};\blu{q}})$$
+$$\mbf{P}(\blu{\Upsilon};\blu{q};\blu{\Psi},\blu{a \! : \! r}) \defeq \frak q (\mbf{P}(\blu{\Upsilon};\blu{q};\blu{\Psi}),\sem{\blu{\Upsilon},\blu{\Psi};\blu{r}})$$
+
+The idea is that $\mbf{P}(\blu{\Upsilon} ; \blu{q} ; \blu{\Psi})$ is a morphism from $\sem{\blu{\Upsilon}, \blu{a : q}, \blu{\Psi}}$ to $\sem{\blu{\Upsilon},\blu{\Psi}}$ projecting the $\blu{q}$-part. \\
+
+Now let $\blu{\Upsilon},\blu{\Psi},\blu{q}$ be as before and $\blu{i}$ a pre-index. We define
+
+$$\mbf{T}(\blu{\Upsilon};\blu{q};\blu{\blu{\diamond}};\blu{i}) \defeq \overline{\sem{\blu{\Upsilon;i}}}$$
+$$\mbf{T}(\blu{\Upsilon};\blu{q};\blu{\Psi},\blu{a \! : \! r};\blu{i}) \defeq \frak q (\mbf{T}(\blu{\Upsilon};\blu{q};\blu{\Psi};\blu{i}), \sem{\blu{\Upsilon},\blu{b : q}, \blu{\Psi}; \blu{r}})~~~~~\text{b fresh}$$
+
+The idea here is that $\mbf{T}(\blu{\Upsilon} ; \blu{q} ; \blu{\Psi} ; \blu{i})$ is a morphism from $\sem{\blu{\Upsilon},\blu{\Psi}[\blu{i}/\blu{b}]}$ to $\sem{\blu{\Upsilon}, \blu{b} : \blu{q}, \blu{\Psi}}$ yielding $\sem{\blu{\Upsilon} ; \blu{i}}$ at the $\blu{b \! : \! \blu{q}}$ position and variables otherwise.\\~\\
+The above ideas must be proven simultaneously in the form of weakening and substitution lemmas.
+
+For possibly undefined expressions, $s \simeq t$ means that if either side is defined then so is the other and both agree. 
+
+\begin{lemma}
+(Weakening) Let $\blu{\Upsilon},\blu{\Psi}$ be pre-contexts, $\blu{p},\blu{q}$ pre-sorts, $\blu{i}$ a pre-index, and $\blu{b}$ a fresh variable. Let $\blu{A} \in \{ \blu{p}, \blu{i} \}$. The expression $\mbf{P}(\blu{\Upsilon} ; \blu{p} ; \blu{\Psi})$ is defined iff $\sem{\blu{\Upsilon}, \blu{p \! : \! q}, \blu{\Psi}}$ and $\sem{\blu{\Upsilon}, \blu{\Psi}}$ are defined and in this case is a morphism from the former to the latter. If $\sem{\blu{\Upsilon},\blu{\Psi} ; \blu{A}}$ is defined then 
+$$\sem{\blu{\Upsilon}, \blu{b \! : \! p}, \blu{\Psi} ; \blu{A}} \simeq \sem{\blu{\Upsilon} , \blu{\Psi} ; \blu{A}} \{ \mbf{P}(\blu{\Upsilon}; \blu{p} ; \blu{\Psi}) \}$$
+\end{lemma}
+
+\begin{lemma}
+(Substitution) Let $\blu{\Upsilon},\blu{\Psi}$ be pre-contexts, $\blu{p},\blu{q}$ pre-sorts, $\blu{i}, \blu{j}$ pre-indices, and $\blu{b}$ a fresh variable. Let $\blu{A} \in \{ \blu{p}, \blu{i} \}$ and suppose that $\sem{\blu{\Upsilon} ; \blu{i}}$ is defined. 
+
+The expression $\mbf{T}(\blu{\Upsilon};\blu{p};\blu{\Psi};\blu{i})$ is defined iff $\sem{\blu{\Upsilon}, \blu{\Psi}[\blu{i}/\blu{b}]}$ and $\sem{\blu{\Upsilon} , \blu{b \! : \! p}, \blu{\Psi}}$ are both defined and in this case is a morphism from the former to the latter. If $\sem{\blu{\Upsilon},\blu{b \! : \! p},\blu{\Psi} ; \blu{A}}$ is defined then 
+$$\sem{\blu{\Upsilon},\blu{\Psi}[\blu{i}/\blu{b}]; \blu{A}[\blu{i}/\blu{b}]} \simeq \sem{\blu{\Upsilon},\blu{b} \! : \! \blu{p},\blu{\Psi};\blu{A}} \{ \mbf{T}(\blu{\Upsilon} ; \blu{p} ; \blu{\Psi} ; \blu{i}) \}$$
+\end{lemma}
+
+\begin{proof}
+We will prove this by induction, but we must first clarify how the induction is structured. As hinted at by Hoffman, induction is on the pointwise order on the level of the tuple of assumed objects $(\blu{\Upsilon},\blu{\Psi},\blu{p},\blu{q},\blu{i})$. We prove all claims using a fixed set of objects $\blu{\Upsilon},\blu{\Psi},\blu{p},\blu{q},\blu{i}$ and the induction principle.
+
+We first prove that $\mbf{P}(\blu{\Upsilon};\blu{p};\blu{\Psi})$ is defined iff $\sem{\blu{\Upsilon}, \blu{b \! : \! p}, \blu{\Psi}}$ and $\sem{\blu{\Upsilon}, \blu{\Psi}}$ are defined.\\~\\
+By cases on $\blu{\Psi}$.
+\begin{description}
+\item[Case $\blu{\Psi} = \blu{\diamond}$]:~\\
+Expanding, we have\\~\\
+$\mbf{P}(\blu{\Upsilon};\blu{p};\blu{\diamond}) = \frak p(\sem{\blu{\Upsilon};\blu{p}})$\\~\\
+The projection $\frak p(\sem{\blu{\Upsilon};\blu{p}})$ is defined iff $\sem{\blu{\Upsilon};\blu{p}} \isdef$ and $\sem{\blu{\Upsilon}} \isdef$.
+\item[Case $\blu{\Psi} = \blu{\Psi}',\blu{a \! : \! q}$]:~\\
+
+Expanding, we have\\~\\
+$\mbf{P}(\blu{\Upsilon} ; \blu{p} ; \blu{\Psi}', \blu{a \! : \! q})$ \\~\\
+$= \frak q(\mbf{P}(\blu{\Upsilon};\blu{p};\blu{\Psi}'),\sem{\blu{\Upsilon},\blu{\Psi}';\blu{q}})$ \\~\\
+$= \langle \mbf{P}(\blu{\Upsilon};\blu{p};\blu{\Psi}')~\circ~\frak p(\sem{\blu{\Upsilon},\blu{\Psi}';\blu{q}} \{ \mbf{P}(\blu{\Upsilon};\blu{p};\blu{\Psi}') \}), \frak v_{\sem{\blu{\Upsilon},\blu{\Psi}';\blu{q}} \{ \mbf{P}(\blu{\Upsilon};\blu{p};\blu{\Psi}') \}} \rangle_{\sem{\blu{\Upsilon},\blu{\Psi}';\blu{q}}} $\\~\\
+$(\Rightarrow)$\\~\\
+Suppose $\mbf{P}(\blu{\Upsilon};\blu{p};\blu{\Psi}',\blu{a \! : \! q}) \isdef$.
+
+Then by the above expansion, $\mbf{P}(\blu{\Upsilon};\blu{p};\blu{\Psi}') \isdef$ and $\sem{\blu{\Upsilon},\blu{\Psi}';\blu{q}} \isdef$.\\~\\
+By the IH we have $\sem{\blu{\Upsilon},\blu{z \! : \! p},\blu{\Psi}'} \isdef$ and $\sem{\blu{\Upsilon},\blu{\Psi}'} \isdef$.\\~\\
+Since $\sem{\blu{\Upsilon},\blu{\Psi}';\blu{q}} \isdef$ we have $$\sem{\blu{\Upsilon},\blu{z \! : \! p},\blu{\Psi}';\blu{q}} \simeq \sem{\blu{\Upsilon},\blu{\Psi}';\blu{q}} \{ \mbf{P}(\blu{\Upsilon};\blu{p};\blu{\Psi}') \}$$
+Since $\sem{\blu{\Upsilon},\blu{z \! : \! p},\blu{\Psi}',\blu{a \! : \! q}} = \sem{\blu{\Upsilon},\blu{z \! : \! p},\blu{\Psi}'}.\sem{\blu{\Upsilon},\blu{z \! : \! p},\blu{\Psi}';\blu{q}}$, but we already know $\sem{\blu{\Upsilon},\blu{z \! : \! p},\blu{\Psi}'} \isdef$, we have $$\sem{\blu{\Upsilon},\blu{z \! : \! p},\blu{\Psi}',\blu{a \! : \! q}} \isdef \Leftrightarrow \sem{\blu{\Upsilon},\blu{z \! : \! p},\blu{\Psi}';\blu{q}} \isdef \Leftrightarrow \sem{\blu{\Upsilon},\blu{\Psi}';\blu{q}} \isdef \wedge \mbf{P}(\blu{\Upsilon};\blu{p};\blu{\Psi}') \isdef$$
+We already know $\sem{\blu{\Upsilon},\blu{\Psi}'; \blu{q}} \isdef$ and $\mbf{P}(\blu{\Upsilon};\blu{p};\blu{\Psi}')$, so we conclude $$\sem{\blu{\Upsilon},\blu{z \! : \! p},\blu{\Psi}',\blu{a \! : \! q}} \isdef$$
+Finally, since $\sem{\blu{\Upsilon},\blu{\Psi}'} \isdef$, $\sem{\blu{\Upsilon},\blu{\Psi}';\blu{q}} \isdef$, and $\sem{\blu{\Upsilon},\blu{\Psi}',\blu{a \! : \! q}} \defeq \sem{\blu{\Upsilon},\blu{\Psi}'} . \sem{\blu{\Upsilon},\blu{\Psi}';\blu{q}}$ we have $\sem{\blu{\Upsilon},\blu{\Psi}',\blu{a \! : \! q}} \isdef$.\\~\\
+$(\Leftarrow)$\\~\\
+Suppose $\sem{\blu{\Upsilon},\blu{\Psi}',\blu{a \! : \! q}} \isdef$ and $\sem{\blu{\Upsilon},\blu{z \! : \! p},\blu{\Psi}',\blu{a \! : \! q}} \isdef$.\\~\\
+From $\sem{\blu{\Upsilon},\blu{\Psi}',\blu{a \! : \! q}} \isdef$ we conclude $\sem{\blu{\Upsilon},\blu{\Psi}'} \isdef$ and $\sem{\blu{\Upsilon},\blu{\Psi}';\blu{q}} \isdef$. From $\sem{\blu{\Upsilon},\blu{z \! : \! p},\blu{\Psi}',\blu{a \! : \! q}} \isdef$ we conclude $\sem{\blu{\Upsilon},\blu{z \! : \! p},\blu{\Psi}'} \isdef$ and $\sem{\blu{\Upsilon},\blu{z \! : \! p},\blu{\Psi}';\blu{q}} \isdef$. Since $\sem{\blu{\Upsilon},\blu{\Psi}'} \isdef$ and $\sem{\blu{\Upsilon},\blu{p},\blu{\Psi}'} \isdef$, we can apply the IH to obtain $\mbf{P}(\blu{\Upsilon};\blu{p};\blu{\Psi}') \isdef$.
+
+Since $\mbf{P}(\blu{\Upsilon};\blu{p};\blu{\Psi}') \isdef$ and $\sem{\blu{\Upsilon},\blu{\Psi}';\blu{q}} \isdef$, from the expansion of $\mbf{P}(\blu{\Upsilon};\blu{p};\blu{\Psi}',\blu{a \! : \! q})$ we see that $\mbf{P}(\blu{\Upsilon};\blu{p};\blu{\Psi}',\blu{a \! : \! q}) \isdef$.
+\end{description}
+
+We next prove that $\mbf{T}(\blu{\Upsilon};\blu{p};\blu{\Psi};\blu{i}) \isdef$ iff $\sem{\blu{\Upsilon}, \blu{\Psi}[\blu{i/b}]} \isdef$ and $\sem{\blu{\Upsilon}, \blu{z \! : \! p}, \blu{\Psi}} \isdef$. We do by case splitting on $\blu{\Psi}$.
+\begin{description}
+\item[Case $\blu{\Psi} = \blu{\Psi}',\blu{a \! : \! q}$]~\\
+Expanding $\mbf{T}(\blu{\Upsilon};\blu{p};\blu{\Psi}',\blu{a \! : \! q};\blu{i})$ gives
+$\mbf{T}(\blu{\Upsilon};\blu{p};\blu{\Psi}',\blu{a \! : \! q};\blu{i})$\\~\\
+$= \frak q(\mbf{T}(\blu{\Upsilon};\blu{p};\blu{\Psi}';\blu{i}), \sem{\blu{\Upsilon},\blu{z \! : \! p},\blu{\Psi}';\blu{q}})$\\~\\
+$= \langle \mbf{T}(\blu{\Upsilon};\blu{p};\blu{\Psi}';\blu{i}) \circ \frak p(\sem{\blu{\Upsilon},\blu{z \! : \! p},\blu{\Psi}';\blu{q}} \{ \mbf{T}(\blu{\Upsilon};\blu{p};\blu{\Psi}';\blu{i}) \}), \frak v_{\sem{\blu{\Upsilon},\blu{z \! : \! p},\blu{\Psi}';\blu{q}} \{ \mbf{T}(\blu{\Upsilon};\blu{p};\blu{\Psi}';\blu{i}) \}} \rangle$\\~\\
+$(\Rightarrow)$\\~\\
+Suppose that $\mbf{T}(\blu{\Upsilon};\blu{p};\blu{\Psi}',\blu{a \! : \! q} ; \blu{i})$ is defined. We can see from the expansion above that this implies $\mbf{T}(\blu{\Upsilon};\blu{p};\blu{\Psi}';\blu{i}) \isdef$, $\sem{\blu{\Upsilon},\blu{z \! : \! p},\blu{\Psi}'} \isdef$, and $\sem{\blu{\Upsilon},\blu{z \! : \! p},\blu{\Psi}';\blu{q}} \isdef$. \\~\\
+We still need to prove that $\sem{\blu{\Upsilon},\blu{\Psi}'[\blu{i/b}],\blu{a \! : \! q}[\blu{i/b}]} \isdef$. Since $\blu{\Psi}'$ is smaller than $\blu{\Psi}$, we can applying the IH to $\mbf{T}(\blu{\Upsilon};\blu{p};\blu{\Psi}';\blu{i})$ gives $\sem{\blu{\Upsilon},\blu{\Psi}'[\blu{i/b}]} \isdef$. Applying the IH to $\sem{\blu{\Upsilon},\blu{z \! : \! p},\blu{\Psi}';\blu{q}} \isdef$ gives $\sem{\blu{\Upsilon},\blu{\Psi}'[\blu{i/b}];\blu{q}[\blu{i/b}]} \isdef$. Since $$\sem{\blu{\Upsilon},\blu{\Psi}'[\blu{i/b}],\blu{a \! : \! q}[\blu{i/b}]} = \sem{\blu{\Upsilon},\blu{\Psi}'[\blu{i/b}]}.\sem{\blu{\Upsilon},\blu{\Psi}'[\blu{i/b}];\blu{q}[\blu{i/b}]}$$ we have $\sem{\blu{\Upsilon},\blu{\Psi}'[\blu{i/b}], \blu{a \! : \! q}[\blu{i/b}]} \isdef$.
+\end{description}
+
+\end{proof}
 
 \end{document}
