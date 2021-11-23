@@ -4,15 +4,27 @@
 
 \usepackage{listings}
 \usepackage{xcolor}
+\usepackage{mathpartir}
 
 \lstset{
   basicstyle=\small\ttfamily,
   columns=fullflexible,
   keepspaces=true,
+  numbers=left
 }
 
 \newcommand{\blu}[1]{\textbf{\color{blue}{#1}}}
+\newcommand{\blum}[1]{\mathbf{\color{blue}{#1}}}
 \newcommand{\defeq}{\overset{\mathit{def}}{=}}
+\newcommand{\sem}[1]{\llbracket #1 \rrbracket}
+
+\newcommand{\fm}[2]{
+\left(
+\tiny
+#1
+\normalsize
+\right)_{#2}
+}
 
 \title{Indexed Kind Checking for Hierarchical Database Schemas}
 \author{Kevin Clancy}
@@ -77,7 +89,6 @@ Since we are working with two distinct concepts which are both typically referre
 \begin{figure}
 
 \begin{lstlisting}[escapeinside=`']
-
 `$\bigvee \!\!$' `$\lambda \!\!$' (`\blu{ItemId : str -> prop}').
 `$\bigvee \!\!$' `$\lambda \!\!$' (`\blu{CustId : str -> prop}').
 `$\bigvee \!\!$' `$\lambda \!\!$' (`\blu{PurchaseId : str -> prop}').
@@ -117,29 +128,36 @@ The purpose of a schema is to identify a set of database instances, so before ex
 
 Figure \ref{fig:ecommerce} shows a schema fragment for an e-commerce database. It begins by declaring five predicates: first four unary predicates for item ids, customer ids, purchase ids, and card types. Finally, it declares a ternary predicate for card ids. The predicate variables and their classifiers have been bolded and colored blue to indicate that they are part of the \emph{index language}. This simple language defines conceptual entities such as predicates and relations, divorced from the physical details of where these entities are stored. The index langauge is layered beneath our schema language, i.e. schemas may depend on indices but not vice versa. 
 
-Lines ??-??, use the record type constructor to define a subschema denoting the set of instances representing credit cards; these are the instances which map the list [``addr''] to any string and the list [``cardType''] to any string satisfying the \lstinline[mathescape]{$\blu{CardType}$} predicate. 
+Lines 7-10, use the record type constructor to define a subschema representing credit cards. It denotes the set of instances which map the list [``addr''] to any string and the list [``cardType''] to any string satisfying the \lstinline[mathescape]{$\blu{CardType}$} predicate. 
 
 %The field \emph{cardId} is an instance of a foreign key. In this schema language, foreign keys don't refer directly to locations in the database; instead, they refer to index-level unary predicates. By separating conceptual sets (index-level predicates) from their physical  
 
-Lines ??-?? define an index-to-type operator called \emph{Purchase}, which maps a string \lstinline[mathescape]{$\blu{cust}$} and a proof that \lstinline[mathescape]{$\blu{cust}$} satisfies the \lstinline[mathescape]{$\blu{CustId}$} predicate to a type denoting the set of instances representing purchases made by customer \lstinline[mathescape]{$\blu{cust}$}. In the application \lstinline[mathescape]{$\blu{CardId cust card}$}, the second argument to CardId is missing. This is because it is a proof; since any two proofs of the same proposition are interchangeable, we apply proofs implicitly to reduce visual clutter. 
+Lines 12-15 define an index-to-type operator called \emph{Purchase}, which maps a string \lstinline[mathescape]{$\blu{cust}$} and a proof that \lstinline[mathescape]{$\blu{cust}$} satisfies the \lstinline[mathescape]{$\blu{CustId}$} predicate to a type denoting representing purchases made by customer \lstinline[mathescape]{$\blu{cust}$}. In the application \lstinline[mathescape]{$\blu{CardId cust card}$}, the second argument to  \lstinline[mathescape]{CardId} is missing. This is because it is a proof; since any two proofs of the same proposition are interchangeable, we apply proofs implicitly to reduce visual clutter. 
 
-On lines ??-?? define a index-to-type operator \lstinline{Customer} mapping a string \lstinline[mathescape]{$\blu{cust}$} and a proof that \lstinline[mathescape]{$\blu{CustId cust}$} holds to a type denoting the set of instances representing customers with id \lstinline[mathescape]{$\blu{cust}$}. Such instances map all lists [``purchases'', \lstinline[mathescape]{$\blu{p}$}] such that \lstinline[mathescape]{$\blu{purchaseId p}$} holds to instances of type \lstinline[mathescape]{Purchase $\blu{cust}$}. They also map all lists [``cards'', \lstinline[mathescape]{$\blu{card}$}] such that \lstinline[mathescape]{$\blu{CardId cust card}$} holds to instances of type \lstinline{Card}.
+On lines 17-24 define a index-to-type operator \lstinline{Customer} mapping a string \lstinline[mathescape]{$\blu{cust}$} and a proof that \lstinline[mathescape]{$\blu{CustId cust}$} holds to a type representing customers with id \lstinline[mathescape]{$\blu{cust}$}. It denotes the set of instances which
+\begin{itemize}
+\item Map all lists [``purchases'', \lstinline[mathescape]{$\blu{p}$}] such that \lstinline[mathescape]{$\blu{purchaseId p}$} holds to instances of type \lstinline[mathescape]{Purchase $\blu{cust}$}. 
+\item Map all lists [``cards'', \lstinline[mathescape]{$\blu{card}$}] such that \lstinline[mathescape]{$\blu{CardId cust card}$} holds to instances of type \lstinline{Card}.
+\end{itemize}
 
-Finally, lines ??-?? define the schema using a record type. An instance satisfies this schema whenever: 
-\begin{enumerate}
-\item It maps [``cardTypes''] to a subinstance that stores the set of all card types by mapping each \lstinline[mathescape]{Purchase $\blu{x}$} satisfying the \lstinline[mathescape]{$\blu{CardType}$} predicate to the string \lstinline[mathescape]{"*"}
-\item It maps [``customers''] to a dictionary that maps every \lstinline[mathescape]{$\blu{x}$} satisfying the \lstinline[mathescape]{$\blu{CustId}$} predicate to a subschema of type \lstinline[mathescape]{Customer $\blu{x}$}. 
-\end{enumerate}
+Finally, lines 26-29 define the schema using a record type. It denotes the set of instances which: 
+\begin{itemize}
+\item Map [``cardTypes''] to a subinstance that stores the set of all card types by mapping each \lstinline[mathescape]{Purchase $\blu{x}$} satisfying the \lstinline[mathescape]{$\blu{CardType}$} predicate to the string \lstinline[mathescape]{"*"}
+\item Map [``customers''] to a dictionary that maps every \lstinline[mathescape]{$\blu{x}$} satisfying the \lstinline[mathescape]{$\blu{CustId}$} predicate to a subschema of type \lstinline[mathescape]{Customer $\blu{x}$}. 
+\end{itemize}
 
 %The code \lstinline[mathescape]{$\lambda (\blu{ItemId : str -> prop})/$} on the first line is an abstraction mapping indices of sort \lstinline[mathescape]{$\blu{str -> prop}$} to the type whose syntax occupies the remaining lines of the figure. A type denotes a set of database instances.
+
+\subsection*{Reconfigurations}
+
 
 \begin{figure} 
 
 \begin{small}
 \begin{lstlisting}[escapeinside=`']
-`$\bigvee \!\!$' (`\blu{ItemId : str -> prop}') =>
-`$\bigvee \!\!$' (`\blu{CustId : str -> prop}') =>
-`$\bigvee \!\!$' (`\blu{Purchased : \\ \hspace{1cm} (x : str) -> prf (CustId x) -> \\ \hspace{1cm} (y : str) -> prf (ItemId y) -> prop)}' =>
+`$\bigvee \!\!$' `$\lambda \!\!$' (`\blu{ItemId : str -> prop}').
+`$\bigvee \!\!$' `$\lambda \!\!$' (`\blu{CustId : str -> prop}').
+`$\bigvee \!\!$' `$\lambda \!\!$' (`\blu{Purchased : \\ \hspace{1cm} (x : str) -> prf (CustId x) -> \\ \hspace{1cm} (y : str) -> prf (ItemId y) -> prop}').
 
 { 
   custToItem : { 
@@ -160,6 +178,221 @@ Finally, lines ??-?? define the schema using a record type. An instance satisfie
 \label{fig:ecommerce-indices}
 \Description[Secondary indices]{Secondary indices in an e-commerce database}
 \end{figure}
+
+Figure \ref{fig:ecommerce-indices} shows a schema for a simple database with reconfigurations. An instance satisfies the schema if 
+\begin{itemize}
+\item For each customer/item pair \lstinline[mathescape]{$\blu{c}$}, \lstinline[mathescape]{$\blu{i}$} satisfying \lstinline[mathescape]{$\blu{Purchased c i}$}, it maps \lstinline[mathescape]{["custToItem", $\blu{c}$, $\blu{i}$]} to the string \lstinline[mathescape]{"*"} and \lstinline[mathescape]{["itemToCust", $\blu{i}$, $\blu{c}$]} to \lstinline[mathescape]{"*"}.
+\item It is not defined anywhere else.
+\end{itemize}
+
+Such an instance allows us to efficiently query both the set of all items purchased by a customer (via \lstinline[mathescape]{custToItem} and the set of all customers which purchased an item (via \lstinline[mathescape]{itemToCust}. Importantly, the two fields both refer to the same set of purchase entities via the index-level relation \lstinline[mathescape]{$\blu{Purchased}$}.
+
+\section{Syntax}
+
+\iffalse
+
+\begin{tabular}{llll}
+$\mathit{Chars}$ & $\doteq$ & the set of all characters \\
+$\mathit{TypeVars}$ & $\doteq$ & the set of all type variables \\
+$\mathit{IndexVars}$ & $\doteq$ & the set of all index variables \\
+$x,y,z$ & $\in$ & $\mathit{TypeVars}$ & ~ \\
+$\blu{a}, \blu{b}, \blu{P}$ & $\in$ & $\mathit{IndexVars}$ & ~ \\
+$\blu{c}$ & $\in$ & $\mathit{Chars}$ & (characters) \\
+$\blu{s},\blu{t}$ & $\in$ & $\mathit{Strings}$ & (where $\mathit{Strings} = \mathit{Chars}^{\star}$) \\~\\
+ & & \\
+$\blu{j},\blu{k}$ (index) & ::=  & $\blu{s}$ & (string literal) \\
+                          & $\mid$ & $\blu{App_{[a : q],p}(j,k)}$ & (index application) \\
+                          & $\mid$ & $\blu{a}$ & (index variable) \\~\\
+$\blu{C}$ (string classifiers) & ::= & $\blu{s}$ & (string singleton) \\
+                         & $\mid$ & $\blu{str}$ & (all strings) \\~\\
+$\blu{q},\blu{r}$ (sort) & ::= & $\blu{C}$ & (sort of strings satisfying $C$) \\
+                         & $\mid$ & $\blu{\textbf{prop}}$ & (proposition sort) \\
+                         & $\mid$ & $\blu{\textbf{prf}~\phi}$ & (proof sort) \\
+                         & $\mid$ & $\blu{(a : q) \Rightarrow r}$ & (dependent function sort) \\~\\
+$\kappa,\rho$ (kind) & $::=$ & $\ast$ & (kind of proper types) \\
+                     & $\mid$ & $\kappa \to \rho$ & (type-to-type operator)\\
+                     & $\mid$ & $\forall \blu{q}.~\kappa$ & (index-to-type operator) \\~\\
+$\tau,\sigma$ (type) & $::=$ & $\{[\blu{a : C}] : \tau \}$ & (dictionary type) \\ 
+       & $\mid$ & $\{ \blu{s}_i : \tau_i^{~i \in 1..n} \}$ & (record type) \\
+       & $\mid$ & $\langle \blu{C} \rangle$ & (string type) \\
+       & $\mid$ & $\lambda \blu{a : q} . \tau$ & (index-to-type abstraction) \\
+       & $\mid$ & $\lambda x : \kappa. \tau$ & (type-to-type abstraction) \\
+       & $\mid$ & $\bigvee \tau$ & (colimit) \\
+       & $\mid$ & $\tau~\sigma$ & (type application) \\
+       & $\mid$ & $\tau~[~\blu{j}~]$ & (index-to-type application)
+\end{tabular}
+
+\fi 
+
+\begin{figure}
+\begin{tabular}{llll}
+$\mathit{TypeVars}$ & $\defeq$ & the set of all type variables \\
+$\mathit{IndexVars}$ & $\defeq$ & the set of all index variables \\
+$x,y,z$ & $\in$ & $\mathit{TypeVars}$ & ~ \\
+$\blu{a}, \blu{b}, \blu{P}$ & $\in$ & $\mathit{IndexVars}$ & ~ \\
+$\blu{s},\blu{t}$ & $\in$ & $\mathit{Strings}$ & ~ \\
+\end{tabular}\\~\\~\\
+\begin{tabular}{llll}
+$\blu{j},\blu{k}$ (indices) & ::=  & $\blum{s}$ & (string literal) \\
+                          & $\mid$ & $\blum{App}_{\blum{[a : q],p}}\blum{(j,k)}$ & (index application) \\
+                          & $\mid$ & $\blu{a}$ & (index variable) \\
+                          & $\mid$ & $\blu{true}$ & (true proposition) \\
+~ & ~ & ~ & ~ \\
+$\blu{q},\blu{r}$ (sort) & ::= & $\blum{str}$ & (string sort) \\
+                         & $\mid$ & $\blum{prop}$ & (proposition sort) \\
+                         & $\mid$ & $\blum{prf~j}$ & (proof sort) \\
+                         & $\mid$ & $\blum{(a : q) \to r}$ & (function sort) \\
+~ & ~ & ~ & ~ \\
+$\kappa,\rho$ (kind) & $::=$ & $\ast$ & (proper type kind) \\
+                     & $\mid$ & $\kappa \to \rho$ & (type-to-type op)\\
+                     & $\mid$ & $\forall \blu{q}.~\kappa$ & (index-to-type op) \\
+~ & ~ & ~ & ~ \\
+$\tau,\sigma$ (type) & $::=$ & $\{[\blu{a : str}] : \tau \}$ & (dictionary type) \\ 
+       & $\mid$ & $\{ \blu{s}_i : \tau_i^{~i \in 1..n} \}$ & (record type) \\
+       & $\mid$ & $\{ \blu{a : str} \mid \blu{i} \}$ & (string refinement type) \\
+       & $\mid$ & $\lambda \blu{a : q} . \tau$ & (index-to-type abstr.) \\
+       & $\mid$ & $\lambda x : \kappa. \tau$ & (type-to-type abstr.) \\
+       & $\mid$ & $\bigvee \tau$ & (union) \\
+       & $\mid$ & $\tau~\sigma$ & (type app.) \\
+       & $\mid$ & $\tau~[~\blu{j}~]$ & (index-to-type app.) 
+\end{tabular}\\~\\~\\
+\begin{tabular}{llll}
+$\blum{\Omega}, \blum{\Psi}$ (pre-index-context) & $::=$  & $\blum{\Omega,a : q}$ & (extension) \\
+                                     & $\mid$ & $\blum{\diamond}$ & (empty) \\~\\
+$\Gamma$ (kind context) & $::=$ & $\Gamma,x : \kappa$ & (extension) \\
+                        & $\mid$ & $\diamond$ & (empty) 
+\end{tabular}
+\caption{Syntax}
+\label{fig:syntax}
+\Description[Syntax]{Syntax}
+\end{figure}
+
+There is some syntax
+
+\section{Static classification}
+
+\subsection{Sorting}
+
+\begin{figure}
+\begin{mathpar}
+\inferrule
+  {~}
+  {\blum{\Omega \vdash s : str}}
+\and
+\inferrule
+  {~}
+  {\blum{\Omega,a : q, \Omega' \vdash a : q}}
+\and
+\inferrule
+  {\blum{\Omega \vdash j : (a : q) \to r} \\ \blum{\Omega \vdash k : q}}
+  {\blum{\Omega \vdash App_{[a : q],r}(j,k) : r[k/a]}}
+\and
+\inferrule
+  {~}
+  {\blum{\Omega \vdash true : prop}}
+\and
+\inferrule
+  {~}
+  {\blum{\Omega \vdash str}}
+\and
+\inferrule
+  {\blum{\Omega \vdash q} \\ \blum{\Omega,a:q \vdash r}}
+  {\blum{\Omega \vdash (a : q) \Rightarrow r}}
+\and
+\inferrule
+  {\blum{\Omega \vdash j : prop}}
+  {\blum{\Omega \vdash prf~j}}
+\end{mathpar}
+\caption{Sorting and sort formation}
+\label{fig:sorting}
+\Description[Sorting and sort formation]{Sorting and sort formation rules}
+\end{figure}
+
+Here are some sorting and sort formation rules.
+
+\subsection{Kinding}
+
+Here are some kinding and kind formation rules.
+
+\begin{figure}
+\begin{mathpar}
+\inferrule
+  {\blum{\Omega,a : str} \mid \Gamma \vdash \tau : \ast}
+  {\blum{\Omega} \mid \Gamma \vdash \{ [\blum{a : str}] : \tau \} : \ast}
+\and
+\inferrule
+  {\blum{\Omega} \mid \Gamma \vdash \tau_i : \ast^{~i \in 1..n}}
+  {\blum{\Omega} \mid \Gamma \vdash \{ \blum{s}_i : \tau_i^{~i \in 1..n} \} : \ast}
+\and
+\inferrule
+  {\blum{\Omega,a:str \vdash i : prop}}
+  {\blum{\Omega} \mid \Gamma \vdash \{ \blum{a : str} \mid \blum{i} \} : \ast}
+\and
+\inferrule
+  {\blum{\Omega \vdash q} \\ \blum{\Omega,a : q} \mid \Gamma \vdash r : \kappa}
+  {\blum{\Omega} \mid \Gamma \vdash \lambda \blum{a : q} . r : \forall \blum{q} . \kappa}
+\and
+\inferrule
+  {\blum{\Omega} \vdash \kappa \\ \blum{\Omega} \mid \Gamma,x:\kappa \vdash \tau : \rho}
+  {\blum{\Omega} \mid \Gamma \vdash \lambda x : \kappa. \tau : \kappa \to \rho}
+\and
+\inferrule
+  {\blum{\Omega} \mid \Gamma \vdash \tau : \forall \blum{q}. \ast}
+  {\blum{\Omega} \mid \Gamma \vdash \bigvee \tau : \ast}
+\and
+\inferrule
+  {\blum{\Omega} \mid \Gamma \vdash \tau : \forall \blum{q}. \rho \\ \blum{\Omega \vdash j : q}}
+  {\blum{\Omega} \mid \Gamma \vdash \tau~[~\blum{j}~]: \rho}
+\and
+\inferrule
+  {\blum{\Omega} \mid \Gamma \vdash \tau : \kappa \to \rho \\ \blum{\Omega} \mid \Gamma \vdash \sigma : \kappa}
+  {\blum{\Omega} \mid \Gamma \vdash \tau~\sigma : \rho}
+\and
+\inferrule
+  {~}
+  {\blum{\Omega} \vdash \ast}
+\and
+\inferrule
+  {\blum{\Omega \vdash q} \\ \blum{\Omega,a:q} \vdash \kappa}
+  {\blum{\Omega} \vdash \forall \blu{q}. \kappa}
+\and
+\inferrule
+  {\blum{\Omega} \vdash \kappa \\ \blum{\Omega \vdash \rho}}
+  {\blum{\Omega} \vdash \kappa \to \rho}
+\end{mathpar}
+\caption{Kinding and kind formation}
+\label{fig:kinding}
+\Description[Kinding and kind formation]{Kinding and kind formation rules}
+\end{figure}
+
+\section{Denotational Semantics}
+
+\subsection{Index Language}
+
+The standard set-theoretic CwF interpretation of the calculus of constructions.
+
+\subsection{Type language}
+
+%\begin{figure}
+%\begin{tabular}{l}
+%$\sem{\{ [\blum{a : str}] : \tau \}}_\omega \gamma \defeq$ \\
+%\hspace{1em} $\{ f \in \mathit{Inst} \mid f |_s \in \sem{\tau}_{(\omega,s)} \gamma^+ \text{ if } \sem{\tau}_{(\omega,s)} \gamma^+ \text{ is non-empty }$ \\
+%\hspace{5.5em} $ \text{and } f |_s = \emptyset \text{ otherwise} \}$ \\~\\
+%hello
+%\end{tabular}
+%\end{figure}
+
+\begin{figure*}
+\begin{tabular}{l}
+$\sem{\{ [\blum{a : str}] : \tau \}}_\omega \gamma \defeq \{ f \in \mathit{Inst} \mid \forall s. f |_s \in \sem{\tau}_{(\omega,s)} \gamma^+ \text{ if } \sem{\tau}_{(\omega,s)} \gamma^+ \text{ is non-empty } \text{and } f |_s = \emptyset \text{ otherwise} \}$ \\~\\
+
+\end{tabular}
+\end{figure*}
+
+\pagebreak
+
+yo
+
 
 %\begin{figure}
 
