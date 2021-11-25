@@ -5,6 +5,10 @@
 \usepackage{listings}
 \usepackage{xcolor}
 \usepackage{mathpartir}
+\usepackage{tikz}
+\usepackage{quiver}
+
+\usetikzlibrary{cd}
 
 \lstset{
   basicstyle=\small\ttfamily,
@@ -17,7 +21,7 @@
 \newcommand{\blum}[1]{\mathbf{\color{blue}{#1}}}
 \newcommand{\defeq}{\overset{\mathit{def}}{=}}
 \newcommand{\sem}[1]{\llbracket #1 \rrbracket}
-
+\newcommand{\mbf}[1]{\mathbf{#1}}
 \newcommand{\fm}[2]{
 \left(
 \tiny
@@ -29,7 +33,7 @@
 \title{Indexed Kind Checking for Hierarchical Database Schemas}
 \author{Kevin Clancy}
 
-
+ 
 \begin{document}
 
 %\category{D.3.3}{Test 1}
@@ -329,8 +333,8 @@ Here are some kinding and kind formation rules.
   {\blum{\Omega} \mid \Gamma \vdash \{ \blum{a : str} \mid \blum{i} \} : \ast}
 \and
 \inferrule
-  {\blum{\Omega \vdash q} \\ \blum{\Omega,a : q} \mid \Gamma \vdash r : \kappa}
-  {\blum{\Omega} \mid \Gamma \vdash \lambda \blum{a : q} . r : \forall \blum{q} . \kappa}
+  {\blum{\Omega \vdash q} \\ \blum{\Omega,a : q} \mid \Gamma \vdash \tau : \kappa}
+  {\blum{\Omega} \mid \Gamma \vdash \lambda \blum{a : q} . \tau : \forall \blum{q} . \kappa}
 \and
 \inferrule
   {\blum{\Omega} \vdash \kappa \\ \blum{\Omega} \mid \Gamma,x:\kappa \vdash \tau : \rho}
@@ -357,7 +361,7 @@ Here are some kinding and kind formation rules.
   {\blum{\Omega} \vdash \forall \blu{q}. \kappa}
 \and
 \inferrule
-  {\blum{\Omega} \vdash \kappa \\ \blum{\Omega \vdash \rho}}
+  {\blum{\Omega} \vdash \kappa \\ \blum{\Omega} \vdash \rho}
   {\blum{\Omega} \vdash \kappa \to \rho}
 \end{mathpar}
 \caption{Kinding and kind formation}
@@ -369,7 +373,38 @@ Here are some kinding and kind formation rules.
 
 \subsection{Index Language}
 
-The standard set-theoretic CwF interpretation of the calculus of constructions.
+We interpret our index langauage using Dybjer's \emph{Categories-with-Families} (CwF) framework for semantically modeling dependently typed languages \cite{}. We first review the definition of CwF and then provide an interpretation of the index language with respect to a CwF. There is nothing novel about our index language, so both sections are standard. However, we rename some of the standard terminology to fit into the present setting, e.g., instead of types we have sorts.
+
+\subsection{Categories with families}
+
+A category-with-families consists of 
+\begin{itemize}
+\item A category $\mathbb C$ with a terminal object, called the \emph{category of contexts}. Objects of $\mathbb C$ are called semantic contexts and written with the symbols $\Omega$, $\Psi$, $\Upsilon$.
+\item For each semantic context $\Omega$ a collection $\mathit{St}(\Omega)$ called the \emph{semantic sorts} of $\Omega$. Semantic sorts are written with the symbols $X$,$Y$, and $Z$.
+\item For each semantic context $\Omega$ and $X \in \mathit{St}(\Omega)$ a collection $\mathit{In}(\Omega,X)$ called the \emph{semantic indices} of sort $X$.
+\item For each morphism $f : \Omega \to \Psi$ a mapping $- \{ f \} : \mathit{St}(\Psi) \to \mathit{St}(\Omega)$. These mappings preserve composition, in the sense that we have $- \{ \mathit{id}_{\Omega} \} = \mathit{id}_{\mathit{St}(\Omega)}$, and for $g : \Psi \to \Upsilon$ we have $- \{ g \circ f \} = - \{ g \} \{ f \}$.
+\item For each morphism $f : \Omega \to \Psi$ and sort $X \in \mathit{St}(\Psi)$ a mapping $- \{ f \} : \mathit{In}(\Psi,X) \to \mathit{In}(\Omega,X \{ f \})$. These mappings preserve composition in the same sense as above.
+\end{itemize}
+
+
+\subsection{Interpretation}
+
+\begin{figure}
+\begin{small}
+\begin{tabular}{l}
+$\sem{\blum{\diamond}} \defeq \top$ \\
+$\sem{\blum{\Omega,a:q}} \defeq \sem{\blum{\Omega}}.\sem{\blum{\Omega};\blum{q}}$ if $x$ not in $\blum{\Omega}$, undefined otherwise.\\
+$\sem{\blum{\Omega}; \blum{(j : q) \Rightarrow r}} \defeq \Pi(\sem{\blum{\Omega};\blum{q}},\sem{\blum{\Omega,a:q};\blum{r}})$ \\
+$\sem{\blum{\Omega}; \blum{\mathbf{prf}~j}} \defeq (~[ \sem{\blum{\Omega}; \blum{j}}_\omega = \mathit{true} ]~)_{\omega \in \sem{\blum{\Omega}}}$ \\
+$\sem{\blum{\Omega}; \blum{prop}} \defeq ( \{ \mathit{true}, \mathit{false} \} )_{\omega \in \sem{\blum{\Omega}}}$\\
+$\sem{\blum{\Omega}; \blum{str}} \defeq (\text{the set of strings})_{\omega \in \sem{\blum{\Omega}}}$\\
+$\sem{\blum{\Omega}; \blum{App_{[a:q],r}(i,j)}} \defeq$ \\
+\hspace{1.5ex} $\mathit{App}_{\sem{\blum{\Omega;q}},\sem{\blum{\Omega,a:q;r}}} \circ \langle \overline{\sem{\blum{\Omega ; i}}}, \sem{\blum{\Omega ; j}}^+ \rangle_{\sem{\blum{\Omega ; \blum{(a : q) \to r}}}^+}$ \\
+$\sem{\blum{\Omega,a \! : \! q}~;~\blum{a}} \defeq \frak{v}_{\sem{\blum{\Omega,a:q}}}$ \\
+$\sem{\blum{\Omega};\blum{s}} \defeq \fm{s}{\omega \in \sem{\blum{\Omega}}}$
+\end{tabular}{l}
+\end{small}
+\end{figure}
 
 \subsection{Type language}
 
@@ -384,14 +419,55 @@ The standard set-theoretic CwF interpretation of the calculus of constructions.
 
 \begin{figure*}
 \begin{tabular}{l}
-$\sem{\{ [\blum{a : str}] : \tau \}}_\omega \gamma \defeq \{ f \in \mathit{Inst} \mid \forall s. f |_s \in \sem{\tau}_{(\omega,s)} \gamma^+ \text{ if } \sem{\tau}_{(\omega,s)} \gamma^+ \text{ is non-empty } \text{and } f |_s = \emptyset \text{ otherwise} \}$ \\~\\
-
+$\sem{\{ [\blum{a : str}] : \tau \}}_\omega \gamma \defeq \{ f \mid \forall s. f |_s \in \sem{\tau}_{(\omega,s)} \gamma^+ \text{ if } \sem{\tau}_{(\omega,s)} \gamma^+ \text{ is non-empty } \text{and } f |_s = \emptyset \text{ otherwise} \}$ \\~\\
+$\sem{\{ \blum{s_i} : \tau_i^{~i \in 1..n}\}}_\omega \gamma \defeq \{ f \mid \forall i \in 1..n.~f |_{s_i} \in \sem{\tau_i}_{\omega} \gamma \}$\\~\\
+$\sem{\{ \blum{a : str} \mid \blum{i} \}}_\omega \gamma \defeq \{ f \mid f(\epsilon) \! \downarrow~\wedge~~~~\sem{\blum{i}}_{(\omega, f(\epsilon))} = \mathit{true} \}$\\~\\
+$\sem{\bigvee \tau}_{\omega} \gamma \defeq \bigcup_{M \in \sem{\blum{q}}_\omega} (\sem{\tau}_{\omega} \gamma)_M$
 \end{tabular}
+
+\caption{Direct semantics for non-operational kinding rules}
+\label{fig:kindsem-direct}
+\Description[Direct semantics for non-operational kinding]{Direct semantics for non-operational kinding rules}
 \end{figure*}
 
-\pagebreak
+Our kinding and kind formation judgments are interpreted in terms of the fibration $\mathit{Fam}(\mbf{Sets})$. We assume basic knowledge of fibrations \cite{}. A kind-in-sorting-context $\blum{\Omega} \vdash \kappa$ is interpreted as an object of $\mathit{Fam}(\mbf{Sets})$ over $\sem{\blum{\Omega}}$, concretely a $\sem{\blum{\Omega}}$-indexed family of sets. For kind contexts $\Gamma = x_1:\kappa_1,\ldots,x_n : \kappa_n$, the kinding-context-in-sorting-context judgment $\blum{\Omega} \vdash \Gamma$ is interpreted as the product $\sem{\blum{\Omega} \vdash \kappa_1} \times \cdots \times \sem{\blum{\Omega} \vdash \kappa_n}$ in the fibre category $\mathit{Fam}(\mbf{Sets})_{\sem{\blum{\Omega}}}$. A kinding judgment $\blum{\Omega} \mid \Gamma \vdash \tau : \kappa$ is interpreted as a morphism of $\mathit{Fam}(\mbf{Sets})$ from $\sem{\blum{\Omega} \vdash \Gamma}$ to $\sem{\blum{\Omega} \vdash \kappa}$. 
 
-yo
+\subsubsection{Dependent Simple Products}
+
+\begin{figure}
+
+\[\begin{tikzcd}
+	{\mathit{Fam}(\mathbf{Sets})_\Omega} && {\mathit{Fam}(\mathbf{Sets})_\Psi} \\
+	\\
+	{\mathit{Fam}(\mathbf{Sets})_{\Omega.X}} && {\mathit{Fam}(\mathbf{Sets})_{\Psi . X \{ u \}}}
+	\arrow["{\frak p(X)^*}"', curve={height=12pt}, from=1-1, to=3-1]
+	\arrow["{\Pi_{\Omega,X}}"', curve={height=12pt}, from=3-1, to=1-1]
+	\arrow["{u^*}", from=1-1, to=1-3]
+	\arrow["{q(u,X)^*}"', from=3-1, to=3-3]
+	\arrow["{\frak p(X \{ u \})^*}"', curve={height=12pt}, from=1-3, to=3-3]
+	\arrow["{\Pi_{\Psi, X \{ u \}}}"', curve={height=12pt}, from=3-3, to=1-3]
+\end{tikzcd}\]
+\caption{Beck chevalley condition for dependent simple products}
+\label{fig:beck-chevalley}
+\Description[Beck-Chevalley condition for dependent simple products]{A Beck-Chevalley condition for dependent simple products}
+\end{figure}
+
+We define a \emph{CwF-fibration} as a pair $(\mathcal C, p)$ where $\mathcal C$ is a category-with-families and $p : \mathbb E \to \mathbb C$ is a fibration whose base category $\mathbb C$ is $\mathcal C$'s context category.
+
+We say that a CwF-fibration has dependent simple products if 
+\begin{itemize}
+\item For all contexts $\Omega$ and all $X \in \mathit{St}(\Omega)$ the functor $\frak p (X)^*$ has a right adjoint $\Pi_{\Omega, X}$.
+\item For every $u : \Psi \to \Omega$ and $X \in \mathit{St}(\Omega)$ the canonical natural transformation $u^* \Pi_{\Omega,X} \Longrightarrow \Pi_{\Psi, X \{ u \}} \frak q(u, X)^*$ is an isomorphism.
+\end{itemize}
+
+In the latter point, the \emph{canonical transformation} is obtained as follows. First, it is a standard fact of fibrations that for arrows $u : \Omega \to \Psi$ and $v : \Psi \to \Upsilon$ of the base category, we have $u^*v^* \cong (v \circ u)^*$. Hence we obtain \\~\\
+$\frak q(u,X)^* \frak p(X)^*$\\
+$\cong (\frak p(X) \circ \frak q(u,X))^*$\\ 
+$= (\frak p(X) \circ \langle u \circ \frak p(X \{ u \}), \frak v_{X \{ u \}} \rangle)^*$\\
+$= (u \circ \frak p(X \{ u \}))^*$\\
+$= \frak p(X \{ u \})^* u^*$\\~\\
+The canonical transformation is then the transpose of\\~\\
+$\frak p(X \{u \}) u^* \Pi \overset{\cong}{\to} q(u,X)^* \frak p(X)^* \Pi \overset{q(u,X) \epsilon}{\to} q(u,X)^*$\\~\\
 
 
 %\begin{figure}
