@@ -7,6 +7,7 @@
 \usepackage{mathpartir}
 \usepackage{tikz}
 \usepackage{quiver}
+\usepackage{bussproofs}
 
 \usetikzlibrary{cd}
 
@@ -44,7 +45,7 @@
 
 \begin{abstract}
 
-Types are an appropriate tool for describing the structure of hierarchical databases. But two common database structure idioms, \emph{foreign keys} and \emph{secondary indices} cannot be expressed using standard type systems. We present a lanaguage in which a database schema is described using a type layered over a dependently sorted index language. The index language consists of keys and relations on keys. Multiple occurrences of the same index-level relation inside of a schema establish a correlation between two distinct portions of a database instance; both secondary indices and foreign keys can be specified in this manner.
+Types are an appropriate tool for describing the structure of hierarchical databases. But two common database idioms, \emph{foreign keys} and \emph{secondary indices}, cannot be expressed using standard type systems. We present a lanaguage in which a database schema is described using a type layered over a dependently sorted index language. The index language consists of keys and relations on keys. Multiple occurrences of the same index-level relation inside of a schema establish a correlation between two distinct portions of a database instance; both secondary indices and foreign keys can be specified in this manner.
 
 %We present a lanaguage in which a database schema is described using a type layered over a dependently sorted index language of keys and relations on keys. A dictionary type constructor binds a sequence of $n$ index variables corresponding to a sequence of $n$ nested keys. It also includes a proposition, typically an application of an $n$-ary predicate on keys, which determines the exact set of key sequences that a database instance must contain. We a reconfiguration by including the same predicate in multiple dictionary types.
 
@@ -189,7 +190,7 @@ Figure \ref{fig:ecommerce-indices} shows a schema for a simple database with rec
 \item It is not defined anywhere else.
 \end{itemize}
 
-Such an instance allows us to efficiently query both the set of all items purchased by a customer (via \lstinline[mathescape]{custToItem} and the set of all customers which purchased an item (via \lstinline[mathescape]{itemToCust}. Importantly, the two fields both refer to the same set of purchase entities via the index-level relation \lstinline[mathescape]{$\blu{Purchased}$}.
+Such an instance allows us to efficiently query both the set of all items purchased by a customer (via \lstinline[mathescape]{custToItem}) and the set of all customers which purchased an item (via \lstinline[mathescape]{itemToCust}). Importantly, the two fields both refer to the same set of purchase entities via the index-level relation \lstinline[mathescape]{$\blu{Purchased}$}.
 
 \section{Syntax}
 
@@ -377,7 +378,7 @@ We interpret our index langauage using Dybjer's \emph{Categories-with-Families} 
 
 \subsection{Categories with families}
 
-A category-with-families consists of 
+A Category-with-Families (CwF) consists of 
 \begin{itemize}
 \item A category $\mathbb C$ with a terminal object, called the \emph{category of contexts}. Objects of $\mathbb C$ are called semantic contexts and written with the symbols $\Omega$, $\Psi$, $\Upsilon$.
 \item For each semantic context $\Omega$ a collection $\mathit{St}(\Omega)$ called the \emph{semantic sorts} of $\Omega$. Semantic sorts are written with the symbols $X$,$Y$, and $Z$.
@@ -417,6 +418,15 @@ $\sem{\blum{\Omega};\blum{s}} \defeq \fm{s}{\omega \in \sem{\blum{\Omega}}}$
 %\end{tabular}
 %\end{figure}
 
+\begin{figure}
+\begin{tabular}{l}
+$\sem{\blum{\Omega} \vdash \ast}_\omega \defeq \mathcal P \mathcal P (\mathit{Inst})$\\~\\
+$\sem{\blum{\Omega} \vdash \forall \blum{q}. \kappa}_\omega \defeq \{ \fm{\sem{\blum{\Omega, a : q} \vdash \kappa}_{(\omega, x)} }{x \in \sem{\blum{\Omega \vdash q}}_\omega} \}$\\
+\hspace{2.0ex} $= \Pi_{\blum{\Omega},\blum{q}} \sem{\blum{\Omega, a : q} \vdash \kappa}$\\~\\
+$\sem{\blum{\Omega} \vdash \kappa \to \rho} \defeq \sem{\blum{\Omega} \vdash \kappa} \Rightarrow \sem{\blum{\Omega \vdash \rho}}$
+\end{tabular}
+\end{figure}
+
 \begin{figure*}
 \begin{tabular}{l}
 $\sem{\{ [\blum{a : str}] : \tau \}}_\omega \gamma \defeq \{ f \mid \forall s. f |_s \in \sem{\tau}_{(\omega,s)} \gamma^+ \text{ if } \sem{\tau}_{(\omega,s)} \gamma^+ \text{ is non-empty } \text{and } f |_s = \emptyset \text{ otherwise} \}$ \\~\\
@@ -441,23 +451,23 @@ Our kinding and kind formation judgments are interpreted in terms of the fibrati
 	\\
 	{\mathit{Fam}(\mathbf{Sets})_{\Omega.X}} && {\mathit{Fam}(\mathbf{Sets})_{\Psi . X \{ u \}}}
 	\arrow["{\frak p(X)^*}"', curve={height=12pt}, from=1-1, to=3-1]
-	\arrow["{\Pi_{\Omega,X}}"', curve={height=12pt}, from=3-1, to=1-1]
+	\arrow["{\Pi_{X}}"', curve={height=12pt}, from=3-1, to=1-1]
 	\arrow["{u^*}", from=1-1, to=1-3]
-	\arrow["{q(u,X)^*}"', from=3-1, to=3-3]
+	\arrow["{\frak q(u,X)^*}"', from=3-1, to=3-3]
 	\arrow["{\frak p(X \{ u \})^*}"', curve={height=12pt}, from=1-3, to=3-3]
-	\arrow["{\Pi_{\Psi, X \{ u \}}}"', curve={height=12pt}, from=3-3, to=1-3]
+	\arrow["{\Pi_{X \{ u \}}}"', curve={height=12pt}, from=3-3, to=1-3]
 \end{tikzcd}\]
-\caption{Beck chevalley condition for dependent simple products}
+\caption{Beck-Chevalley condition for dependent simple products}
 \label{fig:beck-chevalley}
 \Description[Beck-Chevalley condition for dependent simple products]{A Beck-Chevalley condition for dependent simple products}
 \end{figure}
 
-We define a \emph{CwF-fibration} as a pair $(\mathcal C, p)$ where $\mathcal C$ is a category-with-families and $p : \mathbb E \to \mathbb C$ is a fibration whose base category $\mathbb C$ is $\mathcal C$'s context category.
+We define a \emph{CwF-fibration} as a pair $(\mathcal C, p)$ where $\mathcal C$ is a CwF and $p : \mathbb E \to \mathbb C$ is a fibration whose base category $\mathbb C$ is $\mathcal C$'s context category.
 
-We say that a CwF-fibration has dependent simple products if 
+We say that a CwF-fibration has \emph{dependent simple products} if 
 \begin{itemize}
-\item For all contexts $\Omega$ and all $X \in \mathit{St}(\Omega)$ the functor $\frak p (X)^*$ has a right adjoint $\Pi_{\Omega, X}$.
-\item For every $u : \Psi \to \Omega$ and $X \in \mathit{St}(\Omega)$ the canonical natural transformation $u^* \Pi_{\Omega,X} \Longrightarrow \Pi_{\Psi, X \{ u \}} \frak q(u, X)^*$ is an isomorphism.
+\item For all contexts $\Omega$ and all $X \in \mathit{St}(\Omega)$ the functor $\frak p (X)^*$ has a right adjoint $\Pi_{X}$.
+\item For every $u : \Psi \to \Omega$ and $X \in \mathit{St}(\Omega)$ the canonical natural transformation $u^* \Pi_{X} \Longrightarrow \Pi_{X \{ u \}} \frak q(u, X)^*$ is an isomorphism.
 \end{itemize}
 
 In the latter point, the \emph{canonical transformation} is obtained as follows. First, it is a standard fact of fibrations that for arrows $u : \Omega \to \Psi$ and $v : \Psi \to \Upsilon$ of the base category, we have $u^*v^* \cong (v \circ u)^*$. Hence we obtain \\~\\
@@ -467,14 +477,81 @@ $= (\frak p(X) \circ \langle u \circ \frak p(X \{ u \}), \frak v_{X \{ u \}} \ra
 $= (u \circ \frak p(X \{ u \}))^*$\\
 $= \frak p(X \{ u \})^* u^*$\\~\\
 The canonical transformation is then the transpose of\\~\\
-$\frak p(X \{u \}) u^* \Pi \overset{\cong}{\to} q(u,X)^* \frak p(X)^* \Pi \overset{q(u,X) \epsilon}{\to} q(u,X)^*$\\~\\
+$\frak p(X \{u \})^* u^* \Pi_X \overset{\cong}{\to} \frak q(u,X)^* \frak p(X)^* \Pi_X \overset{\frak q(u,X) \epsilon}{\to} \frak q(u,X)^*$\\~\\
 
+\appendix{Appendix}\\
+
+For semantic contexts $\Omega$ and sorts $X \in \mathit{St}(\Omega)$, we define the right adjoint $\Pi_{X}$ of $\frak p(X)^* : \mathit{Fam}(\mbf{Sets})_{\Omega} \to \mathit{Fam}(\mbf{Sets})_{\Omega . X}$ as
+
+\begin{tabular}{l}
+$\Pi_{X}(\fm{B_{(\omega, x)}}{(\omega,x) \in \Omega . X}) \defeq \fm{\Pi_{x \in X_\omega} B_{(\omega,x)}}{\omega \in \Omega}$\\~\\
+$\Pi_{X} \fm{f_{(\omega,x)} : B_{(\omega,x)} \to C_{(\omega,x)}}{(\omega,x) \in \Omega .X} \defeq$\\ 
+\hspace{2.0ex} $\fm{\Pi_{x \in X_\omega} \hspace{2.0ex} f_{(\omega,x)}}{\omega \in \Omega}$
+\end{tabular}\\~\\~\\
+We have a bijection of the following form. 
+\begin{prooftree}\\~\\
+\AxiomC{$(A_\omega)_{\omega \in \Omega} \longrightarrow \fm{\Pi_{x \in X_\omega} B_{(\omega,x)}}{\omega \in \Omega} = \Pi_{X} \fm{B_{(\omega,x)}}{(\omega,x) \in \Omega . X}$}
+\doubleLine
+\UnaryInfC{$\frak p (X)^* \fm{A_\omega}{\omega \in \Omega} = \fm{A_\omega}{(\omega,x) \in \Omega . X} \longrightarrow \fm{B_{(\omega, x)}}{(\omega,x) \in \Omega . X}$}
+
+\end{prooftree}~\\~\\
+From top to bottom, this bijection, which we'll call $\phi$, takes a morphism $$\fm{\langle f_{(\omega,x)} : A_\omega \to B_{(\omega,x)} \rangle_{x \in X_\omega}}{\omega \in \Omega}$$ to $$\fm{f_{(\omega,x)} : A_\omega \to B_{(\omega,x)}}{(\omega,x) \in \Omega.X}$$
+From bottom to top, $\phi$'s inverse $\phi^\circ$ takes a morphism $$(f_{(\omega,x)} : A_\omega \to B_{(\omega,x)})_{(\omega,x) \in \Omega . X}$$ to $$\fm{\Pi_{x \in X_\omega} f_{(\omega,x)}}{\omega \in \Omega}$$ 
+
+$\phi$ underlies an adjunction $\frak p(X)^* \dashv \Pi_{\Omega, X}$. To prove this, first consider a morphism $g$, where $$g = \fm{g_{\omega}}{(\omega) \in \Omega} : \fm{C_{\omega}}{\omega \in \Omega} \to \fm{A_\omega}{\omega \in \Omega}$$
+and a morphism $f$ where
+$$f = \fm{f_{(\omega,x)}}{(\omega,x) \in \Omega . X} : \fm{A_\omega}{(\omega,x) \in \Omega . X} \to \fm{B_{(\omega, x)}}{(\omega,x) \in \Omega . X}$$
+We then have\\~\\
+$\phi^\circ(f \circ \frak p^*(g))$\\
+$= \phi^\circ( \fm{f_{(\omega,x)} \circ g_{\omega}}{(\omega,x) \in \Omega.X} )$\\
+$= \fm{\Pi_{x \in X_{\omega}}~~~f_{(\omega,x)} \circ g_\omega}{\omega \in \Omega}$\\
+$= \fm{(\Pi_{x \in X_{\omega}}~~~f_{(\omega,x)}) \circ g_\omega}{\omega \in \Omega}$\\
+$= \phi^\circ(f) \circ g$\\~\\
+Next, consider a morphism $f$, where
+$$f = \fm{\langle f_{(\omega,x)} \rangle_{x \in X_\omega}}{\omega \in \Omega} : \fm{A_\omega}{\omega \in \Omega} \to \fm{\Pi_{x \in X_\omega} B_{(\omega,x)}}{\omega \in \Omega}$$
+and a morphism $g$, where
+$$g = \fm{g_{(\omega,x)}}{(\omega,x) \in \Omega . X} : \fm{B_{(\omega,x)}}{(\omega,x) \in \Omega . X} \to \fm{D_{(\omega,x)}}{(\omega,x) \in \Omega . X}$$
+We then have\\~\\
+$\phi(\Pi_{X}(g) \circ f)$\\
+$= \phi( \fm{\langle g_{(\omega, x)} \circ f_{(\omega,x)} \rangle_{x \in X_\omega} }{\omega \in \Omega} )$\\ 
+\vspace{0.5ex}$= \fm{g_{(\omega, x)} \circ f_{(\omega,x)}}{(\omega, x) \in \Omega . X}$\\
+$= g \circ \phi(f)$\\~\\
+To obtain the counit of this bijection at component $\fm{B_{(\omega, x)}}{(\omega,x) \in \Omega.X}$, writing $\pi_x$ for the projection $\Pi_{x \in X_\omega} B_{(x,\omega)} \to B_{(x,\omega)}$, we map the identity morphism $$\fm{\langle \pi_x \rangle_{x \in X_\omega}}{\omega \in \Omega} : \Pi_X \fm{B_{(\omega,x)}}{(\omega,x) \in \Omega} \to \Pi_X \fm{B_{(\omega,x)}}{(\omega,x) \in \Omega}$$ through $\phi$, obtaining the counit $\epsilon$ as $$\fm{\pi_{(\omega,x')} : \Pi_{x \in X_\omega} B_{(\omega,x)} \to B_{(\omega,x')}}{(\omega,x') \in \Omega . X}$$ It is a morphism of type
+$$\frak p(X)^* \Pi_X \fm{B_{(\omega,x)}}{(\omega,x) \in \Omega . X} \longrightarrow \fm{B_{(\omega,x)}}{(\omega,x) \in \Omega . X}$$
+
+To prove the Beck-Chevalley condition, we must first concretely describe the canonical natural transformation $u^* \Pi_X \Longrightarrow \Pi_{X \{ u \}} \frak q(u,X)^*$. As a first step, we concretely describe the natural transformation
+$$\frak p(X \{u \})^* u^* \Pi_X \overset{\cong}{\to} \frak q(u,X)^* \frak p(X)^* \Pi_X \overset{\frak q(u,X) \epsilon}{\to} \frak q(u,X)^*$$
+at component $\fm{B_{(\omega,x)}}{(\omega,x) \in \Omega.X}$\\~\\
+$\frak p(X \{ u \})^* u^* \Pi_X \fm{B_{\omega,x}}{(\omega,x) \in \Omega.X}$\\
+$= \frak p(X \{ u \})^* u^* \fm{\Pi_{x \in X_\omega} B_{(\omega,x)}}{\omega \in \Omega}$\\
+$= \frak p(X \{ u \})^* \fm{\Pi_{x \in X_{u(\psi)}} B_{(u(\psi),x)}}{\psi \in \Psi}$\\
+$= \fm{\Pi_{x \in X_{u(\psi)}} B_{(u(\psi),x)}}{(\psi,x') \in \Psi . X \{ u \}}$ \\
+$= \fm{\Pi_{x \in X_{\pi \langle u \circ \frak p(X \{ u \})  , \frak v_{X \{ u \}} \rangle (\psi,x')}} B_{(\pi \langle u \circ \frak p(X \{ u \})  , \frak v_{X \{ u \}} \rangle (\psi,x'),x)}}{(\psi,x') \in \Psi . X \{ u \}}$\\
+$= \langle u \circ \frak p(X \{ u \})  , \frak v_{X \{ u \}} \rangle^* \fm{\Pi_{x \in X_{\pi (\omega,x')}} B_{(\pi (\omega,x'),x)}}{(\omega,x') \in \Omega . X}$\\
+\vspace{1.5ex} $= \langle u \circ \frak p(X \{ u \})  , \frak v_{X \{ u \}} \rangle^* \fm{\Pi_{x \in X_\omega} B_{(\omega,x)}}{(\omega,x') \in \Omega . X}$
+\[\begin{tikzcd}
+	{} \\
+	{} \\
+	\arrow["{\langle u \circ \frak p(X \{ u \}), \frak v_{X \{u \}}\rangle^*(\pi_{(\omega, x'}))_{(\omega, x') \in \Omega . X}}", from=1-1, to=3-1]
+\end{tikzcd}\]
+$\langle u \circ \frak p(X \{ u \})  , \frak v_{X \{ u \}} \rangle^* \fm{B_{(\omega,x')}}{(\omega,x') \in \Omega . X}$
+\\~\\
+The above arrow is equal to 
+$$\fm{\pi_{(u(\psi),x')} : \Pi_{x \in X_{u(\psi)}} B_{(u(\psi),x)} \to B_{(u(\psi),x')}}{(\psi, x') \in \Psi . X \{ u \}}$$
+Transposing gives 
+$$\fm{\Pi_{x' \in X_{u(\psi)}}~\pi_{(u(\psi),x')}}{\psi \in \Psi} $$
+
+TODO: Demonstrate that the type of this. Show it is an inverse.
+
+Since $\mathit{Fam}(\mbf{Sets})$ is a split fibration, we have $$\frak q(u,X)^* \frak p(X)^* = (\frak p(X) \circ \frak q(u,X))^* = \frak p(X \{ u \})^* u^*$$
+
+
+
+ 
 
 %\begin{figure}
-
-%\begin{small}
-
-%\begin{tabular}{l}
+%\beg[[
+%\begin{tabular}{l
 %(``Alonzo Church'', ``Purchases'', ``0'', ``itemId'') $\mapsto$ ``Sony Digital Paper'' \\
 %(``Alonzo Church'', ``Purchases'', ``0'', ``cardId'') $\mapsto$ ``Alonzo's Card''\\
 %(``Alonzo Church'', ``Cards'', ``Alonzo's Card'', ``Addr'') $\mapsto$ ``12 Main St''\\
