@@ -238,7 +238,7 @@ $\blu{a}, \blu{b}, \blu{P}$ & $\in$ & $\mathit{IndexVars}$ & ~ \\
 $\blu{s},\blu{t}$ & $\in$ & $\mathit{Strings}$ & ~ \\
 \end{tabular}\\~\\~\\
 \begin{tabular}{llll}
-$\blu{j},\blu{k}$ (indices) & ::=  & $\blum{s}$ & (string literal) \\
+$\blu{i},\blu{j},\blu{k}$ (indices) & ::=  & $\blum{s}$ & (string literal) \\
                           & $\mid$ & $\blum{App}_{\blum{[a : q],p}}\blum{(j,k)}$ & (index application) \\
                           & $\mid$ & $\blu{a}$ & (index variable) \\
                           & $\mid$ & $\blu{true}$ & (true proposition) \\
@@ -248,10 +248,6 @@ $\blu{q},\blu{r}$ (sort) & ::= & $\blum{str}$ & (string sort) \\
                          & $\mid$ & $\blum{prf~j}$ & (proof sort) \\
                          & $\mid$ & $\blum{(a : q) \to r}$ & (function sort) \\
 ~ & ~ & ~ & ~ \\
-$\kappa,\rho$ (kind) & $::=$ & $\ast$ & (proper type kind) \\
-                     & $\mid$ & $\kappa \to \rho$ & (type-to-type op)\\
-                     & $\mid$ & $\forall \blu{q}.~\kappa$ & (index-to-type op) \\
-~ & ~ & ~ & ~ \\
 $\tau,\sigma$ (type) & $::=$ & $\{[\blu{a : str}] : \tau \}$ & (dictionary type) \\ 
        & $\mid$ & $\{ \blu{s}_i : \tau_i^{~i \in 1..n} \}$ & (record type) \\
        & $\mid$ & $\{ \blu{a : str} \mid \blu{i} \}$ & (string refinement type) \\
@@ -259,7 +255,11 @@ $\tau,\sigma$ (type) & $::=$ & $\{[\blu{a : str}] : \tau \}$ & (dictionary type)
        & $\mid$ & $\lambda x : \kappa. \tau$ & (type-to-type abstr.) \\
        & $\mid$ & $\bigvee \tau$ & (union) \\
        & $\mid$ & $\tau~\sigma$ & (type app.) \\
-       & $\mid$ & $\tau~[~\blu{j}~]$ & (index-to-type app.) 
+       & $\mid$ & $\tau~[~\blu{j}~]$ & (index-to-type app.)\\
+~ & ~ & ~ & ~ \\
+$\kappa,\rho$ (kind) & $::=$ & $\ast$ & (proper type kind) \\
+                     & $\mid$ & $\kappa \to \rho$ & (type-to-type op)\\
+                     & $\mid$ & $\forall \blu{q}.~\kappa$ & (index-to-type op)
 \end{tabular}\\~\\~\\
 \begin{tabular}{llll}
 $\blum{\Omega}, \blum{\Psi}$ (pre-index-context) & $::=$  & $\blum{\Omega,a : q}$ & (extension) \\
@@ -272,7 +272,18 @@ $\Gamma$ (kind context) & $::=$ & $\Gamma,x : \kappa$ & (extension) \\
 \Description[Syntax]{Syntax}
 \end{figure}
 
-There is some syntax
+Index-level terms $\blum{i,j,k}$ consist of string literals, variables, applications, and the proposition constant $\blum{true}$. An application is annotated with the domain and codomain of the applied function; this eases the definition of our denotational semantics, but the types can be inferred and are thus omitted in our examples, which instead use the notation $\blum{j}~\blum{k}$ as shorthand for $\blum{App_{[a : q], p}(j,k)}$.
+
+Following \cite{dependent ml journal of fp}, index level classifiers are called \emph{sorts}. Sorts are written using the variables $\blum{p,q,r}$. We include the sorts $\blum{str}$ for strings, $\blum{prop}$ for propositions, $\blum{prf}~j$ proofs of the proposition $\blum{j}$, and the sort constructor $\blum{(a : q) \to r}$ for constructing dependen function sorts, which are essentially index-level $\Pi$-types.
+
+Our types $\tau,\sigma$ are also called \emph{schemas}. The type constructor $\{ [\blum{a : str}] : \tau \}$ is used for dictionaries of value type $\tau$. The type $\tau$ depends on the index variable $\blum{a}$, and such a dictionary type describes the set of database instances which contains exactly those keys $\blum{a}$ which $\tau$ maps to a non-empty set of database instances. The record types, type-type applications, and type-type abstractions in our type syntax are standard. A string refinement type of the form $\{ \blum{a : str} \mid \blum{i} \}$ denotes the set of all strings which satisfy the proposition $\blum{i}$.
+
+Finally, our type syntax include index-type abstractions $\lambda (\blum{a : q}). \tau$, index-type application $\tau~[~\blum{j}~]$, and union $\bigvee \tau$. In a well-kinded union type $\bigvee \tau$, the type $\tau$ is an index-type function whose codomain is $\ast$ (the kind of proper types). $\tau$ then denotes a function which maps a semantic index to a set of database instances; $\bigvee \tau$ denotes the union over the applications of $\tau$ to all semantic indices in its domain. 
+   
+
+In figures \ref{fig:ecommerce} and \ref{fig:reconfigurations}, a dictionary type of the form $\{ [\blum{a :str}] : \blum{i_1, \ldots, i_n} > \tau \}$ is sugar for $$\{ [\blum{a :str}] : \bigvee \lambda \blum{(a_1 : prf~i_1}) \ldots \bigvee \lambda (\blum{a_n : prf~i_n}). \tau \}$$
+
+
 
 \section{Static classification}
 
@@ -364,17 +375,25 @@ Here are some kinding and kind formation rules.
 \inferrule
   {\blum{\Omega} \vdash \kappa \\ \blum{\Omega} \vdash \rho}
   {\blum{\Omega} \vdash \kappa \to \rho}
+\and
+\inferrule
+  {~}
+  {\blum{\Omega} \vdash \diamond}
+\and
+\inferrule
+  {\blum{\Omega} \vdash \Gamma \\ \blum{\Omega} \vdash \kappa}
+  {\blum{\Omega} \vdash \Gamma, x : \kappa}
 \end{mathpar}
 \caption{Kinding and kind formation}
 \label{fig:kinding}
-\Description[Kinding and kind formation]{Kinding and kind formation rules}
+\Description[Kinding and kind formation]{Kinding, kind formation, and kind context formation rules}
 \end{figure}
 
 \section{Denotational Semantics}
 
 \subsection{Index Language}
 
-We interpret our index langauage using Dybjer's \emph{Categories-with-Families} (CwF) framework for semantically modeling dependently typed languages \cite{}. We first review the definition of CwF and then provide an interpretation of the index language with respect to a CwF. There is nothing novel about our index language, so both sections are standard. However, we rename some of the standard terminology to fit into the present setting, e.g., instead of types we have sorts.
+We interpret our index langauage using Dybjer's \emph{Categories-with-Families} (CwF) framework for semantically modeling dependently typed languages \cite{}. We first review the definition of CwF and then provide an interpretation of the index language with respect to a CwF. There is nothing novel about our index language, so both sections are standard. However, we rename some of the standard terminology to fit into the present setting, e.g. instead of dependent types we have dependent sorts.
 
 \subsection{Categories with families}
 
@@ -383,10 +402,22 @@ A Category-with-Families (CwF) consists of
 \item A category $\mathbb C$ with a terminal object, called the \emph{category of contexts}. Objects of $\mathbb C$ are called semantic contexts and written with the symbols $\Omega$, $\Psi$, $\Upsilon$.
 \item For each semantic context $\Omega$ a collection $\mathit{St}(\Omega)$ called the \emph{semantic sorts} of $\Omega$. Semantic sorts are written with the symbols $X$,$Y$, and $Z$.
 \item For each semantic context $\Omega$ and $X \in \mathit{St}(\Omega)$ a collection $\mathit{In}(\Omega,X)$ called the \emph{semantic indices} of sort $X$.
-\item For each morphism $f : \Omega \to \Psi$ a mapping $- \{ f \} : \mathit{St}(\Psi) \to \mathit{St}(\Omega)$. These mappings preserve composition, in the sense that we have $- \{ \mathit{id}_{\Omega} \} = \mathit{id}_{\mathit{St}(\Omega)}$, and for $g : \Psi \to \Upsilon$ we have $- \{ g \circ f \} = - \{ g \} \{ f \}$.
-\item For each morphism $f : \Omega \to \Psi$ and sort $X \in \mathit{St}(\Psi)$ a mapping $- \{ f \} : \mathit{In}(\Psi,X) \to \mathit{In}(\Omega,X \{ f \})$. These mappings preserve composition in the same sense as above.
+\item For each arrow $f : \Omega \to \Psi$ a mapping $- \{ f \} : \mathit{St}(\Psi) \to \mathit{St}(\Omega)$. These mappings preserve composition, in the sense that we have $- \{ \mathit{id}_{\Omega} \} = \mathit{id}_{\mathit{St}(\Omega)}$, and for $g : \Psi \to \Upsilon$ we have $- \{ g \circ f \} = - \{ g \} \{ f \}$.
+\item For each arrow $f : \Omega \to \Psi$ and sort $X \in \mathit{St}(\Psi)$ a mapping $- \{ f \} : \mathit{In}(\Psi,X) \to \mathit{In}(\Omega,X \{ f \})$. These mappings preserve composition in the same sense as above.
+\item For each context $\Omega$ and sort $X \in \mathit{St}(\Omega)$, we have an object $\Omega . X$ of $\mathbb C$, an arrow $\frak p(X) : \Omega . X \to \Omega$, and an index $\frak v_{X} \in \mathit{In}(\Omega . X, X \{ \frak p(X) \})$ such that for all $f : \Psi \to \Omega$ and $M \in \mathit{In}(\Psi, X \{ f \})$ there exists a unique morphism $\langle f , M \rangle_X : \Psi \to \Omega . X$ such that $\frak p(X) \circ \langle f , M \rangle_X = f$ and $\frak v_{X} \{ \langle f, M \rangle_X \} = M$.
 \end{itemize}
 
+% TODO: explain weakening and the + notation here. maybe also explain overline notation
+
+A CwF is said to \emph{support $\Pi$-sorts} if for any two sorts $X \in \mathit{St}(\Omega)$ and $Y \in \mathit{St}(\Omega.X)$ there is a sort $\Pi(X,Y) \in \mathit{St}(\Omega)$ and a morphism $$\mathit{App}_{X,Y} : \Omega . X . \Pi(X,Y)^+ \to \Omega . X . Y$$ such that $$\frak p(X) \circ \mathit{App}_{X,Y} = \frak p(\Pi(X,Y)^+) \hspace{3.0ex} \textit{App-T}$$
+and for every $M \in \mathit{In}(\Omega.X, Y)$
+$$\mathit{App}_{X,Y} \circ \overline{M \{ p(X) \}} = \overline{M}$$
+and for every morphism $f : B \to \Gamma$\\~\\
+$\mathit{App}_{X,Y} \circ \frak q( \frak q(f, X), \Pi(X,Y)\{ \frak q (f, X) \})$\\ 
+$= \frak q(\frak q (f, X), Y) \circ \mathit{App}_{X \{ f \}, Y \{ \frak q(f, \sigma) \}}$\\~\\
+
+
+% TODO: the + notation in the above definition is not defined
 
 \subsection{Interpretation}
 
@@ -420,9 +451,8 @@ $\sem{\blum{\Omega};\blum{s}} \defeq \fm{s}{\omega \in \sem{\blum{\Omega}}}$
 
 \begin{figure}
 \begin{tabular}{l}
-$\sem{\blum{\Omega} \vdash \ast}_\omega \defeq \mathcal P \mathcal P (\mathit{Inst})$\\~\\
-$\sem{\blum{\Omega} \vdash \forall \blum{q}. \kappa}_\omega \defeq \{ \fm{\sem{\blum{\Omega, a : q} \vdash \kappa}_{(\omega, x)} }{x \in \sem{\blum{\Omega \vdash q}}_\omega} \}$\\
-\hspace{2.0ex} $= \Pi_{\blum{\Omega},\blum{q}} \sem{\blum{\Omega, a : q} \vdash \kappa}$\\~\\
+$\sem{\blum{\Omega} \vdash \ast}_\omega \defeq \mathcal P \mathcal P (\mathit{Inst})$\\
+$\sem{\blum{\Omega} \vdash \forall \blum{q}. \kappa}_\omega \defeq \Pi_{\blum{\Omega},\blum{q}} \sem{\blum{\Omega, a : q} \vdash \kappa}$\\
 $\sem{\blum{\Omega} \vdash \kappa \to \rho} \defeq \sem{\blum{\Omega} \vdash \kappa} \Rightarrow \sem{\blum{\Omega \vdash \rho}}$
 \end{tabular}
 \end{figure}
@@ -440,7 +470,7 @@ $\sem{\bigvee \tau}_{\omega} \gamma \defeq \bigcup_{M \in \sem{\blum{q}}_\omega}
 \Description[Direct semantics for non-operational kinding]{Direct semantics for non-operational kinding rules}
 \end{figure*}
 
-Our kinding and kind formation judgments are interpreted in terms of the fibration $\mathit{Fam}(\mbf{Sets})$. We assume basic knowledge of fibrations \cite{}. A kind-in-sorting-context $\blum{\Omega} \vdash \kappa$ is interpreted as an object of $\mathit{Fam}(\mbf{Sets})$ over $\sem{\blum{\Omega}}$, concretely a $\sem{\blum{\Omega}}$-indexed family of sets. For kind contexts $\Gamma = x_1:\kappa_1,\ldots,x_n : \kappa_n$, the kinding-context-in-sorting-context judgment $\blum{\Omega} \vdash \Gamma$ is interpreted as the product $\sem{\blum{\Omega} \vdash \kappa_1} \times \cdots \times \sem{\blum{\Omega} \vdash \kappa_n}$ in the fibre category $\mathit{Fam}(\mbf{Sets})_{\sem{\blum{\Omega}}}$. A kinding judgment $\blum{\Omega} \mid \Gamma \vdash \tau : \kappa$ is interpreted as a morphism of $\mathit{Fam}(\mbf{Sets})$ from $\sem{\blum{\Omega} \vdash \Gamma}$ to $\sem{\blum{\Omega} \vdash \kappa}$. 
+Our kinding and kind formation judgments are interpreted in terms of the fibration $\mathit{Fam}(\mbf{Sets})$. We assume basic knowledge of fibrations \cite{}. A kind-in-sorting-context $\blum{\Omega} \vdash \kappa$ is interpreted as an object of $\mathit{Fam}(\mbf{Sets})$ over $\sem{\blum{\Omega}}$, concretely a $\sem{\blum{\Omega}}$-indexed family of sets. For kind contexts $\Gamma = x_1:\kappa_1,\ldots,x_n : \kappa_n$, the kinding context formation judgment $\blum{\Omega} \vdash \Gamma$ is interpreted as the product $\sem{\blum{\Omega} \vdash \kappa_1} \times \cdots \times \sem{\blum{\Omega} \vdash \kappa_n}$ in the fibre category $\mathit{Fam}(\mbf{Sets})_{\sem{\blum{\Omega}}}$. A kinding judgment $\blum{\Omega} \mid \Gamma \vdash \tau : \kappa$ is interpreted as a arrow of $\mathit{Fam}(\mbf{Sets})$ from $\sem{\blum{\Omega} \vdash \Gamma}$ to $\sem{\blum{\Omega} \vdash \kappa}$. 
 
 \subsubsection{Dependent Simple Products}
 
@@ -495,11 +525,11 @@ We have a bijection of the following form.
 \UnaryInfC{$\frak p (X)^* \fm{A_\omega}{\omega \in \Omega} = \fm{A_\omega}{(\omega,x) \in \Omega . X} \longrightarrow \fm{B_{(\omega, x)}}{(\omega,x) \in \Omega . X}$}
 
 \end{prooftree}~\\~\\
-From top to bottom, this bijection, which we'll call $\phi$, takes a morphism $$\fm{\langle f_{(\omega,x)} : A_\omega \to B_{(\omega,x)} \rangle_{x \in X_\omega}}{\omega \in \Omega}$$ to $$\fm{f_{(\omega,x)} : A_\omega \to B_{(\omega,x)}}{(\omega,x) \in \Omega.X}$$
-From bottom to top, $\phi$'s inverse $\phi^\circ$ takes a morphism $$(f_{(\omega,x)} : A_\omega \to B_{(\omega,x)})_{(\omega,x) \in \Omega . X}$$ to $$\fm{\Pi_{x \in X_\omega} f_{(\omega,x)}}{\omega \in \Omega}$$ 
+From top to bottom, this bijection, which we'll call $\phi$, takes a arrow $$\fm{\langle f_{(\omega,x)} : A_\omega \to B_{(\omega,x)} \rangle_{x \in X_\omega}}{\omega \in \Omega}$$ to $$\fm{f_{(\omega,x)} : A_\omega \to B_{(\omega,x)}}{(\omega,x) \in \Omega.X}$$
+From bottom to top, $\phi$'s inverse $\phi^\circ$ takes a arrow $$(f_{(\omega,x)} : A_\omega \to B_{(\omega,x)})_{(\omega,x) \in \Omega . X}$$ to $$\fm{\Pi_{x \in X_\omega} f_{(\omega,x)}}{\omega \in \Omega}$$ 
 
-$\phi$ underlies an adjunction $\frak p(X)^* \dashv \Pi_{\Omega, X}$. To prove this, first consider a morphism $g$, where $$g = \fm{g_{\omega}}{(\omega) \in \Omega} : \fm{C_{\omega}}{\omega \in \Omega} \to \fm{A_\omega}{\omega \in \Omega}$$
-and a morphism $f$ where
+$\phi$ underlies an adjunction $\frak p(X)^* \dashv \Pi_{\Omega, X}$. To prove this, first consider a arrow $g$, where $$g = \fm{g_{\omega}}{(\omega) \in \Omega} : \fm{C_{\omega}}{\omega \in \Omega} \to \fm{A_\omega}{\omega \in \Omega}$$
+and a arrow $f$ where
 $$f = \fm{f_{(\omega,x)}}{(\omega,x) \in \Omega . X} : \fm{A_\omega}{(\omega,x) \in \Omega . X} \to \fm{B_{(\omega, x)}}{(\omega,x) \in \Omega . X}$$
 We then have\\~\\
 $\phi^\circ(f \circ \frak p^*(g))$\\
@@ -507,16 +537,16 @@ $= \phi^\circ( \fm{f_{(\omega,x)} \circ g_{\omega}}{(\omega,x) \in \Omega.X} )$\
 $= \fm{\Pi_{x \in X_{\omega}}~~~f_{(\omega,x)} \circ g_\omega}{\omega \in \Omega}$\\
 $= \fm{(\Pi_{x \in X_{\omega}}~~~f_{(\omega,x)}) \circ g_\omega}{\omega \in \Omega}$\\
 $= \phi^\circ(f) \circ g$\\~\\
-Next, consider a morphism $f$, where
+Next, consider a arrow $f$, where
 $$f = \fm{\langle f_{(\omega,x)} \rangle_{x \in X_\omega}}{\omega \in \Omega} : \fm{A_\omega}{\omega \in \Omega} \to \fm{\Pi_{x \in X_\omega} B_{(\omega,x)}}{\omega \in \Omega}$$
-and a morphism $g$, where
+and a arrow $g$, where
 $$g = \fm{g_{(\omega,x)}}{(\omega,x) \in \Omega . X} : \fm{B_{(\omega,x)}}{(\omega,x) \in \Omega . X} \to \fm{D_{(\omega,x)}}{(\omega,x) \in \Omega . X}$$
 We then have\\~\\
 $\phi(\Pi_{X}(g) \circ f)$\\
 $= \phi( \fm{\langle g_{(\omega, x)} \circ f_{(\omega,x)} \rangle_{x \in X_\omega} }{\omega \in \Omega} )$\\ 
 \vspace{0.5ex}$= \fm{g_{(\omega, x)} \circ f_{(\omega,x)}}{(\omega, x) \in \Omega . X}$\\
 $= g \circ \phi(f)$\\~\\
-To obtain the counit of this bijection at component $\fm{B_{(\omega, x)}}{(\omega,x) \in \Omega.X}$, writing $\pi_x$ for the projection $\Pi_{x \in X_\omega} B_{(x,\omega)} \to B_{(x,\omega)}$, we map the identity morphism $$\fm{\langle \pi_x \rangle_{x \in X_\omega}}{\omega \in \Omega} : \Pi_X \fm{B_{(\omega,x)}}{(\omega,x) \in \Omega} \to \Pi_X \fm{B_{(\omega,x)}}{(\omega,x) \in \Omega}$$ through $\phi$, obtaining the counit $\epsilon$ as $$\fm{\pi_{(\omega,x')} : \Pi_{x \in X_\omega} B_{(\omega,x)} \to B_{(\omega,x')}}{(\omega,x') \in \Omega . X}$$ It is a morphism of type
+To obtain the counit of this bijection at component $\fm{B_{(\omega, x)}}{(\omega,x) \in \Omega.X}$, writing $\pi_x$ for the projection $\Pi_{x \in X_\omega} B_{(x,\omega)} \to B_{(x,\omega)}$, we map the identity arrow $$\fm{\langle \pi_x \rangle_{x \in X_\omega}}{\omega \in \Omega} : \Pi_X \fm{B_{(\omega,x)}}{(\omega,x) \in \Omega} \to \Pi_X \fm{B_{(\omega,x)}}{(\omega,x) \in \Omega}$$ through $\phi$, obtaining the counit $\epsilon$ as $$\fm{\pi_{(\omega,x')} : \Pi_{x \in X_\omega} B_{(\omega,x)} \to B_{(\omega,x')}}{(\omega,x') \in \Omega . X}$$ It is a arrow of type
 $$\frak p(X)^* \Pi_X \fm{B_{(\omega,x)}}{(\omega,x) \in \Omega . X} \longrightarrow \fm{B_{(\omega,x)}}{(\omega,x) \in \Omega . X}$$
 
 To prove the Beck-Chevalley condition, we must first concretely describe the canonical natural transformation $u^* \Pi_X \Longrightarrow \Pi_{X \{ u \}} \frak q(u,X)^*$. As a first step, we concretely describe the natural transformation
@@ -532,22 +562,19 @@ $= \langle u \circ \frak p(X \{ u \})  , \frak v_{X \{ u \}} \rangle^* \fm{\Pi_{
 \[\begin{tikzcd}
 	{} \\
 	{} \\
-	\arrow["{\langle u \circ \frak p(X \{ u \}), \frak v_{X \{u \}}\rangle^*(\pi_{(\omega, x'}))_{(\omega, x') \in \Omega . X}}", from=1-1, to=3-1]
+	\arrow["{\langle u \circ \frak p(X \{ u \}), \frak v_{X \{u \}}\rangle^*(\pi_{(\omega, x')})_{(\omega, x') \in \Omega . X}}", from=1-1, to=3-1]
 \end{tikzcd}\]
 $\langle u \circ \frak p(X \{ u \})  , \frak v_{X \{ u \}} \rangle^* \fm{B_{(\omega,x')}}{(\omega,x') \in \Omega . X}$
 \\~\\
 The above arrow is equal to 
 $$\fm{\pi_{(u(\psi),x')} : \Pi_{x \in X_{u(\psi)}} B_{(u(\psi),x)} \to B_{(u(\psi),x')}}{(\psi, x') \in \Psi . X \{ u \}}$$
-Transposing gives 
-$$\fm{\Pi_{x' \in X_{u(\psi)}}~\pi_{(u(\psi),x')}}{\psi \in \Psi} $$
-
-TODO: Demonstrate that the type of this. Show it is an inverse.
-
-Since $\mathit{Fam}(\mbf{Sets})$ is a split fibration, we have $$\frak q(u,X)^* \frak p(X)^* = (\frak p(X) \circ \frak q(u,X))^* = \frak p(X \{ u \})^* u^*$$
-
-
-
- 
+Transposing gives
+$$\fm{\Pi_{x' \in X_{u(\psi)}}~(\pi_{(u(\psi),x')} : (\Pi_{x \in X_{u(\psi)}} B_{(u(\psi),x)}) \to B_{(u(\psi),x')})}{\psi \in \Psi}$$
+This is the identity arrow on the object 
+$$\fm{\Pi_{x' \in X_{u(\psi)}} B_{(u(\psi), x')}}{\psi \in \Psi}$$
+which has the following ``type signature'' 
+$$\Pi_{X \{ u \}} \frak q(u, X)^* \fm{B_{(\omega,x)}}{(\omega,x) \in \Omega . X} \longrightarrow u^* \Pi_X \fm{B_{(\omega,x)}}{(\omega,x) \in \Omega . X}$$
+Because it is an identity, it is clearly invertible.
 
 %\begin{figure}
 %\beg[[
