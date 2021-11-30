@@ -345,7 +345,7 @@ Here are some kinding and kind formation rules.
   {\blum{\Omega} \mid \Gamma \vdash \{ \blum{a : str} \mid \blum{i} \} : \ast}
 \and
 \inferrule
-  {\blum{\Omega \vdash q} \\ \blum{\Omega,a : q} \mid \Gamma \vdash \tau : \kappa}
+  {\blum{\Omega \vdash q} \\ \blum{\Omega,a : q} \mid \Gamma \vdash \tau : \kappa \\ a \not \in FV(\Gamma)}
   {\blum{\Omega} \mid \Gamma \vdash \lambda \blum{a : q} . \tau : \forall \blum{q} . \kappa}
 \and
 \inferrule
@@ -395,7 +395,7 @@ Here are some kinding and kind formation rules.
 
 We interpret our index langauage using Dybjer's \emph{Categories-with-Families} (CwF) framework for semantically modeling dependently typed languages \cite{}. We first review the definition of CwF and then provide an interpretation of the index language with respect to a CwF. There is nothing novel about our index language, so both sections are standard. However, we rename some of the standard terminology to fit into the present setting, e.g. instead of dependent types we have dependent sorts.
 
-\subsection{Categories with families}
+\subsubsection{Categories with families}
 
 A Category-with-Families (CwF) consists of 
 \begin{itemize}
@@ -419,7 +419,7 @@ $= \frak q(\frak q (f, X), Y) \circ \mathit{App}_{X \{ f \}, Y \{ \frak q(f, \si
 
 % TODO: the + notation in the above definition is not defined
 
-\subsection{Interpretation}
+\subsubsection{Interpretation}
 
 \begin{figure}
 \begin{small}
@@ -465,10 +465,26 @@ $\sem{\{ \blum{a : str} \mid \blum{i} \}}_\omega \gamma \defeq \{ f \mid f(\epsi
 $\sem{\bigvee \tau}_{\omega} \gamma \defeq \bigcup_{M \in \sem{\blum{q}}_\omega} (\sem{\tau}_{\omega} \gamma)_M$
 \end{tabular}
 
-\caption{Direct semantics for non-operational kinding rules}
+\caption{Direct-style semantics for non-operational kinding rules}
 \label{fig:kindsem-direct}
 \Description[Direct semantics for non-operational kinding]{Direct semantics for non-operational kinding rules}
 \end{figure*}
+
+\begin{figure}
+\begin{mathpar}
+\inferrule
+  {f \defeq \sem{\blum{\Omega} \mid \Gamma \vdash \tau : \forall \blum{q}. \rho} : \sem{\blum{\Omega \vdash \Gamma}} \to \Pi_{\blum{\Omega}, \blum{q}} \sem{\blum{\Omega, a : q} \vdash \rho} \\ M \defeq \sem{\blum{\Omega \vdash j : q}} \in \mathit{In}(\sem{\blum{\Omega}}, \sem{\blum{\Omega \vdash q}})}
+  {\sem{\blum{\Omega} \mid \Gamma \vdash \tau~[~\blum{j}~] : \rho} \defeq \overline{M}^{~*}(f^\sharp)}
+\and
+\inferrule
+  {X \defeq \sem{\blum{\Omega \vdash q}} \in \mathit{St}(\Omega) \\ 
+   f \defeq \sem{\blum{\Omega,a:q} \mid \Gamma \vdash \tau : \kappa} : \frak p (X)^* \sem{\blum{\Omega} \vdash \Gamma} \to\sem{\blum{\Omega,a : q} \vdash \kappa}}
+  {\sem{\blum{\Omega} \mid \Gamma \vdash \lambda \blum{a : q}. \tau : \forall \blum{q}. \kappa} \defeq 
+   f^\flat}
+\end{mathpar} 
+
+\caption{Compositional-style semantics for operational kinding rules}
+\end{figure}
 
 Our kinding and kind formation judgments are interpreted in terms of the fibration $\mathit{Fam}(\mbf{Sets})$. We assume basic knowledge of fibrations \cite{}. A kind-in-sorting-context $\blum{\Omega} \vdash \kappa$ is interpreted as an object of $\mathit{Fam}(\mbf{Sets})$ over $\sem{\blum{\Omega}}$, concretely a $\sem{\blum{\Omega}}$-indexed family of sets. For kind contexts $\Gamma = x_1:\kappa_1,\ldots,x_n : \kappa_n$, the kinding context formation judgment $\blum{\Omega} \vdash \Gamma$ is interpreted as the product $\sem{\blum{\Omega} \vdash \kappa_1} \times \cdots \times \sem{\blum{\Omega} \vdash \kappa_n}$ in the fibre category $\mathit{Fam}(\mbf{Sets})_{\sem{\blum{\Omega}}}$. A kinding judgment $\blum{\Omega} \mid \Gamma \vdash \tau : \kappa$ is interpreted as a arrow of $\mathit{Fam}(\mbf{Sets})$ from $\sem{\blum{\Omega} \vdash \Gamma}$ to $\sem{\blum{\Omega} \vdash \kappa}$. 
 
