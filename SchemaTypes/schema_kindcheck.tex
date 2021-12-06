@@ -499,13 +499,13 @@ $\sem{\bigvee \tau}_{\omega} \gamma \defeq \bigcup_{M \in \sem{\blum{q}}_\omega}
 \begin{mathpar}
 \inferrule
   {f \defeq \sem{\blum{\Omega} \mid \Gamma \vdash \tau : \forall \blum{q}. \rho} : \sem{\blum{\Omega \vdash \Gamma}} \to \Pi_{\blum{\Omega}, \blum{q}} \sem{\blum{\Omega, a : q} \vdash \rho} \\ M \defeq \sem{\blum{\Omega \vdash j : q}} \in \mathit{In}(\sem{\blum{\Omega}}, \sem{\blum{\Omega \vdash q}})}
-  {\sem{\blum{\Omega} \mid \Gamma \vdash \tau~[~\blum{j}~] : \rho} \defeq \overline{M}^{~*}(f^\sharp)}
+  {\sem{\blum{\Omega} \mid \Gamma \vdash \tau~[~\blum{j}~] : \rho} \defeq \overline{M}^{~*}(f^\flat)}
 \and
 \inferrule
   {X \defeq \sem{\blum{\Omega \vdash q}} \in \mathit{St}(\Omega) \\ 
    f \defeq \sem{\blum{\Omega,a:q} \mid \Gamma \vdash \tau : \kappa} : \frak p (X)^* \sem{\blum{\Omega} \vdash \Gamma} \to\sem{\blum{\Omega,a : q} \vdash \kappa}}
   {\sem{\blum{\Omega} \mid \Gamma \vdash \lambda \blum{a : q}. \tau : \forall \blum{q}. \kappa} \defeq 
-   f^\flat}
+   f^\sharp}
 \end{mathpar} 
 
 \caption{Semantics for abstraction and application}
@@ -518,9 +518,9 @@ Our kinding and kind formation judgments are interpreted in terms of the fibrati
 \begin{figure}
 
 \[\begin{tikzcd}
-	{\mathit{Fam}(\mathbf{Sets})_\Omega} && {\mathit{Fam}(\mathbf{Sets})_\Psi} \\
+	{\mathbb E_\Omega} && {\mathbb E_\Psi} \\
 	\\
-	{\mathit{Fam}(\mathbf{Sets})_{\Omega.X}} && {\mathit{Fam}(\mathbf{Sets})_{\Psi . X \{ u \}}}
+	{\mathbb E_{\Omega.X}} && {\mathbb E_{\Psi . X \{ u \}}}
 	\arrow["{\frak p(X)^*}"', curve={height=12pt}, from=1-1, to=3-1]
 	\arrow["{\Pi_{X}}"', curve={height=12pt}, from=3-1, to=1-1]
 	\arrow["{u^*}", from=1-1, to=1-3]
@@ -700,6 +700,15 @@ $$\sem{\blum{\Omega},\blum{\Psi}[\blum{i}/\blum{b}]; \blum{A}[\blum{i}/\blum{b}]
 TODO
 \end{proof}
 
+\begin{lemma}
+\label{lemma:indsortsub-syntax}
+If $\blum{\Omega, a:p,\Psi \vdash q}$ and $\blum{\Omega \vdash j : p}$ then $\blum{\Omega, \Psi[j/a] \vdash q[j/a]}$.
+\end{lemma}
+
+\begin{proof}
+TODO
+\end{proof}
+
 Now that the above standard lemmas have been established, we state and prove our substitution lemmas.
 
 \begin{lemma}
@@ -708,23 +717,94 @@ and $$\mbf{T}(\blum{\Omega} ; \blum{a : p} ; \blum{\Psi} ; \blu{j})^* \sem{\blum
 \end{lemma}
 
 \begin{proof}
+By induction on the proof of $\blum{\Omega,a : p, \Psi} \vdash \kappa$.\\
+\begin{description}
+\item[Case \begin{sc}WFK-IndAbs\end{sc}:]~\\
+We have $\kappa = \forall \blum{q}. \kappa'$. Our premises are $\blum{\Omega,a : p, \Psi \vdash q}$ and $\blum{\Omega, a : p, \Psi, b : q} \mid \Gamma \vdash \kappa'$.
+Applying lemma \ref{lemma:indsortsub-syntax} we have $\blum{\Omega, \Psi[j/a] \vdash q[j/a]}$ and hence $\sem{\blum{\Omega, \Psi[j/a] \vdash q[j/a]}} \downarrow$.
+By lemma \ref{lemma:indsortsub} we have $$\sem{\blum{\Omega,a:p,\Psi \vdash q}} \{ \mbf{T}(\blum{\Omega} ; \blum{p} ; \blum{\Psi} ; \blu{j}) \} = \sem{\blum{\Omega,\Psi[\blum{j}/\blum{a}] \vdash q[\blum{j}/\blum{a}]}}$$
+Applying the IH to the second premise we have
+$$\blum{\Omega,\Psi[j/a],b : q[j/a]} \mid \Gamma[\blum{j}/\blum{a}] \vdash \kappa'[\blum{j}/\blum{a}]$$
+and
+$$ \mbf{T}(\blum{\Omega} ; \blum{p} ; \blum{\Psi}, \blum{b : q} ; \blu{j})^* \sem{\blum{\Omega, a : p, \Psi, b : q} \mid \Gamma \vdash \kappa'} \cong \sem{\blum{\Omega, \Psi[\blum{j}/a], b : q[\blum{j}/\blum{a}]} \mid \Gamma[\blum{j}/\blum{a}] \vdash \kappa'[\blum{j}/\blum{a}]} $$
+Applying \begin{sc}WFK-IndAbs\end{sc} we get
+\begin{mathpar}
+\inferrule
+  {\blum{\Omega,\Psi[j/a] \vdash q[j/a]} \\ \blum{\Omega,\Psi[j/a],b : q[j/a]} \mid \Gamma[\blum{j}/\blum{a}] \vdash \kappa'[\blum{j}/\blum{a}]}
+  {\blum{\Omega,\Psi[j/a]} \mid \Gamma[\blum{j}/\blum{a}] \vdash \forall \blum{q[j/a]}. \kappa'[\blum{j}/\blum{a}]}
+\end{mathpar}
+Additionally, we have\\~\\
+$\mbf{T}(\blum{\Omega} ; \blum{a : p} ; \blum{\Psi} ; \blu{j})^* \sem{\blum{\Omega,a:p,\Psi} \vdash \forall \blum{q}. \kappa'}$\\
+$= \mbf{T}(\blum{\Omega} ; \blum{a : p} ; \blum{\Psi} ; \blu{j})^* \Pi_{\sem{\blum{\Omega, a : p, \Psi \vdash q}}} \sem{\blum{\Omega,a:p,\Psi,b:q} \vdash \kappa'}$\\
+$\cong \Pi_{ \sem{\blum{\Omega, a : p, \Psi \vdash q}} \{ \mbf{T}(\blum{\Omega} ; \blum{a : p} ; \blum{\Psi} ; \blu{j}) \} } \frak q(\mbf{T}(\blum{\Omega} ; \blum{a : p} ; \blum{\Psi} ; \blu{j}) , \sem{\blum{\Omega, a:p, \Psi \vdash q}})^* \sem{\blum{\Omega,a:p,\Psi,b : q} \vdash \kappa'}$\\
+$= \Pi_{ \sem{\blum{\Omega, \Psi[j/a] \vdash q[j/a]}} } \frak q(\mbf{T}(\blum{\Omega} ; \blum{a : p} ; \blum{\Psi} ; \blu{j}) , \sem{\blum{\Omega, a:p, \Psi \vdash q}})^* \sem{\blum{\Omega,a:p,\Psi,b:q} \vdash \kappa'}$\\
+$= \Pi_{ \sem{\blum{\Omega, \Psi[j/a] \vdash q[j/a]}} } \mbf T(\blum{\Omega}; \blum{p} ; \blum{(\Psi, a : q)}; \blum{j})^* \sem{\blum{\Omega,a:p,\Psi,b:q} \vdash \kappa'}$\\
+$= \Pi_{ \sem{\blum{\Omega, \Psi[j/a] \vdash q[j/a]}} } \sem{\blum{\Omega,\Psi[j/a],b:q[j/a]} \vdash \kappa'[\blum{j}/\blum{a}]}$\\
+$= \sem{\blum{\Omega,\Psi[j/a]} \vdash \forall \blum{q[j/a]}. \kappa'[\blum{j}/\blum{a}]}$\\
+$= \sem{\blum{\Omega,\Psi[j/a]} \vdash (\forall \blum{q}. \kappa')[\blum{j}/\blum{a}]}$\\
+
+\item[Other cases:]~\\
 TODO
+\end{description}
+
 \end{proof}
 
 \begin{lemma}
 If $\blum{\Omega,a : p, \Psi} \mid \Gamma \vdash \tau : \kappa$ and $\blum{\Omega \vdash j : p}$ then $\blum{\Omega, \Psi[j/a]} \mid \Gamma[\blum{j}/\blum{p}] \vdash \tau[\blum{j}/\blum{p}] : \kappa[\blum{j}/\blum{p}]$ and
-$$\mbf{T}(\blum{\Omega} ; \blum{a : p} ; \blum{\Psi} ; \blu{j})^* \sem{\blum{\Omega, a:p} \mid \Gamma \vdash \tau : \kappa} \cong \sem{\blum{\Omega} \mid \Gamma[\blum{j}/\blum{a}] \vdash \tau[\blum{j}/\blum{a}] : \kappa[\blum{j}/\blum{a}]}$$
+$$\mbf{T}(\blum{\Omega} ; \blum{a : p} ; \blum{\Psi} ; \blu{j})^* \sem{\blum{\Omega, a:p, \Psi} \mid \Gamma \vdash \tau : \kappa} \cong \sem{\blum{\Omega, \Psi[j/a]} \mid \Gamma[\blum{j}/\blum{a}] \vdash \tau[\blum{j}/\blum{a}] : \kappa[\blum{j}/\blum{a}]}$$
 \end{lemma}
 
 \begin{proof}
 By induction on the proof of $\blum{\Omega, a : p, \Psi} \mid \Gamma \vdash \tau : \kappa$.
 \begin{description}
 \item [Case \sc{K-IndAbs}:]~\\
-We have $\tau = \lambda \blum{b : q}. \tau'$ and $\kappa = \forall \blum{q}. \kappa'$.
-By lemma \ref{lemma:indsortsub} we have $$\mbf{T}(\blum{\Omega} ; \blum{a : p} ; \blum{\Psi} ; \blu{j})^*\sem{\blum{\Omega,a:p,\Psi \vdash q}} = \sem{\blum{\Omega,\Psi[j/a] \vdash q[j/a]}}$$
-Applying the IH to the second premise we have $$\blum{\Omega, b \! : \! q[j/a]} \mid \Gamma[j/a] \vdash \tau[j/a] : \kappa[j/a]$$
+We have $\tau = \lambda \blum{b : q}. \tau'$ and $\kappa = \forall \blum{q}. \kappa'$. Our premises are $\blum{\Omega, a:p, \Psi \vdash q}$ and $\blum{\Omega, a : p, \Psi, b : q} \mid \Gamma \vdash \tau' : \kappa'$.
+Applying lemma \ref{lemma:indsortsub-syntax} we have $\blum{\Omega, \Psi[j/a] \vdash q[j/a]}$ and hence $\sem{\blum{\Omega, \Psi[j/a] \vdash q[j/a]}} \downarrow$.
+By lemma \ref{lemma:indsortsub} we have $$\sem{\blum{\Omega,a:p,\Psi \vdash q}} \{ \mbf{T}(\blum{\Omega} ; \blum{p} ; \blum{\Psi} ; \blu{j}) \} = \sem{\blum{\Omega,\Psi[\blum{j}/\blum{a}] \vdash q[\blum{j}/\blum{a}]}}$$
+Applying the IH to the second premise we have $$\blum{\Omega, \Psi[\blum{j}/\blum{a}], b : q[\blum{j}/\blum{a}]} \mid \Gamma[\blum{j}/\blum{a}] \vdash \tau'[\blum{j}/\blum{a}] : \kappa'[\blum{j}/\blum{a}]$$
+and
+$$ \mbf{T}(\blum{\Omega} ; \blum{p} ; \blum{\Psi}, \blum{b : q} ; \blu{j})^* \sem{\blum{\Omega, a : p, \Psi, b : q} \mid \Gamma \vdash \tau' : \kappa'} \cong \sem{\blum{\Omega, \Psi[\blum{j}/a], b : q[\blum{j}/\blum{a}]} \mid \Gamma[\blum{j}/\blum{a}] \vdash \tau'[\blum{j}/\blum{a}] : \kappa'[\blum{j}/\blum{a}]} $$
+Now, applying the \begin{sc}K-IndAbs\end{sc} rule, we get
+\begin{mathpar}
+\inferrule
+  {\blum{\Omega,\Psi[j/a] \vdash q[j/a]} \\ \blum{\Omega,\Psi[j/a],b : q[j/a]} \mid \Gamma[\blum{j}/\blum{a}] \vdash \tau'[\blum{j}/\blum{a}] : \kappa'[\blum{j}/\blum{a}]}
+  {\blum{\Omega,\Psi[j/a]} \mid \Gamma[\blum{j}/\blum{a}] \vdash \lambda \blum{b : q[j/a]}. \tau'[\blum{j}/\blum{a}] : \forall \blum{q[j/a]}. \kappa'[\blum{j}/\blum{a}]}
+\end{mathpar} 
+
+We prove ?? by cases on $\Psi$:
+
+\begin{description}
+
+\item[Case $\blum{\Psi} = \blum{\diamond}$:]~\\
+TODO.
+
+\item[Case $\blum{\Psi} = \blum{(\Psi', c : r)}$~:]~\\
+Let $\alpha : \frak p(\sem{\blum{\Omega,a:p,\Psi ; q}} \{ \mbf{T}(\blum{\Omega}; \blum{p}; \blum{\Psi}; \blum{j} ) \})^* \mbf{T}(\blum{\Omega}; \blum{p}; \blum{\Psi}; \blum{j} )^* \to \frak q(\mbf{T}(\blum{\Omega};\blum{p};\blum{\Psi};\blum{j})^*, \sem{\blum{\Omega,a:p,\Psi ; q}})^* \frak p(\sem{\blum{\Omega,a:p,\Psi ; q}})^*$\\
+i.e. $\alpha : \frak p(\sem{\blum{\Omega,\Psi[j/a] ; q[j/a]}})^* \mbf{T}(\blum{\Omega}; \blum{p}; \blum{\Psi}; \blum{j} )^* \to \frak q(\mbf{T}(\blum{\Omega};\blum{p};\blum{\Psi};\blum{j})^*, \sem{\blum{\Omega,a:p,\Psi ; q}})^* \frak p(\sem{\blum{\Omega,a:p,\Psi ; q}})^*$\\~\\
+%Let $\alpha : \frak p(\blum{\Omega,\Psi[j/a] \vdash q})^* \frak q(\mbf{T}(\blum{\Omega};\blum{p};\blum{\Psi};\blum{j}), \sem{\blum{\Omega,a:p,\Psi ; q}})^* \to  ?   $\\
+$\sem{\blum{\Omega, \Psi'[j/a]} \mid \Gamma[\blum{j}/\blum{a}] \vdash \lambda \blum{b : q[j/a]}. \tau'[\blum{j}/\blum{a}] : \forall \blum{q[j/a]}. \kappa'[\blum{j}/\blum{a}]}$\\
+$= \sem{\blum{\Omega,\Psi'[j/a], b : q[j/a]} \mid \Gamma[\blum{j}/\blum{a}] \vdash \tau'[\blum{j}/\blum{a}] : \kappa'[\blum{j} / \blum{a}] }^\sharp$\\
+$\cong (\mbf{T}(\blum{\Omega}; \blum{p} ; \blum{(\Psi, b:q)} ; \blum{j})^* \sem{\blum{\Omega, a : p, \Psi, b : q} \mid \Gamma \vdash \tau' : \kappa'})^\sharp$\\
+$= (\frak q(\mbf{T}(\blum{\Omega};\blum{p};\blum{\Psi};\blum{j}), \sem{\blum{\Omega,a:p,\Psi ; q}})^* \sem{\blum{\Omega, a : p, \Psi, b : q} \mid \Gamma \vdash \tau' : \kappa'})^\sharp$\\
+$\cong (\frak q(\mbf{T}(\blum{\Omega};\blum{p};\blum{\Psi};\blum{j}), \sem{\blum{\Omega,a:p,\Psi ; q}})^* \sem{\blum{\Omega, a : p, \Psi, b : q} \mid \Gamma \vdash \tau' : \kappa'} \circ \frak p^*(\alpha_{\sem{\blum{\Omega, a:p, b:q} \vdash \Gamma}}) )^\sharp$\\
+
+$\cong (\Pi_{\sem{\blum{q}}}(\alpha) ; )$\\~\\
+
+$\mbf{T}(\blum{\Omega} ; \blum{p} ; (\blum{\Psi}, \blum{c : r}) ; \blum{j})^*\sem{\blum{\Omega, a : p, \Psi} \mid \Gamma \vdash \lambda \blum{b : q}. \tau' : \forall \blum{q}. \kappa'}$\\
+$= \frak q(\mbf{T}(\blum{\Omega};\blum{p};\blum{\Psi};\blum{j}), \sem{\blum{\Omega,a:p,\Psi ; r}})^* \sem{\blum{\Omega, a : p, \Psi} \mid \Gamma \vdash \lambda \blum{b : q}. \tau' : \forall \blum{q}. \kappa'}$\\
+$= \frak q(\mbf{T}(\blum{\Omega};\blum{p};\blum{\Psi};\blum{j}), \sem{\blum{\Omega,a:p,\Psi ; r}})^* \sem{\blum{\Omega, a : p, \Psi, b : q} \mid \Gamma \vdash \tau' : \kappa'}^\sharp$\\
+%todo\\
+%$= $
+
+
 \end{description}
 
+We also have\\~\\
+$\mbf{T}(\blum{\Omega} ; \blum{p} ; (\blum{\Psi}, \blum{b : q}) ; \blum{j})^*\sem{\blum{\Omega, a : p, \Psi} \mid \Gamma \vdash \lambda \blum{b : q}. \tau' : \forall \blum{q}. \kappa'}$\\
+$= \frak q(\mbf{T}(\blum{\Omega};\blum{p};\blum{\Psi};\blum{j}), \sem{\blum{\Omega,a:p,\Psi ; q}})^* \sem{\blum{\Omega, a : p, \Psi} \mid \Gamma \vdash \lambda \blum{b : q}. \tau' : \forall \blum{q}. \kappa'}$\\
+
+
+\end{description}
 \end{proof}
 
 %\begin{figure}
