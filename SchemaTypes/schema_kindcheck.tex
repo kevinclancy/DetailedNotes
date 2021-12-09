@@ -8,6 +8,7 @@
 \usepackage{tikz}
 \usepackage{quiver}
 \usepackage{bussproofs}
+\usepackage{amsmath}
 
 \usetikzlibrary{cd}
 
@@ -733,6 +734,31 @@ Applying \begin{sc}WFK-IndAbs\end{sc} we get
   {\blum{\Omega,\Psi[j/a] \vdash q[j/a]} \\ \blum{\Omega,\Psi[j/a],b : q[j/a]} \mid \Gamma[\blum{j}/\blum{a}] \vdash \kappa'[\blum{j}/\blum{a}]}
   {\blum{\Omega,\Psi[j/a]} \mid \Gamma[\blum{j}/\blum{a}] \vdash \forall \blum{q[j/a]}. \kappa'[\blum{j}/\blum{a}]}
 \end{mathpar}
+
+Additionally, we have\\~\\
+\begin{align*}
+ &\quad \mbf{T}(\blum{\Omega} ; \blum{a : p} ; \blum{\Psi} ; \blu{j})^* \sem{\blum{\Omega,a:p,\Psi} \vdash \forall \blum{q}. \kappa'}\\
+=&\qquad \text{\{ Interpretation of \begin{sc}KF-Forall\end{sc} \}} \\
+ &\quad \mbf{T}(\blum{\Omega} ; \blum{a : p} ; \blum{\Psi} ; \blu{j})^* \Pi_{\sem{\blum{\Omega, a : p, \Psi \vdash q}}} \sem{\blum{\Omega,a:p,\Psi,b:q} \vdash \kappa'}\\
+\cong&\qquad \text{\{ Beck-Chevalley For Dependent Simple Products, taking } \mbf{T}(\blum{\Omega} ; \blum{a : p} ; \blum{\Psi} ; \blu{j}) \text{ as } u \}\\
+ &\quad \Pi_{ \sem{\blum{\Omega, a : p, \Psi \vdash q}} \{ \mbf{T}(\blum{\Omega} ; \blum{a : p} ; \blum{\Psi} ; \blu{j}) \} } \frak q(\mbf{T}(\blum{\Omega} ; \blum{a : p} ; \blum{\Psi} ; \blu{j}) , \sem{\blum{\Omega, a:p, \Psi \vdash q}})^* \sem{\blum{\Omega,a:p,\Psi,b : q} \vdash \kappa'}\\
+=&\qquad \text{ \{ Lemma \ref{lemma:indsortsub} \}}\\
+ &\quad \Pi_{ \sem{\blum{\Omega, \Psi[j/a] \vdash q[j/a]}} } \frak q(\mbf{T}(\blum{\Omega} ; \blum{a : p} ; \blum{\Psi} ; \blu{j}) , \sem{\blum{\Omega, a:p, \Psi \vdash q}})^* \sem{\blum{\Omega,a:p,\Psi,b:q} \vdash \kappa'}\\
+=&\qquad \text{\{ Definition of } \mbf{T} \}\\
+ &\quad \Pi_{ \sem{\blum{\Omega, \Psi[j/a] \vdash q[j/a]}} } \mbf T(\blum{\Omega}; \blum{p} ; \blum{(\Psi, a : q)}; \blum{j})^* \sem{\blum{\Omega,a:p,\Psi,b:q} \vdash \kappa'}\\
+=&\qquad \text{\{ IH \}} \\ 
+ &\quad \Pi_{ \sem{\blum{\Omega, \Psi[j/a] \vdash q[j/a]}} } \sem{\blum{\Omega,\Psi[j/a],b:q[j/a]} \vdash \kappa'[\blum{j}/\blum{a}]}\\
+=&\qquad \text{\{ Interpretation of \begin{sc}KF-Forall\end{sc} \}}\\
+ &\quad \sem{\blum{\Omega,\Psi[j/a]} \vdash \forall \blum{q[j/a]}. \kappa'[\blum{j}/\blum{a}]}\\
+=&\qquad \text{\{ Definition of Index-to-Type Substitution \}}\\
+ &\quad \sem{\blum{\Omega,\Psi[j/a]} \vdash (\forall \blum{q}. \kappa')[\blum{j}/\blum{a}]}
+\end{align*}
+
+%\begin{align*}
+% &\quad \mbf{T}(\blum{\Omega} ; \blum{a : p} ; \blum{\Psi} ; \blu{j})^* \sem{\blum{\Omega,a:p,\Psi} \vdash \forall \blum{q}. \kappa'}\\
+%\end{align*}
+
+\iffalse
 Additionally, we have\\~\\
 $\mbf{T}(\blum{\Omega} ; \blum{a : p} ; \blum{\Psi} ; \blu{j})^* \sem{\blum{\Omega,a:p,\Psi} \vdash \forall \blum{q}. \kappa'}$\\
 $= \mbf{T}(\blum{\Omega} ; \blum{a : p} ; \blum{\Psi} ; \blu{j})^* \Pi_{\sem{\blum{\Omega, a : p, \Psi \vdash q}}} \sem{\blum{\Omega,a:p,\Psi,b:q} \vdash \kappa'}$\\
@@ -742,6 +768,8 @@ $= \Pi_{ \sem{\blum{\Omega, \Psi[j/a] \vdash q[j/a]}} } \mbf T(\blum{\Omega}; \b
 $= \Pi_{ \sem{\blum{\Omega, \Psi[j/a] \vdash q[j/a]}} } \sem{\blum{\Omega,\Psi[j/a],b:q[j/a]} \vdash \kappa'[\blum{j}/\blum{a}]}$\\
 $= \sem{\blum{\Omega,\Psi[j/a]} \vdash \forall \blum{q[j/a]}. \kappa'[\blum{j}/\blum{a}]}$\\
 $= \sem{\blum{\Omega,\Psi[j/a]} \vdash (\forall \blum{q}. \kappa')[\blum{j}/\blum{a}]}$\\
+\fi
+
 
 \item[Other cases:]~\\
 TODO
