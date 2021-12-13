@@ -538,18 +538,23 @@ We define a \emph{CwF-fibration} as a pair $(\mathcal C, p)$ where $\mathcal C$ 
 
 We say that a CwF-fibration has \emph{dependent simple products} if 
 \begin{itemize}
-\item For all contexts $\Omega$ and all $X \in \mathit{St}(\Omega)$ the functor $\frak p (X)^*$ has a right adjoint $\Pi_{X}$.
-\item For every $u : \Psi \to \Omega$ and $X \in \mathit{St}(\Omega)$ the canonical natural transformation $u^* \Pi_{X} \Longrightarrow \Pi_{X \{ u \}} \frak q(u, X)^*$ is an isomorphism.
+\item For all contexts $\Omega$ and all $X \in \mathit{St}(\Omega)$ the functor $\frak p (X)^*$ has a right adjoint $\Pi_{X}$. (We write $(-)^\sharp$ for the transposition from $\frak p(X)^*(A) \to B$ to $A \to \Pi_X(B)$, and $(-)^\flat$ for transposition in the opposite direction.)
+\item The above adjunction satisfies a \emph{flip-flop property}: for contexts $\Omega,\Psi$, context arrows $u : \Psi \to \Omega$, sorts $X \in \mathit{St}(\Omega)$, total objects $\Gamma$ over $\Omega$, total objects $\Delta$ over $\Omega . X$, and total arrows $f : \frak p(X)^*(\Gamma) \to \Delta$. We have $u^*f^\sharp \cong (\frak q(u, X)^* f)^\sharp$.
+\item For every $u : \Psi \to \Omega$ and $X \in \mathit{St}(\Omega)$ the canonical natural transformation $u^* \Pi_{X} \Longrightarrow \Pi_{X \{ u \}} \frak q(u, X)^*$ is an isomorphism. This is typically called a \emph{Beck-Chevalley condition}.
 \end{itemize}
 
-In the latter point, the \emph{canonical transformation} is obtained as follows. First, it is a standard fact of fibrations that for arrows $u : \Omega \to \Psi$ and $v : \Psi \to \Upsilon$ of the base category, we have $u^*v^* \cong (v \circ u)^*$. Hence we obtain \\~\\
+It is a standard fact of fibrations that for arrows $u : \Omega \to \Psi$ and $v : \Psi \to \Upsilon$ of the base category, we have $u^*v^* \cong (v \circ u)^*$. From this we derive a natural isomorphism $\frak q(u,X)^* \frak p(X)^* \cong \frak p(X \{ u \})^* u^*$, which will clarify the second and third points:\\
+
 $\frak q(u,X)^* \frak p(X)^*$\\
-$\cong (\frak p(X) \circ \frak q(u,X))^*$\\ 
-$= (\frak p(X) \circ \langle u \circ \frak p(X \{ u \}), \frak v_{X \{ u \}} \rangle)^*$\\
-$= (u \circ \frak p(X \{ u \}))^*$\\
-$= \frak p(X \{ u \})^* u^*$\\~\\
-The canonical transformation is then the transpose of\\~\\
-$\frak p(X \{u \})^* u^* \Pi_X \overset{\cong}{\to} \frak q(u,X)^* \frak p(X)^* \Pi_X \overset{\frak q(u,X) \epsilon}{\to} \frak q(u,X)^*$
+$\cong \langle u \circ \frak p^*(X \{ u \}), \frak v_{X \{ u \}} \rangle_X^* \frak p(X)^*$\\
+$= (\frak p(X) \circ \langle u \circ \frak p^*(X \{ u \}), \frak v_{X \{ u \}} \rangle_X)^*$\\
+$= (u \circ \frak p(X \{ u \})^*)^*$\\
+$\cong \frak p(X \{ u \})^* u^*$\\
+
+In the second point, it is not immediately clear that the right-hand side of the isomorphism is ``well-typed''. However, applying our isomorphism to the domain of $\frak q(z, X)^* f$ shows its domain is $\frak q(u,X)^* \frak p(X)^*(\Gamma) \cong \frak p(X \{ u \})^* u^*(\Gamma)$.
+
+In the third point, the \emph{canonical transformation} is obtained as the transpose of
+$$\frak p(X \{u \})^* u^* \Pi_X \overset{\cong}{\to} \frak q(u,X)^* \frak p(X)^* \Pi_X \overset{\frak q(u,X) \epsilon}{\to} \frak q(u,X)^*$$
 
 \subsubsection{Set-theoretic Dependent Simple Products}
 
@@ -568,8 +573,8 @@ with an underlying correspondence
 \UnaryInfC{$\frak p (X)^* \fm{A_\omega}{\omega \in \Omega} = \fm{A_\omega}{(\omega,x) \in \Omega . X} \longrightarrow \fm{B_{(\omega, x)}}{(\omega,x) \in \Omega . X}$}
 
 \end{prooftree}
-From top to bottom, this bijection, which we'll call $(-)^\sharp$ takes an arrow $$\fm{\langle f_{(\omega,x)} : A_\omega \to B_{(\omega,x)} \rangle_{x \in X_\omega}}{\omega \in \Omega}$$ to $$\fm{f_{(\omega,x)} : A_\omega \to B_{(\omega,x)}}{(\omega,x) \in \Omega.X}$$
-From bottom to top, $(-)^\sharp$'s inverse $(-)^\flat$ takes an arrow $$(f_{(\omega,x)} : A_\omega \to B_{(\omega,x)})_{(\omega,x) \in \Omega . X}$$ to $$\fm{\Pi_{x \in X_\omega} f_{(\omega,x)}}{\omega \in \Omega}$$ 
+From top to bottom, $(-)^\sharp$ takes an arrow $$\fm{\langle f_{(\omega,x)} : A_\omega \to B_{(\omega,x)} \rangle_{x \in X_\omega}}{\omega \in \Omega}$$ to $$\fm{f_{(\omega,x)} : A_\omega \to B_{(\omega,x)}}{(\omega,x) \in \Omega.X}$$
+From bottom to top, $(-)^\flat$ takes an arrow $$(f_{(\omega,x)} : A_\omega \to B_{(\omega,x)})_{(\omega,x) \in \Omega . X}$$ to $$\fm{\Pi_{x \in X_\omega} f_{(\omega,x)}}{\omega \in \Omega}$$ 
 
 In this set-theoretic model, we have that $\Pi_{X \{ u \}} \frak q (u, X)^* = u^* \Pi_{X}$, and furthermore that the canonical transformation is the identity at this functor. Clearly, then, this model satisfies the Beck-Chevalley condition for dependent simple products. % double check this
 
@@ -778,6 +783,84 @@ TODO
 \end{proof}
 
 \begin{lemma}
+If $\blum{\Omega, a : p, \Psi} \vdash \tau$ then $\blum{\Omega, a : p, \Psi, b : q} \vdash \tau$ and $$\sem{\blum{\Omega, a : p, \Psi, b : q \vdash \tau}} = \frak p^*(\sem{\blum{q}})(\sem{\blum{\Omega, a : p, \Psi} \vdash \tau})$$
+\end{lemma}
+
+\begin{proof}
+TODO 
+\end{proof}
+
+\begin{corollary}
+If $\blum{\Omega, a : p, \Psi} \vdash \Gamma$ then $\blum{\Omega, a : p, \Psi, b : q} \vdash \Gamma$ and $$\sem{\blum{\Omega, a : p, \Psi, b : q \vdash \Gamma}} = \frak p^*(\sem{\blum{q}})(\sem{\blum{\Omega, a : p, \Psi} \vdash \Gamma})$$
+\end{corollary}
+
+
+\begin{lemma}
+For contexts $\Omega,\Psi$, context arrows $z : \Psi \to \Omega$, sorts $X \in \mathit{St}(\Omega)$, total objects $\Gamma$ over $\Omega$, total objects $\Delta$ over $\Omega . X$, and total arrows $f : \frak p(X)^*(\Gamma) \to \Delta$. We have 
+$$z^*f^\sharp \cong (\frak q(z, X)^* f)^\sharp$$
+\end{lemma}
+
+It's not immediately clear that the right-hand side is ``well-typed''. However, some algebraic manipulation of the domain of $\frak q(z, X)^* f$ shows this: \\~\\
+$\frak q(z,X)^* \frak p(X)^*(\Gamma)$\\
+$= \langle z \circ \frak p^*(X \{ z \}), \frak v_{X \{ z \}} \rangle_X^* \frak p(X)^*(\Gamma)$\\
+$= (\frak p(X) \circ \langle z \circ \frak p^*(X \{ z \}), \frak v_{X \{ z \}} \rangle_X)^*(\Gamma)$\\
+$= (z \circ \frak p(X \{ z \})^*)^*(\Gamma)$\\
+$= (p(X \{ z \})^* z^*(\Gamma)$
+
+\begin{proof}
+a
+\end{proof}
+
+
+\begin{lemma}
+For all $f : \frak p^*(\sem{\blum{\Omega, a : p, \Psi \vdash q}})(\Omega) \to \Psi$ we have
+$$\mbf{T}(\blum{\Omega; p; \Psi; j})^* f^\sharp \cong (\mbf{T}(\blum{\Omega; p ; (\Psi, b : q); j})^* f)^\sharp$$
+\end{lemma}
+
+
+\begin{proof}
+We prove by induction on the length of $\Psi$.
+
+\begin{description}
+
+\item[Case $\blum{\Psi = \diamond}$]~\\
+We must prove
+$$\mbf{T}(\blum{\Omega;p;\diamond;j})^* f^\sharp \cong (\mbf{T}(\blum{\Omega ; p ; (b : q) ; j})^* f)^\sharp$$
+Expanding the left side gives
+$$(\overline{\sem{\blum{\Omega;j}}})^* f^\sharp \cong (\mbf{T}(\blum{\Omega ; p ; (b : q) ; j})^* f)^\sharp$$
+And then expanding the right side gives
+$$(\overline{\sem{\blum{\Omega;j}}})^* f^\sharp \cong (\frak q( \overline{\sem{\blum{\Omega;j}}}, \sem{\blum{\Omega,a:p;q}})^* f)^\sharp$$
+and
+$$(\overline{\sem{\blum{\Omega;j}}})^* f^\sharp \cong (\langle \overline{\sem{\blum{\Omega;j}}} \circ \frak p(\sem{\blum{\Omega,a:p ; q}} \{ \overline{\sem{\blum{\Omega ; j}}}) \}), \frak v_{\sem{\blum{\Omega,a:p ; q}} \{ \overline{\sem{\blum{\Omega ; j}}} \}} \rangle^* f)^\sharp$$
+i.e.
+$$(\overline{\sem{\blum{\Omega;j}}})^* f^\sharp \cong (\langle \overline{\sem{\blum{\Omega;j}}} \circ \frak p(\sem{\blum{\Omega ; q[j/a]}}) \}), \frak v_{\sem{\blum{\Omega ; q[j/a]}}} \rangle^* f)^\sharp$$
+
+\item[Case $\blum{\Psi} = \blum{\Psi', c: r}$]
+Expanding the right-hand side, we must prove.
+
+$$\mbf{T}(\blum{\Omega; p; \Psi; j})^* f^\sharp \cong (\frak q(\mbf{T}(\blum{\Omega; p ; \Psi; j}), \sem{\blum{\Omega, a:p, \Psi; q}})^* f)^\sharp $$
+
+Expanding again gives
+
+$$\mbf{T}(\blum{\Omega; p; \Psi; j})^* f^\sharp \cong (\langle \mbf{T}(\blum{\Omega; p ; \Psi; j}) \circ \frak p, \frak v_{\sem{\blum{\Omega, a:p, \Psi; q}}} \rangle^* f)^\sharp $$
+
+\end{description}
+
+\end{proof}
+
+\begin{lemma}
+If $\blum{\Omega; a :p; \Psi; b : q} \mid \Gamma \vdash \tau : \kappa$ and $\blum{\Omega, a : p, \Psi} \vdash \Gamma$ then $$\mbf{T}(\blum{\Omega; p; \Psi; j})^* \sem{\blum{\Omega, a : p, \Psi, b : q} \mid \Gamma \vdash \tau : \kappa}^\sharp \cong (\mbf{T}(\blum{\Omega; p ; (\Psi, b : q); j})^* \sem{\blum{\Omega ; a : p, \Psi, b : q} \mid \Gamma \vdash \tau : \kappa})^\sharp$$ 
+\end{lemma}
+
+\begin{proof}
+By induction on the proof of $\blum{\Omega,a:p,\Psi,b:q} \mid \Gamma \vdash \tau : \kappa$.
+\begin{description}
+\item[Case \begin{sc}K-IndAbs\end{sc}:]~\\
+TODO.
+\end{description}
+\end{proof}
+
+\begin{lemma}
 If $\blum{\Omega,a : p, \Psi} \mid \Gamma \vdash \tau : \kappa$ and $\blum{\Omega \vdash j : p}$ then $\blum{\Omega, \Psi[j/a]} \mid \Gamma[\blum{j}/\blum{p}] \vdash \tau[\blum{j}/\blum{p}] : \kappa[\blum{j}/\blum{p}]$ and
 $$\mbf{T}(\blum{\Omega} ; \blum{a : p} ; \blum{\Psi} ; \blu{j})^* \sem{\blum{\Omega, a:p, \Psi} \mid \Gamma \vdash \tau : \kappa} \cong \sem{\blum{\Omega, \Psi[j/a]} \mid \Gamma[\blum{j}/\blum{a}] \vdash \tau[\blum{j}/\blum{a}] : \kappa[\blum{j}/\blum{a}]}$$
 \end{lemma}
@@ -813,7 +896,12 @@ i.e. $\alpha : \frak p(\sem{\blum{\Omega,\Psi[j/a] ; q[j/a]}})^* \mbf{T}(\blum{\
 $\sem{\blum{\Omega, \Psi'[j/a]} \mid \Gamma[\blum{j}/\blum{a}] \vdash \lambda \blum{b : q[j/a]}. \tau'[\blum{j}/\blum{a}] : \forall \blum{q[j/a]}. \kappa'[\blum{j}/\blum{a}]}$\\
 $= \sem{\blum{\Omega,\Psi'[j/a], b : q[j/a]} \mid \Gamma[\blum{j}/\blum{a}] \vdash \tau'[\blum{j}/\blum{a}] : \kappa'[\blum{j} / \blum{a}] }^\sharp$\\
 $\cong (\mbf{T}(\blum{\Omega}; \blum{p} ; \blum{(\Psi, b:q)} ; \blum{j})^* \sem{\blum{\Omega, a : p, \Psi, b : q} \mid \Gamma \vdash \tau' : \kappa'})^\sharp$\\
-$= (\frak q(\mbf{T}(\blum{\Omega};\blum{p};\blum{\Psi};\blum{j}), \sem{\blum{\Omega,a:p,\Psi ; q}})^* \sem{\blum{\Omega, a : p, \Psi, b : q} \mid \Gamma \vdash \tau' : \kappa'})^\sharp$\\
+%$= (\frak q(\mbf{T}(\blum{\Omega};\blum{p};\blum{\Psi};\blum{j}), \sem{\blum{\Omega,a:p,\Psi ; q}})^* \sem{\blum{\Omega, a : p, \Psi, b : q} \mid \Gamma \vdash \tau' : \kappa'})^\sharp$\\
+%$= (\langle \mbf{T}(\blum{\Omega};\blum{p};\blum{\Psi};\blum{j}) \circ \frak p(\sem{\blum{q}} \{ \mbf{T}(\blum{\Omega};\blum{p};\blum{\Psi};\blum{j}) \}), \frak v_{\sem{\blum{q}}  \{ \mbf{T}(\blum{\Omega};\blum{p};\blum{\Psi};\blum{j}) \}} \rangle_{\sem{\blum{q}}})^* \sem{\blum{\Omega, a : p, \Psi, b : q} \mid \Gamma \vdash \tau' : \kappa'})^\sharp$\\
+
+
+\iffalse
+
 $\cong (\frak q(\mbf{T}(\blum{\Omega};\blum{p};\blum{\Psi};\blum{j}), \sem{\blum{\Omega,a:p,\Psi ; q}})^* \sem{\blum{\Omega, a : p, \Psi, b : q} \mid \Gamma \vdash \tau' : \kappa'} \circ \frak p^*(\alpha_{\sem{\blum{\Omega, a:p, b:q} \vdash \Gamma}}) )^\sharp$\\
 
 $\cong (\Pi_{\sem{\blum{q}}}(\alpha) ; )$\\~\\
@@ -824,13 +912,14 @@ $= \frak q(\mbf{T}(\blum{\Omega};\blum{p};\blum{\Psi};\blum{j}), \sem{\blum{\Ome
 %todo\\
 %$= $
 
+\fi
+
 
 \end{description}
 
 We also have\\~\\
-$\mbf{T}(\blum{\Omega} ; \blum{p} ; (\blum{\Psi}, \blum{b : q}) ; \blum{j})^*\sem{\blum{\Omega, a : p, \Psi} \mid \Gamma \vdash \lambda \blum{b : q}. \tau' : \forall \blum{q}. \kappa'}$\\
-$= \frak q(\mbf{T}(\blum{\Omega};\blum{p};\blum{\Psi};\blum{j}), \sem{\blum{\Omega,a:p,\Psi ; q}})^* \sem{\blum{\Omega, a : p, \Psi} \mid \Gamma \vdash \lambda \blum{b : q}. \tau' : \forall \blum{q}. \kappa'}$\\
-
+$\mbf{T}(\blum{\Omega} ; \blum{p} ; \blum{\Psi} ; \blum{j})^*\sem{\blum{\Omega, a : p, \Psi} \mid \Gamma \vdash \lambda \blum{b : q}. \tau' : \forall \blum{q}. \kappa'}$\\
+$= \mbf{T}(\blum{\Omega} ; \blum{p} ; \blum{\Psi} ; \blum{j})^*\sem{\blum{\Omega, a : p, \Psi, b : q} \mid \Gamma \vdash \tau' : \kappa'}^\sharp$\\
 
 \end{description}
 \end{proof}
