@@ -551,7 +551,7 @@ $= (\frak p(X) \circ \langle u \circ \frak p^*(X \{ u \}), \frak v_{X \{ u \}} \
 $= (u \circ \frak p(X \{ u \})^*)^*$\\
 $\cong \frak p(X \{ u \})^* u^*$\\
 
-In the second point, it is not immediately clear that the right-hand side of the isomorphism is ``well-typed''. However, applying our isomorphism to the domain of $\frak q(z, X)^* f$ shows its domain is $\frak q(u,X)^* \frak p(X)^*(\Gamma) \cong \frak p(X \{ u \})^* u^*(\Gamma)$.
+In the second point, it is not immediately clear that the right-hand side of the isomorphism is ``well-typed''. However, applying our isomorphism to the domain of $\frak q(z, X)^* f$ gives $\frak q(u,X)^* \frak p(X)^*(\Gamma) \cong \frak p(X \{ u \})^* u^*(\Gamma)$.
 
 In the third point, the \emph{canonical transformation} is obtained as the transpose of
 $$\frak p(X \{u \})^* u^* \Pi_X \overset{\cong}{\to} \frak q(u,X)^* \frak p(X)^* \Pi_X \overset{\frak q(u,X) \epsilon}{\to} \frak q(u,X)^*$$
@@ -573,8 +573,8 @@ with an underlying correspondence
 \UnaryInfC{$\frak p (X)^* \fm{A_\omega}{\omega \in \Omega} = \fm{A_\omega}{(\omega,x) \in \Omega . X} \longrightarrow \fm{B_{(\omega, x)}}{(\omega,x) \in \Omega . X}$}
 
 \end{prooftree}
-From top to bottom, $(-)^\sharp$ takes an arrow $$\fm{\langle f_{(\omega,x)} : A_\omega \to B_{(\omega,x)} \rangle_{x \in X_\omega}}{\omega \in \Omega}$$ to $$\fm{f_{(\omega,x)} : A_\omega \to B_{(\omega,x)}}{(\omega,x) \in \Omega.X}$$
-From bottom to top, $(-)^\flat$ takes an arrow $$(f_{(\omega,x)} : A_\omega \to B_{(\omega,x)})_{(\omega,x) \in \Omega . X}$$ to $$\fm{\Pi_{x \in X_\omega} f_{(\omega,x)}}{\omega \in \Omega}$$ 
+From top to bottom, $(-)^\flat$ takes an arrow $$\fm{\langle f_{(\omega,x)} : A_\omega \to B_{(\omega,x)} \rangle_{x \in X_\omega}}{\omega \in \Omega}$$ to $$\fm{f_{(\omega,x)} : A_\omega \to B_{(\omega,x)}}{(\omega,x) \in \Omega.X}$$
+From bottom to top, $(-)^\sharp$ takes an arrow $$(f_{(\omega,x)} : A_\omega \to B_{(\omega,x)})_{(\omega,x) \in \Omega . X}$$ to $$\fm{\Pi_{x \in X_\omega} f_{(\omega,x)}}{\omega \in \Omega}$$ 
 
 In this set-theoretic model, we have that $\Pi_{X \{ u \}} \frak q (u, X)^* = u^* \Pi_{X}$, and furthermore that the canonical transformation is the identity at this functor. Clearly, then, this model satisfies the Beck-Chevalley condition for dependent simple products. % double check this
 
@@ -588,6 +588,24 @@ Our interpretation satisfies the following soundness theorems.
 \appendix
 
 \onecolumn
+
+\section{The Flip-Flop Property}
+
+Here we show that dependent simple products in the standard set-theoretic model satisfy the flip-flop property.
+
+For contexts $\Omega$, $\Psi$, arrows $u : \Psi \to \Omega$, semantic sorts $X \in \mathit{St}(\Omega)$, total objects $A$ over $\Omega$, and total objects $B$ over $\Omega . X$,  
+an arrow $f : \frak p(X)^*(A) \to B$ has the form
+
+$$\fm{f_{(\omega,x)} : A_{\omega} \to B_{(\omega,x)}}{(\omega,x) \in \Omega . X}$$
+We then have:\\~\\
+$u^* f^\sharp$ \\
+$u^* \fm{f_{(\omega,x)}}{(\omega,x) \in \Omega . X}^\sharp$ \\
+$= u^* \fm{\langle f_{(\omega, x)} \rangle_{x \in X_\omega}}{\omega \in \Omega}$ \\
+$= \fm{ \fm{f_{(u(\psi), x)}}{x \in X_{u(\psi)}}}{\psi \in \Psi}$\\
+$= \fm{ \fm{f_{(u(\psi), x)}}{x \in X_{u(\psi)}}}{(\psi, x) \in \Psi . X \{ u \}}^\sharp$\\
+$= (\langle u \circ \frak p(X \{ u \}), \frak v_{X \{ u \}} \rangle_X^* \fm{f_{(\omega,x)}}{(\omega,x) \in \Omega . X})^\sharp$\\
+$= (\langle u \circ \frak p(X \{ u \}), \frak v_{X \{ u \}} \rangle_X^* f)^\sharp$\\
+$= (\frak q(u,X)^* f)^\sharp$
 
 \section{The Beck-Chevalley Condition}
 
