@@ -1,5 +1,6 @@
 \documentclass{article}
 
+\usepackage{quiver}
 \usepackage{amscd}
 \usepackage{graphicx}
 \usepackage{amsmath}
@@ -25,6 +26,15 @@
 \newcommand{\lims}[1]{\underset{\longleftarrow}{\text{lim}}~#1}
 \newcommand{\mbf}{\mathbf}
 \newcommand{\sem}[1]{\llbracket #1 \rrbracket}
+\newcommand{\defeq}{\overset{\mathit{def}}{=}}
+
+\newcommand{\fm}[2]{
+\left(
+\tiny
+#1
+\normalsize
+\right)_{#2}
+}
 
 \newcommand{\vrt}[2]{
 \pile{
@@ -1025,8 +1035,50 @@ such that $u$ and $f$ are monos, i.e.,
 Let $(v,g),(w,h) : \ddisp{Z}{r}{K} \to \ddisp{X}{p}{I}$ %(and so $r;v = g;p$ and $r;w = h;p$)
 with $(v,g);(u,f) = (w,h);(u,f)$, i.e. $(v;u,g;f) = (w;u,h;f)$. Then $v = w$ and $g = h$. 
 
+\section*{1.4}
+
+\subsection*{1.4.1}
+
+\subsubsection*{Family Fibration}
+
+$\pi^* \fm{X_{i}}{i \in I} \defeq \fm{X_{i}}{(i,j) \in I \times J}$\\
+$\pi^* \fm{f_{i} : X_i \to Y_i}{i \in I} \defeq \fm{f_{i}}{(i,j) \in I \times J}$
+
+TODO: prove?
 
 
+\subsubsection*{Codomain Fibration}
+
+$\pi_{I,J}^*(f) \defeq f \times J$
+
+\[\begin{tikzcd}
+	Z \\
+	\\
+	&& {X \times J} && X \\
+	\\
+	&& {I \times J} && I
+	\arrow["a"', from=1-1, to=5-3]
+	\arrow["b", curve={height=-18pt}, from=1-1, to=3-5]
+	\arrow["f"', from=3-5, to=5-5]
+	\arrow["\pi", from=5-3, to=5-5]
+	\arrow["{\langle b, (a ; \pi') \rangle}", dashed, from=1-1, to=3-3]
+	\arrow["{f \times J}", from=3-3, to=5-3]
+	\arrow["\pi", from=3-3, to=3-5]
+\end{tikzcd}\]
+
+
+\subsubsection*{Simple Fibration}
+
+$\pi^*(I,X) \defeq (I \times J, X)$\\
+$\pi^*(\mathit{id}_I, f) \defeq (\mathit{id}_{I \times J}, \langle \pi; \pi, \pi' \rangle;f)$\\~\\
+TODO: prove? \\~\\
+$\delta^*(I \times J \times J, X) \defeq (I \times J, X)$\\
+$\delta^*(\mathit{id}_{I \times J \times J}, f : I \times J \times J \times X \to Y) \defeq (I \times J, (\delta \times X);f)$\\~\\
+TODO: prove?
+
+\subsection{1.4.2}
+
+Simple corollary of exercise 1.1.3 (ii).
 
 \section*{1.5}
 
