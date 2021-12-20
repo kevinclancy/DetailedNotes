@@ -22,6 +22,7 @@
 \newcommand{\blu}[1]{\textbf{\color{blue}{#1}}}
 \newcommand{\blum}[1]{\mathbf{\color{blue}{#1}}}
 \newcommand{\defeq}{\overset{\mathit{def}}{=}}
+\newcommand{\defequiv}{\overset{\mathit{def}}{\Leftrightarrow}}
 \newcommand{\sem}[1]{\llbracket #1 \rrbracket}
 \newcommand{\mbf}[1]{\mathbf{#1}}
 \newcommand{\fm}[2]{
@@ -66,10 +67,10 @@ The prevalence of foreign keys in hierarchical databases constrasts sharply agai
 Secondary indices are also common and useful database structure beyond the reach of traditional type systems. Consider this example demonstrating the utility of secondary indices. An e-commerce company wishes to issue a recall on a product. To do so, it must obtain a list of all customers that have purchased an item known to be defective; to compute this list efficiently, the set of all customers which purchased each item must be stored in nearby addresses. At another time, a customer may wish to obtain a list of all items he has purchased from the site; to perform this operation efficiently, we must store the set of all of a customer's purchased items in nearby addresses. These two requirements are at odds if our database merely stores a single collection of all purchases processed. However, if we redundantly store customer-to-item and item-to-customers map, we can satisfy both requirements at once. Such redundant data structures are called secondary indices.
 
 In practice, foreign keys often refer to deleted entities. Such a foreign key is a time-bomb which will raise an exception the next time the data is accessed. Secondary indices can become out-of-sync due to programmer errors. A formal schema language including notions of foreign keys and indices could be compiled to validation routines to detect these errors. 
-
 \begin{itemize}   
-\item We develop a schema language for hierarchical databases with the ability to express foreign keys and secondary indices. 
-\item blah blah blah denotational semantics (and operational)
+\item We design an expressive schema language for hierarchical databases featuring foreign keys and secondary indices. 
+\item We provide a category-theoretic characterization of the dependently-sorted equivalent of simple products. This characterization is similar to, but more general than, exisiting characterizations e.g. by Palmgren \cite{palmgren2019categories}; in particular, we identify a \emph{transpose distribution} property necessary for dependent simple products in models whose total categories, unlike Palmgren's, are not thin.
+
 \end{itemize}
 
 Since we are working with two distinct concepts which are both typically referred to as \emph{indices} -- indices in the sense of database indices and indices in the sense of indexed type checking -- we refer to database secondary indices as \emph{reconfigurations} in the sequel.
@@ -134,7 +135,7 @@ The purpose of a schema is to identify a set of database instances, so before ex
 
 Figure \ref{fig:ecommerce} shows a schema fragment for an e-commerce database. It begins by declaring five predicates: first four unary predicates for item ids, customer ids, purchase ids, and card types. Finally, it declares a ternary predicate for card ids. The predicate variables and their classifiers have been bolded and colored blue to indicate that they are part of the \emph{index language}. This simple language defines conceptual entities such as predicates and relations, divorced from the physical details of where these entities are stored. The index langauge is layered beneath our schema language, i.e. schemas may depend on indices but not vice versa. 
 
-Lines 7-10, use the record type constructor to define a subschema representing credit cards. It denotes the set of instances which map the list [``addr''] to any string and the list [``cardType''] to any string satisfying the \lstinline[mathescape]{$\blu{CardType}$} predicate. 
+Lines 7-10, use the record type constructor to define a subschema representing credit cards. It denotes the set of instances which map the list [``billingAddr''] to any string and the list [``cardType''] to any string satisfying the \lstinline[mathescape]{$\blu{CardType}$} predicate. 
 
 %The field \emph{cardId} is an instance of a foreign key. In this schema language, foreign keys don't refer directly to locations in the database; instead, they refer to index-level unary predicates. By separating conceptual sets (index-level predicates) from their physical  
 
@@ -244,26 +245,26 @@ $\blu{i},\blu{j},\blu{k}$ (indices) & ::=  & $\blum{s}$ & (string literal) \\
                           & $\mid$ & $\blu{a}$ & (index variable) \\
                           & $\mid$ & $\blu{true}$ & (true proposition) \\
 ~ & ~ & ~ & ~ \\
-$\blu{q},\blu{r}$ (sort) & ::= & $\blum{str}$ & (string sort) \\
+$\blu{p},\blu{q},\blu{r}$ (sort) & ::= & $\blum{str}$ & (string sort) \\
                          & $\mid$ & $\blum{prop}$ & (proposition sort) \\
                          & $\mid$ & $\blum{prf~j}$ & (proof sort) \\
                          & $\mid$ & $\blum{(a : q) \to r}$ & (function sort) \\
 ~ & ~ & ~ & ~ \\
-$\tau,\sigma$ (type) & $::=$ & $\{[\blu{a : str}] : \tau \}$ & (dictionary type) \\ 
-       & $\mid$ & $\{ \blu{s}_i : \tau_i^{~i \in 1..n} \}$ & (record type) \\
-       & $\mid$ & $\{ \blu{a : str} \mid \blu{i} \}$ & (string refinement type) \\
+$\tau,\sigma$ (pre-type) & $::=$ & $\{[\blu{a : str}] : \tau \}$ & (dictionary) \\ 
+       & $\mid$ & $\{ \blu{s}_i : \tau_i^{~i \in 1..n} \}$ & (record) \\
+       & $\mid$ & $\{ \blu{a : str} \mid \blu{i} \}$ & (string refinement) \\
        & $\mid$ & $\lambda \blu{a : q} . \tau$ & (index-to-type abstr.) \\
        & $\mid$ & $\lambda x : \kappa. \tau$ & (type-to-type abstr.) \\
        & $\mid$ & $\bigvee \tau$ & (union) \\
        & $\mid$ & $\tau~\sigma$ & (type app.) \\
        & $\mid$ & $\tau~[~\blu{j}~]$ & (index-to-type app.)\\
 ~ & ~ & ~ & ~ \\
-$\kappa,\rho$ (kind) & $::=$ & $\ast$ & (proper type kind) \\
+$\kappa,\rho$ (pre-kind) & $::=$ & $\ast$ & (proper type pre-kind) \\
                      & $\mid$ & $\kappa \to \rho$ & (type-to-type op)\\
                      & $\mid$ & $\forall \blu{q}.~\kappa$ & (index-to-type op)
 \end{tabular}\\~\\~\\
 \begin{tabular}{llll}
-$\blum{\Omega}, \blum{\Psi}$ (pre-index-context) & $::=$  & $\blum{\Omega,a : q}$ & (extension) \\
+$\blum{\Omega}, \blum{\Psi}$ (pre-sort-context) & $::=$  & $\blum{\Omega,a : q}$ & (extension) \\
                                      & $\mid$ & $\blum{\diamond}$ & (empty) \\~\\
 $\Gamma$ (kind context) & $::=$ & $\Gamma,x : \kappa$ & (extension) \\
                         & $\mid$ & $\diamond$ & (empty) 
@@ -275,7 +276,7 @@ $\Gamma$ (kind context) & $::=$ & $\Gamma,x : \kappa$ & (extension) \\
 
 Index-level terms $\blum{i,j,k}$ consist of string literals, variables, applications, and the proposition constant $\blum{true}$. An application is annotated with the domain and codomain of the applied function; this eases the definition of our denotational semantics, but the types can be inferred and are thus omitted in our examples, which instead use the notation $\blum{j}~\blum{k}$ as shorthand for $\blum{App_{[a : q], p}(j,k)}$.
 
-Following \cite{dependent ml journal of fp}, index level classifiers are called \emph{sorts}. Sorts are written using the variables $\blum{p,q,r}$. We include the sorts $\blum{str}$ for strings, $\blum{prop}$ for propositions, $\blum{prf}~j$ proofs of the proposition $\blum{j}$, and the sort constructor $\blum{(a : q) \to r}$ for constructing dependen function sorts, which are essentially index-level $\Pi$-types.
+Following \cite{xi2007dependent}, index level classifiers are called \emph{sorts}. Sorts are written using the variables $\blum{p,q,r}$. We include the sorts $\blum{str}$ for strings, $\blum{prop}$ for propositions, $\blum{prf}~j$ proofs of the proposition $\blum{j}$, and the sort constructor $\blum{(a : q) \to r}$ for constructing dependen function sorts, which are essentially index-level $\Pi$-types.
 
 Our types $\tau,\sigma$ are also called \emph{schemas}. The type constructor $\{ [\blum{a : str}] : \tau \}$ is used for dictionaries of value type $\tau$. The type $\tau$ depends on the index variable $\blum{a}$, and such a dictionary type describes the set of database instances which contains exactly those keys $\blum{a}$ which $\tau$ maps to a non-empty set of database instances. The record types, type-type applications, and type-type abstractions in our type syntax are standard. A string refinement type of the form $\{ \blum{a : str} \mid \blum{i} \}$ denotes the set of all strings which satisfy the proposition $\blum{i}$.
 
@@ -283,9 +284,9 @@ Finally, our type syntax include index-type abstractions $\lambda (\blum{a : q})
    
 In figures \ref{fig:ecommerce} and \ref{fig:reconfigurations}, a dictionary type of the form $\{ [\blum{a :str}] : \blum{i_1, \ldots, i_n} > \tau \}$ is sugar for $$\{ [\blum{a :str}] : \bigvee \lambda \blum{(a_1 : prf~i_1}) \ldots \bigvee \lambda (\blum{a_n : prf~i_n}). \tau \}$$
 
-\section{Static classification}
+\section{Static semantics}
 
-\subsection{Sorting}
+\subsection{Index-level static semantics}
 
 \begin{figure}
 \begin{mathpar}
@@ -330,11 +331,9 @@ In figures \ref{fig:ecommerce} and \ref{fig:reconfigurations}, a dictionary type
 \Description[Sorting and sort formation]{Sorting and sort formation rules}
 \end{figure}
 
-Here are some sorting and sort formation rules.
+Index-level judgment rules are shown in Figure \ref{fig:sorting}. A judgment of the form $\blum{\Omega \vdash q}$ means that the pre-sort $\blum{q}$ is a well-formed sort under the context $\blum{\Omega}$. A judgment of the form $\blum{\Omega \vdash}$ means that the sort pre-context $\blum{\Omega}$ is a well-formed sort context, i.e. for each binding $\blum{a : q}$ such that $\blum{\Omega} = \blum{\Omega_1, a : q, \Omega_2}$ we have $\blum{\Omega_1 \vdash q}$. Finally, a judgment $\blum{\Omega \vdash j : q}$ means that the index $\blum{j}$ has sort $\blum{q}$ under context $\blum{\Omega}$.
 
-\subsection{Kinding}
-
-Here are some kinding and kind formation rules.
+\subsection{Type-level static semantics}
 
 \begin{figure}
 \begin{mathpar}
@@ -350,7 +349,7 @@ Here are some kinding and kind formation rules.
   {\blum{\Omega,a:str \vdash i : prop}}
   {\blum{\Omega} \mid \Gamma \vdash \{ \blum{a : str} \mid \blum{i} \} : \ast}
 \and
-\inferrule
+\inferrule[K-IndAbs]
   {\blum{\Omega \vdash q} \\ \blum{\Omega,a : q} \mid \Gamma \vdash \tau : \kappa \\ a \not \in FV(\Gamma)}
   {\blum{\Omega} \mid \Gamma \vdash \lambda \blum{a : q} . \tau : \forall \blum{q} . \kappa}
 \and
@@ -395,11 +394,13 @@ Here are some kinding and kind formation rules.
 \Description[Kinding and kind formation]{Kinding, kind formation, and kind context formation rules}
 \end{figure}
 
+Type-level judgment rules are shown in Figure \ref{fig:kinding}. A judgment of the form $\blum{\Omega} \vdash \kappa$ means that the kind $\kappa$ is a well-formed kind under context $\blum{\Omega}$. A judgment of the form $\blum{\Omega} \vdash \Gamma$ means that $\Gamma$ is a well-formed kind context under sort context $\blum{\Omega}$. Finally, a judgment of the form $\blum{\Omega} \mid \Gamma \vdash \tau : \kappa$ means that the type $\tau$ has kind $\kappa$ under sort context $\blum{\Omega}$ and kind context $\Gamma$.
+
 \section{Denotational Semantics}
 
 \subsection{Index Language}
 
-We interpret our index langauage using Dybjer's \emph{Categories-with-Families} (CwF) framework for semantically modeling dependently typed languages \cite{}. We first review the definition of CwF, then review the standard set-theoretic CwF, and finally provide an interpretation of the index language with respect to a CwF. There is nothing novel about our index language, so the entirety of this section is standard. However, we rename some of the standard terminology to fit into the present setting, e.g. instead of dependent types we have dependent sorts.
+We interpret our index langauage using Dybjer's \emph{Categories-with-Families} (CwF) framework for semantically modeling dependently typed languages \cite{dybjer1995internal}. We first review the definition of CwF, then review the standard set-theoretic CwF, and finally provide an interpretation of the index language with respect to a CwF. There is nothing novel about our index language, so the entirety of this section is standard. However, we rename some of the standard terminology to fit into the present setting, e.g. instead of dependent types we have dependent sorts.
 
 \subsubsection{Categories with Families}
 
@@ -433,7 +434,7 @@ Our index language will be interpreted using a standard set-theoretic CwF. This 
 
 \subsubsection{Interpretation}
 
-Our index langauge is a fragment of the calculus of constructions, with the unnotable addition of strings. Its interpretation appears, for example, in \cite{}, and is displayed in Figure \ref{fig:index-interp} for convenience. 
+Our index langauge is a fragment of the calculus of constructions, with the unnotable addition of strings. Its interpretation appears, for example, in \cite{Hofmann97syntaxand}, and is displayed in Figure \ref{fig:index-interp} for convenience. 
 
 \begin{figure}
 \begin{small}
@@ -476,11 +477,16 @@ We also state the fragment of the standard soundness theorem which will be relev
 %\end{figure}
 
 \begin{figure}
+
+\begin{small}
 \begin{tabular}{l}
 $\sem{\blum{\Omega} \vdash \ast}_\omega \defeq \mathcal P \mathcal P (\mathit{Inst})$\\
 $\sem{\blum{\Omega} \vdash \forall \blum{q}. \kappa} \defeq \Pi_{\blum{\Omega},\blum{q}} \sem{\blum{\Omega, a : q} \vdash \kappa}$\\
 $\sem{\blum{\Omega} \vdash \kappa \to \rho} \defeq \sem{\blum{\Omega} \vdash \kappa} \Rightarrow \sem{\blum{\Omega} \vdash \rho}$
 \end{tabular}
+\end{small}
+\caption{Interpretation of kinding judgments}
+\label{fig:kind-interp}
 \end{figure}
 
 \begin{figure*}
@@ -512,7 +518,7 @@ $\sem{\bigvee \tau}_{\omega} \gamma \defeq \bigcup_{M \in \sem{\blum{q}}_\omega}
 \caption{Semantics for abstraction and application}
 \end{figure}
 
-Our kinding and kind formation judgments are interpreted in terms of the fibration $\mathit{Fam}(\mbf{Sets})$. We assume basic knowledge of fibrations \cite{}. A kind-in-sorting-context $\blum{\Omega} \vdash \kappa$ is interpreted as an object of $\mathit{Fam}(\mbf{Sets})_{\sem{\blum{\Omega}}}$, concretely a $\sem{\blum{\Omega}}$-indexed family of sets. For kind contexts $\Gamma = x_1:\kappa_1,\ldots,x_n : \kappa_n$, the kinding context formation judgment $\blum{\Omega} \vdash \Gamma$ is interpreted as the product $\sem{\blum{\Omega} \vdash \kappa_1} \times \cdots \times \sem{\blum{\Omega} \vdash \kappa_n}$ in $\mathit{Fam}(\mbf{Sets})_{\sem{\blum{\Omega}}}$. A kinding judgment $\blum{\Omega} \mid \Gamma \vdash \tau : \kappa$ is interpreted as a arrow of $\mathit{Fam}(\mbf{Sets})_{\sem{\blum{\Omega}}}$ from $\sem{\blum{\Omega} \vdash \Gamma}$ to $\sem{\blum{\Omega} \vdash \kappa}$. 
+Our kinding and kind formation judgments are interpreted in terms of the fibration $\mathit{Fam}(\mbf{Sets})$. We assume basic knowledge of fibrations \cite{jacobs1999categorical}. A kind-in-sorting-context $\blum{\Omega} \vdash \kappa$ is interpreted as an object of $\mathit{Fam}(\mbf{Sets})_{\sem{\blum{\Omega}}}$, concretely a $\sem{\blum{\Omega}}$-indexed family of sets. For kind contexts $\Gamma = x_1:\kappa_1,\ldots,x_n : \kappa_n$, the kinding context formation judgment $\blum{\Omega} \vdash \Gamma$ is interpreted as the product $\sem{\blum{\Omega} \vdash \kappa_1} \times \cdots \times \sem{\blum{\Omega} \vdash \kappa_n}$ in $\mathit{Fam}(\mbf{Sets})_{\sem{\blum{\Omega}}}$. A kinding judgment $\blum{\Omega} \mid \Gamma \vdash \tau : \kappa$ is interpreted as a arrow of $\mathit{Fam}(\mbf{Sets})_{\sem{\blum{\Omega}}}$ from $\sem{\blum{\Omega} \vdash \Gamma}$ to $\sem{\blum{\Omega} \vdash \kappa}$. 
 
 \subsubsection{Dependent Simple Products}
 
@@ -534,12 +540,13 @@ Our kinding and kind formation judgments are interpreted in terms of the fibrati
 \Description[Beck-Chevalley condition for dependent simple products]{A Beck-Chevalley condition for dependent simple products}
 \end{figure}
 
+
 We define a \emph{CwF-fibration} as a pair $(\mathcal C, p)$ where $\mathcal C$ is a CwF and $p : \mathbb E \to \mathbb C$ is a fibration whose base category $\mathbb C$ is $\mathcal C$'s context category.
 
 We say that a CwF-fibration has \emph{dependent simple products} if 
 \begin{itemize}
 \item For all contexts $\Omega$ and all $X \in \mathit{St}(\Omega)$ the functor $\frak p (X)^*$ has a right adjoint $\Pi_{X}$. (We write $(-)^\sharp$ for the transposition from $\frak p(X)^*(A) \to B$ to $A \to \Pi_X(B)$, and $(-)^\flat$ for transposition in the opposite direction.)
-\item The above adjunction satisfies a \emph{flip-flop property}: for contexts $\Omega,\Psi$, context arrows $u : \Psi \to \Omega$, sorts $X \in \mathit{St}(\Omega)$, total objects $\Gamma$ over $\Omega$, total objects $\Delta$ over $\Omega . X$, and total arrows $f : \frak p(X)^*(\Gamma) \to \Delta$. We have $u^*f^\sharp \cong (\frak q(u, X)^* f)^\sharp$.
+\item The above adjunction satisfies a \emph{transpose distribution} property: for contexts $\Omega,\Psi$, context arrows $u : \Psi \to \Omega$, sorts $X \in \mathit{St}(\Omega)$, total objects $\Gamma$ over $\Omega$, total objects $\Delta$ over $\Omega . X$, and total arrows $f : \frak p(X)^*(\Gamma) \to \Delta$. We have $u^*f^\sharp \cong (\frak q(u, X)^* f)^\sharp$.
 \item For every $u : \Psi \to \Omega$ and $X \in \mathit{St}(\Omega)$ the canonical natural transformation $u^* \Pi_{X} \Longrightarrow \Pi_{X \{ u \}} \frak q(u, X)^*$ is an isomorphism. This is typically called a \emph{Beck-Chevalley condition}.
 \end{itemize}
 
@@ -584,14 +591,17 @@ Blah blah blah.
 
 Our interpretation satisfies the following soundness theorems.
 
+\bibliography{pldi_schema_kindcheck} 
 
 \appendix
 
 \onecolumn
 
-\section{The Flip-Flop Property}
+\section{Set-theoretic Dependent Simple Products}
 
-Here we show that dependent simple products in the standard set-theoretic model satisfy the flip-flop property.
+\subsection{The Transpose Distribution Property}
+
+Here we show that dependent simple products in the standard set-theoretic model satisfy the transpose distribution property.
 
 For contexts $\Omega$, $\Psi$, arrows $u : \Psi \to \Omega$, semantic sorts $X \in \mathit{St}(\Omega)$, total objects $A$ over $\Omega$, and total objects $B$ over $\Omega . X$,  
 an arrow $f : \frak p(X)^*(A) \to B$ has the form
@@ -607,7 +617,7 @@ $= (\langle u \circ \frak p(X \{ u \}), \frak v_{X \{ u \}} \rangle_X^* \fm{f_{(
 $= (\langle u \circ \frak p(X \{ u \}), \frak v_{X \{ u \}} \rangle_X^* f)^\sharp$\\
 $= (\frak q(u,X)^* f)^\sharp$
 
-\section{The Beck-Chevalley Condition}
+\subsection{The Beck-Chevalley Condition}
 
 \label{sec:beck-chevalley}
 
@@ -683,7 +693,15 @@ Because it is an identity, it is clearly invertible.
 \section{Substitution lemmas}
 
 We first reproduce some standard definitions and theorems from the semantics of dependent types. These definitions and lemmas will subsequently be used to establish our own soundness proofs.
- 
+
+\begin{lemma}
+\label{lemma:indsortsub-syntax}
+If $\blum{\Omega, a:p,\Psi \vdash q}$ and $\blum{\Omega \vdash j : p}$ then $\blum{\Omega, \Psi[j/a] \vdash q[j/a]}$.
+\end{lemma}
+
+\begin{proof}
+TODO
+\end{proof} 
 For pre-contexts $\blum{\Omega},\blum{\Psi}$ and pre-sorts $\blum{q},\blum{r}$ we define the expression $\mbf{P}(\blum{\Omega};\blum{p};\blum{\Psi})$ inductively by
 \begin{center}
 
@@ -718,15 +736,6 @@ $$\sem{\blum{\Omega}, \blum{b \! : \! p}, \blum{\Psi} ; \blum{A}} \simeq \sem{\b
 
 The expression $\mbf{T}(\blum{\Omega};\blum{p};\blum{\Psi};\blum{i})$ is defined iff $\sem{\blum{\Omega}, \blum{\Psi}[\blum{i}/\blum{b}]}$ and $\sem{\blum{\Omega} , \blum{b \! : \! p}, \blum{\Psi}}$ are both defined and in this case is a morphism from the former to the latter. If $\sem{\blum{\Omega},\blum{b \! : \! p},\blum{\Psi} ; \blum{A}}$ is defined then 
 $$\sem{\blum{\Omega},\blum{\Psi}[\blum{i}/\blum{b}]; \blum{A}[\blum{i}/\blum{b}]} \simeq \sem{\blum{\Omega},\blum{b} \! : \! \blum{p},\blum{\Psi};\blum{A}} \{ \mbf{T}(\blum{\Omega} ; \blum{p} ; \blum{\Psi} ; \blum{i}) \}$$
-\end{lemma}
-
-\begin{proof}
-TODO
-\end{proof}
-
-\begin{lemma}
-\label{lemma:indsortsub-syntax}
-If $\blum{\Omega, a:p,\Psi \vdash q}$ and $\blum{\Omega \vdash j : p}$ then $\blum{\Omega, \Psi[j/a] \vdash q[j/a]}$.
 \end{lemma}
 
 \begin{proof}
@@ -777,106 +786,12 @@ Additionally, we have\\~\\
  &\quad \sem{\blum{\Omega,\Psi[j/a]} \vdash (\forall \blum{q}. \kappa')[\blum{j}/\blum{a}]}
 \end{align*}
 
-%\begin{align*}
-% &\quad \mbf{T}(\blum{\Omega} ; \blum{a : p} ; \blum{\Psi} ; \blu{j})^* \sem{\blum{\Omega,a:p,\Psi} \vdash \forall \blum{q}. \kappa'}\\
-%\end{align*}
-
-\iffalse
-Additionally, we have\\~\\
-$\mbf{T}(\blum{\Omega} ; \blum{a : p} ; \blum{\Psi} ; \blu{j})^* \sem{\blum{\Omega,a:p,\Psi} \vdash \forall \blum{q}. \kappa'}$\\
-$= \mbf{T}(\blum{\Omega} ; \blum{a : p} ; \blum{\Psi} ; \blu{j})^* \Pi_{\sem{\blum{\Omega, a : p, \Psi \vdash q}}} \sem{\blum{\Omega,a:p,\Psi,b:q} \vdash \kappa'}$\\
-$\cong \Pi_{ \sem{\blum{\Omega, a : p, \Psi \vdash q}} \{ \mbf{T}(\blum{\Omega} ; \blum{a : p} ; \blum{\Psi} ; \blu{j}) \} } \frak q(\mbf{T}(\blum{\Omega} ; \blum{a : p} ; \blum{\Psi} ; \blu{j}) , \sem{\blum{\Omega, a:p, \Psi \vdash q}})^* \sem{\blum{\Omega,a:p,\Psi,b : q} \vdash \kappa'}$\\
-$= \Pi_{ \sem{\blum{\Omega, \Psi[j/a] \vdash q[j/a]}} } \frak q(\mbf{T}(\blum{\Omega} ; \blum{a : p} ; \blum{\Psi} ; \blu{j}) , \sem{\blum{\Omega, a:p, \Psi \vdash q}})^* \sem{\blum{\Omega,a:p,\Psi,b:q} \vdash \kappa'}$\\
-$= \Pi_{ \sem{\blum{\Omega, \Psi[j/a] \vdash q[j/a]}} } \mbf T(\blum{\Omega}; \blum{p} ; \blum{(\Psi, a : q)}; \blum{j})^* \sem{\blum{\Omega,a:p,\Psi,b:q} \vdash \kappa'}$\\
-$= \Pi_{ \sem{\blum{\Omega, \Psi[j/a] \vdash q[j/a]}} } \sem{\blum{\Omega,\Psi[j/a],b:q[j/a]} \vdash \kappa'[\blum{j}/\blum{a}]}$\\
-$= \sem{\blum{\Omega,\Psi[j/a]} \vdash \forall \blum{q[j/a]}. \kappa'[\blum{j}/\blum{a}]}$\\
-$= \sem{\blum{\Omega,\Psi[j/a]} \vdash (\forall \blum{q}. \kappa')[\blum{j}/\blum{a}]}$\\
-\fi
-
-
 \item[Other cases:]~\\
 TODO
 \end{description}
 
 \end{proof}
 
-\begin{lemma}
-If $\blum{\Omega, a : p, \Psi} \vdash \tau$ then $\blum{\Omega, a : p, \Psi, b : q} \vdash \tau$ and $$\sem{\blum{\Omega, a : p, \Psi, b : q \vdash \tau}} = \frak p^*(\sem{\blum{q}})(\sem{\blum{\Omega, a : p, \Psi} \vdash \tau})$$
-\end{lemma}
-
-\begin{proof}
-TODO 
-\end{proof}
-
-\begin{corollary}
-If $\blum{\Omega, a : p, \Psi} \vdash \Gamma$ then $\blum{\Omega, a : p, \Psi, b : q} \vdash \Gamma$ and $$\sem{\blum{\Omega, a : p, \Psi, b : q \vdash \Gamma}} = \frak p^*(\sem{\blum{q}})(\sem{\blum{\Omega, a : p, \Psi} \vdash \Gamma})$$
-\end{corollary}
-
-
-\begin{lemma}
-For contexts $\Omega,\Psi$, context arrows $z : \Psi \to \Omega$, sorts $X \in \mathit{St}(\Omega)$, total objects $\Gamma$ over $\Omega$, total objects $\Delta$ over $\Omega . X$, and total arrows $f : \frak p(X)^*(\Gamma) \to \Delta$. We have 
-$$z^*f^\sharp \cong (\frak q(z, X)^* f)^\sharp$$
-\end{lemma}
-
-It's not immediately clear that the right-hand side is ``well-typed''. However, some algebraic manipulation of the domain of $\frak q(z, X)^* f$ shows this: \\~\\
-$\frak q(z,X)^* \frak p(X)^*(\Gamma)$\\
-$= \langle z \circ \frak p^*(X \{ z \}), \frak v_{X \{ z \}} \rangle_X^* \frak p(X)^*(\Gamma)$\\
-$= (\frak p(X) \circ \langle z \circ \frak p^*(X \{ z \}), \frak v_{X \{ z \}} \rangle_X)^*(\Gamma)$\\
-$= (z \circ \frak p(X \{ z \})^*)^*(\Gamma)$\\
-$= (p(X \{ z \})^* z^*(\Gamma)$
-
-\begin{proof}
-a
-\end{proof}
-
-
-\begin{lemma}
-For all $f : \frak p^*(\sem{\blum{\Omega, a : p, \Psi \vdash q}})(\Omega) \to \Psi$ we have
-$$\mbf{T}(\blum{\Omega; p; \Psi; j})^* f^\sharp \cong (\mbf{T}(\blum{\Omega; p ; (\Psi, b : q); j})^* f)^\sharp$$
-\end{lemma}
-
-
-\begin{proof}
-We prove by induction on the length of $\Psi$.
-
-\begin{description}
-
-\item[Case $\blum{\Psi = \diamond}$]~\\
-We must prove
-$$\mbf{T}(\blum{\Omega;p;\diamond;j})^* f^\sharp \cong (\mbf{T}(\blum{\Omega ; p ; (b : q) ; j})^* f)^\sharp$$
-Expanding the left side gives
-$$(\overline{\sem{\blum{\Omega;j}}})^* f^\sharp \cong (\mbf{T}(\blum{\Omega ; p ; (b : q) ; j})^* f)^\sharp$$
-And then expanding the right side gives
-$$(\overline{\sem{\blum{\Omega;j}}})^* f^\sharp \cong (\frak q( \overline{\sem{\blum{\Omega;j}}}, \sem{\blum{\Omega,a:p;q}})^* f)^\sharp$$
-and
-$$(\overline{\sem{\blum{\Omega;j}}})^* f^\sharp \cong (\langle \overline{\sem{\blum{\Omega;j}}} \circ \frak p(\sem{\blum{\Omega,a:p ; q}} \{ \overline{\sem{\blum{\Omega ; j}}}) \}), \frak v_{\sem{\blum{\Omega,a:p ; q}} \{ \overline{\sem{\blum{\Omega ; j}}} \}} \rangle^* f)^\sharp$$
-i.e.
-$$(\overline{\sem{\blum{\Omega;j}}})^* f^\sharp \cong (\langle \overline{\sem{\blum{\Omega;j}}} \circ \frak p(\sem{\blum{\Omega ; q[j/a]}}) \}), \frak v_{\sem{\blum{\Omega ; q[j/a]}}} \rangle^* f)^\sharp$$
-
-\item[Case $\blum{\Psi} = \blum{\Psi', c: r}$]
-Expanding the right-hand side, we must prove.
-
-$$\mbf{T}(\blum{\Omega; p; \Psi; j})^* f^\sharp \cong (\frak q(\mbf{T}(\blum{\Omega; p ; \Psi; j}), \sem{\blum{\Omega, a:p, \Psi; q}})^* f)^\sharp $$
-
-Expanding again gives
-
-$$\mbf{T}(\blum{\Omega; p; \Psi; j})^* f^\sharp \cong (\langle \mbf{T}(\blum{\Omega; p ; \Psi; j}) \circ \frak p, \frak v_{\sem{\blum{\Omega, a:p, \Psi; q}}} \rangle^* f)^\sharp $$
-
-\end{description}
-
-\end{proof}
-
-\begin{lemma}
-If $\blum{\Omega; a :p; \Psi; b : q} \mid \Gamma \vdash \tau : \kappa$ and $\blum{\Omega, a : p, \Psi} \vdash \Gamma$ then $$\mbf{T}(\blum{\Omega; p; \Psi; j})^* \sem{\blum{\Omega, a : p, \Psi, b : q} \mid \Gamma \vdash \tau : \kappa}^\sharp \cong (\mbf{T}(\blum{\Omega; p ; (\Psi, b : q); j})^* \sem{\blum{\Omega ; a : p, \Psi, b : q} \mid \Gamma \vdash \tau : \kappa})^\sharp$$ 
-\end{lemma}
-
-\begin{proof}
-By induction on the proof of $\blum{\Omega,a:p,\Psi,b:q} \mid \Gamma \vdash \tau : \kappa$.
-\begin{description}
-\item[Case \begin{sc}K-IndAbs\end{sc}:]~\\
-TODO.
-\end{description}
-\end{proof}
 
 \begin{lemma}
 If $\blum{\Omega,a : p, \Psi} \mid \Gamma \vdash \tau : \kappa$ and $\blum{\Omega \vdash j : p}$ then $\blum{\Omega, \Psi[j/a]} \mid \Gamma[\blum{j}/\blum{p}] \vdash \tau[\blum{j}/\blum{p}] : \kappa[\blum{j}/\blum{p}]$ and
@@ -900,70 +815,87 @@ Now, applying the \begin{sc}K-IndAbs\end{sc} rule, we get
   {\blum{\Omega,\Psi[j/a]} \mid \Gamma[\blum{j}/\blum{a}] \vdash \lambda \blum{b : q[j/a]}. \tau'[\blum{j}/\blum{a}] : \forall \blum{q[j/a]}. \kappa'[\blum{j}/\blum{a}]}
 \end{mathpar} 
 
-We prove ?? by cases on $\Psi$:
+We also have
 
-\begin{description}
+\begin{align*}
+ &\quad \sem{\blum{\Omega, \Psi'[j/a]} \mid \Gamma[\blum{j}/\blum{a}] \vdash (\lambda \blum{b : q}. \tau')[\blum{j}/\blum{a}] : (\forall \blum{q}. \kappa')[\blum{j}/\blum{a}]}\\
+=&\qquad \{ \text{Definition of substitution} \}\\
+ &\quad \sem{\blum{\Omega, \Psi'[j/a]} \mid \Gamma[\blum{j}/\blum{a}] \vdash \lambda \blum{b : q[j/a]}. \tau'[\blum{j}/\blum{a}] : \forall \blum{q[j/a]}. \kappa'[\blum{j}/\blum{a}]}\\
+=&\qquad \{ \text{Interpretation of \begin{sc}K-IndAbs\end{sc}} \} \\
+ &\quad \sem{\blum{\Omega,\Psi'[j/a], b : q[j/a]} \mid \Gamma[\blum{j}/\blum{a}] \vdash \tau'[\blum{j}/\blum{a}] : \kappa'[\blum{j} / \blum{a}] }^\sharp\\
+\cong&\qquad \{ \text{IH} \}\\
+ &\quad (\mbf{T}(\blum{\Omega}; \blum{p} ; \blum{(\Psi, b:q)} ; \blum{j})^* \sem{\blum{\Omega, a : p, \Psi, b : q} \mid \Gamma \vdash \tau' : \kappa'})^\sharp\\
+=&\qquad \{ \text{Transpose distribution} \} \\
+ &\quad \mbf{T}(\blum{\Omega} ; \blum{p} ; \blum{\Psi} ; \blum{j})^*\sem{\blum{\Omega, a : p, \Psi, b : q} \mid \Gamma \vdash \tau' : \kappa'}^\sharp\\
+=& \qquad \{ \text{Interpretation of \begin{sc}K-IndAbs\end{sc}} \}\\
+ &\quad \mbf{T}(\blum{\Omega} ; \blum{p} ; \blum{\Psi} ; \blum{j})^*\sem{\blum{\Omega, a : p, \Psi} \mid \Gamma \vdash \lambda \blum{b : q}. \tau' : \forall \blum{q}. \kappa'}
+\end{align*}
 
-\item[Case $\blum{\Psi} = \blum{\diamond}$:]~\\
+\item[Other cases:]~\\
 TODO.
-
-\item[Case $\blum{\Psi} = \blum{(\Psi', c : r)}$~:]~\\
-Let $\alpha : \frak p(\sem{\blum{\Omega,a:p,\Psi ; q}} \{ \mbf{T}(\blum{\Omega}; \blum{p}; \blum{\Psi}; \blum{j} ) \})^* \mbf{T}(\blum{\Omega}; \blum{p}; \blum{\Psi}; \blum{j} )^* \to \frak q(\mbf{T}(\blum{\Omega};\blum{p};\blum{\Psi};\blum{j})^*, \sem{\blum{\Omega,a:p,\Psi ; q}})^* \frak p(\sem{\blum{\Omega,a:p,\Psi ; q}})^*$\\
-i.e. $\alpha : \frak p(\sem{\blum{\Omega,\Psi[j/a] ; q[j/a]}})^* \mbf{T}(\blum{\Omega}; \blum{p}; \blum{\Psi}; \blum{j} )^* \to \frak q(\mbf{T}(\blum{\Omega};\blum{p};\blum{\Psi};\blum{j})^*, \sem{\blum{\Omega,a:p,\Psi ; q}})^* \frak p(\sem{\blum{\Omega,a:p,\Psi ; q}})^*$\\~\\
-%Let $\alpha : \frak p(\blum{\Omega,\Psi[j/a] \vdash q})^* \frak q(\mbf{T}(\blum{\Omega};\blum{p};\blum{\Psi};\blum{j}), \sem{\blum{\Omega,a:p,\Psi ; q}})^* \to  ?   $\\
-$\sem{\blum{\Omega, \Psi'[j/a]} \mid \Gamma[\blum{j}/\blum{a}] \vdash \lambda \blum{b : q[j/a]}. \tau'[\blum{j}/\blum{a}] : \forall \blum{q[j/a]}. \kappa'[\blum{j}/\blum{a}]}$\\
-$= \sem{\blum{\Omega,\Psi'[j/a], b : q[j/a]} \mid \Gamma[\blum{j}/\blum{a}] \vdash \tau'[\blum{j}/\blum{a}] : \kappa'[\blum{j} / \blum{a}] }^\sharp$\\
-$\cong (\mbf{T}(\blum{\Omega}; \blum{p} ; \blum{(\Psi, b:q)} ; \blum{j})^* \sem{\blum{\Omega, a : p, \Psi, b : q} \mid \Gamma \vdash \tau' : \kappa'})^\sharp$\\
-%$= (\frak q(\mbf{T}(\blum{\Omega};\blum{p};\blum{\Psi};\blum{j}), \sem{\blum{\Omega,a:p,\Psi ; q}})^* \sem{\blum{\Omega, a : p, \Psi, b : q} \mid \Gamma \vdash \tau' : \kappa'})^\sharp$\\
-%$= (\langle \mbf{T}(\blum{\Omega};\blum{p};\blum{\Psi};\blum{j}) \circ \frak p(\sem{\blum{q}} \{ \mbf{T}(\blum{\Omega};\blum{p};\blum{\Psi};\blum{j}) \}), \frak v_{\sem{\blum{q}}  \{ \mbf{T}(\blum{\Omega};\blum{p};\blum{\Psi};\blum{j}) \}} \rangle_{\sem{\blum{q}}})^* \sem{\blum{\Omega, a : p, \Psi, b : q} \mid \Gamma \vdash \tau' : \kappa'})^\sharp$\\
-
-
-\iffalse
-
-$\cong (\frak q(\mbf{T}(\blum{\Omega};\blum{p};\blum{\Psi};\blum{j}), \sem{\blum{\Omega,a:p,\Psi ; q}})^* \sem{\blum{\Omega, a : p, \Psi, b : q} \mid \Gamma \vdash \tau' : \kappa'} \circ \frak p^*(\alpha_{\sem{\blum{\Omega, a:p, b:q} \vdash \Gamma}}) )^\sharp$\\
-
-$\cong (\Pi_{\sem{\blum{q}}}(\alpha) ; )$\\~\\
-
-$\mbf{T}(\blum{\Omega} ; \blum{p} ; (\blum{\Psi}, \blum{c : r}) ; \blum{j})^*\sem{\blum{\Omega, a : p, \Psi} \mid \Gamma \vdash \lambda \blum{b : q}. \tau' : \forall \blum{q}. \kappa'}$\\
-$= \frak q(\mbf{T}(\blum{\Omega};\blum{p};\blum{\Psi};\blum{j}), \sem{\blum{\Omega,a:p,\Psi ; r}})^* \sem{\blum{\Omega, a : p, \Psi} \mid \Gamma \vdash \lambda \blum{b : q}. \tau' : \forall \blum{q}. \kappa'}$\\
-$= \frak q(\mbf{T}(\blum{\Omega};\blum{p};\blum{\Psi};\blum{j}), \sem{\blum{\Omega,a:p,\Psi ; r}})^* \sem{\blum{\Omega, a : p, \Psi, b : q} \mid \Gamma \vdash \tau' : \kappa'}^\sharp$\\
-%todo\\
-%$= $
-
-\fi
-
-
 \end{description}
 
-We also have\\~\\
-$\mbf{T}(\blum{\Omega} ; \blum{p} ; \blum{\Psi} ; \blum{j})^*\sem{\blum{\Omega, a : p, \Psi} \mid \Gamma \vdash \lambda \blum{b : q}. \tau' : \forall \blum{q}. \kappa'}$\\
-$= \mbf{T}(\blum{\Omega} ; \blum{p} ; \blum{\Psi} ; \blum{j})^*\sem{\blum{\Omega, a : p, \Psi, b : q} \mid \Gamma \vdash \tau' : \kappa'}^\sharp$\\
-
-\end{description}
 \end{proof}
 
-%\begin{figure}
-%\beg[[
-%\begin{tabular}{l
-%(``Alonzo Church'', ``Purchases'', ``0'', ``itemId'') $\mapsto$ ``Sony Digital Paper'' \\
-%(``Alonzo Church'', ``Purchases'', ``0'', ``cardId'') $\mapsto$ ``Alonzo's Card''\\
-%(``Alonzo Church'', ``Cards'', ``Alonzo's Card'', ``Addr'') $\mapsto$ ``12 Main St''\\
-%(``Alonzo Church'', ``Cards'', ``Alonzo's Card'', ``Type'') $\mapsto$ ``Visa''\\~\\
+\section{An Order-Theoretic Model (and Redesign)}
 
-%(``Alan Turing'', ``Cards'', ``Alan's Card'', ``Addr'') $\mapsto$ ``312 Some Rd''\\
-%(``Alan Turing'', ``Cards'', ``Alan's Card'', ``Type'') $\mapsto$ ``Mastercard''\\
-%\end{tabular}
+To avoid dangling foreign keys, industrial databases often avoid removing data entries, giving their evolution over time an inflationary character. In such a situation we can interpret the sort $\blum{prop}$ as the ordinal $\mbf{2}$, containing the two elements $\mathit{known}$ and $\mathit{unknown}$, ordered such that $\mathit{unknown} \leq \mathit{known}$. A predicate $\blum{P : str \to prop}$ then represents a set of elements such that membership in the set is either known (definitely a member) or undetermined (may or may not be a member).
 
-%\end{small}
+\subsection{Contexts, Sorts, Indices, and Subsitution}
 
-%\end{figure}
+We capture the above intuition with a CwF. Its category of contexts is $\mbf{Posets}$. For semantic contexts $P$, we define $\mathit{St}(\Omega)$ (read the \emph{semantic sorts} of context $\Omega$) as the collection of $\Omega$-indexed families of posets. Such a family $\fm{X_\omega}{\omega \in \Omega}$ is a poset-indexed family rather than a set-indexed family; i.e., for $\omega_1,\omega_2 \in \Omega$ with $\omega_1 \leq \omega_2$ we have a chosen monotone injection $i_{\omega_1 \leq \omega_2} : X_{\omega_1} \to X_{\omega_2}$ such that for $\omega \in \Omega$ we have $i_{\omega \leq \omega} = \mathit{id}_{X_\omega}$ and for $\omega_1 \leq \omega_2 \leq \omega_3$ we have $i_{\omega_1 \leq \omega_3} = i_{\omega_2 \leq \omega_3} \circ i_{\omega_1 \leq \omega_2}$.
+A poset-indexed family of posets $\fm{X_\omega}{\omega \in \Omega}$ can itself be considered a poset whose elements are families $\fm{M_\omega \in X_\omega}{\omega \in \Omega}$ and $\fm{M_\omega}{\omega \in \Omega} \leq \fm{M_\omega'}{\omega \in \Omega} \Leftrightarrow (M_\omega \leq M_\omega')$ for all $\omega \in \Omega$.
 
-%Hierarchical database schemas are often informally documented in wikis. These informal schemas can easily omit important details, 
+For semantic contexts $\Omega$ and all $X \in \mathit{St}(P)$ we define $\mathit{In}(P, X)$ as the collection of all $\Omega$-indexed families $(M_\omega \in X_\omega)_{\omega \in \Omega}$ such that for $\omega_1 \leq_P \omega_2$ we have $i(M_{\omega_1}) \leq_{X_{\omega_2}} M_{\omega_2}$.
 
-%We use a simplified model of hierachical databases. A \emph{location} is a list of strings, and a \emph{database instance} is a partial function from lists of strings to strings. Initially, it is totally undefined, and each store defines the database at a specific  
+For each monotone function $f : \Omega \to \Psi$ we define a sort-level semantic substitution operator $- \{ f \} : \mathit{St}(\Psi) \to \mathit{St}(\Omega)$ as 
+$$X \{ f \} \defeq \fm{X_{f(\omega)}}{\omega \in \Omega}$$
+For $\omega_1 \leq \omega_2$ we have $f(\omega_1) \leq f(\omega_2)$ and so our chosen monotone injection is 
+$$i_{\omega_1 \leq \omega_2} : X\{ f \}_{\omega_1} \to X \{ f \}_{\omega_2} \defeq i_{f(\omega_1) \leq f(\omega_2)}$$
 
-%To demonstrate the benefits and pitfalls of hierarchical database schemas
+For $X \in \mathit{St}(\Psi)$ a index-level semantic substution operator $- \{ f \} : \mathit{In}(\Psi,X) \to \mathit{In}(\Omega, X \{ f \})$.
 
+\subsection{Comprehensions}
+
+Let $\Omega$ be a semantic context and $X$ a semantic sort in context $\Omega$. The comprehension $\Omega . X$ is the poset of pairs $(\omega,x)$ with $\omega \in \Omega$ and $x \in X_\omega$ such that 
+$$(\omega_1,x_1) \leq_{\Omega.X} (\omega_2,x_2) \defequiv (\omega_1 \leq \omega_2) \wedge (i(x_1) \leq x_2)$$
+We have a monotone function $\frak p(X) : \Omega . X \to \Omega$ defined as 
+$$\frak p(X)(\omega,x) \defeq \omega$$
+and also a semantic index term $\frak v_X \in \mathit{In}(\Omega.X, X \{ \frak p(X) \})$ defined as
+$$\fm{\frak v_X}{ (\omega,x) } \defeq x$$
+\begin{lemma}
+Let $f : \Omega \to \Psi$ be a monotone function, $X \in \mathit{St}(\Psi)$, and $M \in \mathit{In}(\Omega, X \{ f \})$. Then there exists a unique morphism $\langle f, M \rangle_X : \Omega \to \Psi.X$ satisfying $\frak p(X) \circ \langle f, M \rangle_X = f$ and $\frak v_{X}\{ \langle f, M \rangle_X \} = M$.  
+\end{lemma}
+
+\begin{proof}
+The morphism is
+$$\omega \overset{\langle f, M \rangle_X}{\mapsto} (f(\omega), M_{\omega})$$
+Clearly we have $\frak p(X) \circ \langle f, M \rangle_X = f$ since
+$$\omega \overset{\langle f, M \rangle_X}{\mapsto} (f(\omega), M_{\omega}) \overset{\frak p(X)}{\mapsto} f(\omega)$$
+Also, we have $\frak v_X \{ \langle f, M \rangle_X \} = M$ since
+$$\frak v_X \{ \langle f, M \rangle_X \}_\omega = (\frak v_X)_{\langle f , M \rangle_X(\omega)} = (\frak v_X)_{(f(\omega), M_\omega)} = M_\omega$$
+Also, $\langle f, M \rangle_X$ is monotone since if $\omega \leq \omega'$ we have
+$$\langle f, M \rangle_X (\omega) = (f(\omega), M_\omega) \leq (f(\omega'), M_{\omega'}) = \langle f, M \rangle_X (\omega')$$
+(Reminder: Since $M \in X \{ f \}$ we have $M_\omega \in X_{f(\omega)}$.)\\~\\
+TODO: prove uniqueness
+\end{proof}
+
+\subsection{$\Pi$-sorts}
+
+This model does not have arbitrary $\Pi$-sorts. However, identifying the \emph{pointed sorts} $\mathit{PSt}(\Omega)$ as those families of posets over $\Omega$ whose component posets all have $\bot$ (minimum) elements, our model has those $\Pi$-sorts whose codomains are pointed.  
+
+\begin{theorem}
+For all contexts $\Omega$, $X \in \mathit{St}(\Omega)$, $Y \in \mathit{PSt}(\Omega . X)$, our model supports the $\Pi$-sort $\Pi(X,Y)$.
+\end{theorem}
+
+\begin{proof}
+
+UNFINISHED. TODO.
+Given $X \in \mathit{St}(\Omega)$ and $Y \in \mathit{St}(\Omega . X)$ we define the semantic sort $\Pi(X,Y) \in \mathit{St}(\Omega)$ as 
+$$\omega \in \Omega \mapsto \fm{Y_{(\omega,x)}}{x \in X_\omega}$$
+where above, the right-hand-side is a poset-indexed family of posets considered as a poset. Indeed, given $x \leq x' \in X_\omega$ we have $(\omega, i(x)) = (\omega,x) \leq (\omega,x')$ and hence a monotone injection $i : Y_{(\omega,x)} \to Y_{(\omega,x')}$. 
+
+\end{proof}
 
 
 \end{document}
