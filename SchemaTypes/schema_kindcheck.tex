@@ -42,12 +42,12 @@
 %\category{D.3.3}{Test 1}
 %\terms{Languages}
 \keywords{Indexed types, Database schemas, Dependent types}
-\ccsdesc[100]{Networks˜Network reliability}
+\ccsdesc[100]{.}
 
 
 \begin{abstract}
 
-Types are an appropriate tool for describing the structure of hierarchical databases. But two common database idioms, \emph{foreign keys} and \emph{secondary indices}, cannot be expressed using standard type systems. We present a lanaguage in which a database schema is described using a type layered over a dependently sorted index language. The index language consists of keys and relations on keys. Multiple occurrences of the same index-level relation inside of a schema establish a correlation between two distinct portions of a database instance; both secondary indices and foreign keys can be specified in this manner.
+Types are an appropriate tool for describing the structure of hierarchical databases. But two common database idioms, \emph{foreign keys} and \emph{secondary indices}, cannot be expressed using standard type systems. We present a lanaguage in which a database schema is described using a type layered over a dependently sorted index language. The index language consists of keys and relations on keys. Multiple occurrences of the same index-level relation inside of a schema establish a correlation between two distinct portions of a database instance; both secondary indices and foreign keys can be specified in this manner. We present an algorithmic system of judgments for deciding an indexed kinding relation on this schema language, and provide it with an intrinsic denotational semantics.  
 
 %We present a lanaguage in which a database schema is described using a type layered over a dependently sorted index language of keys and relations on keys. A dictionary type constructor binds a sequence of $n$ index variables corresponding to a sequence of $n$ nested keys. It also includes a proposition, typically an application of an $n$-ary predicate on keys, which determines the exact set of key sequences that a database instance must contain. We a reconfiguration by including the same predicate in multiple dictionary types.
 
@@ -58,18 +58,20 @@ Types are an appropriate tool for describing the structure of hierarchical datab
 
 \section{Introduction}
 
-Programmers increasingly choose document database systems, such as DynamoDB, due to their high performance and intuitive hierarchical structure. Schemas for such databases are often intentionally omitted under the premise that they inhibit rapid iteration. However, we disagree with this premise. We believe that the arguments in favor of database schemas are analogous to those in favor of static types in programming langauges. 
+Programmers increasingly choose document database systems, such as DynamoDB, due to their high performance and intuitive hierarchical structure. Schemas for such databases are often intentionally omitted under the premise that they inhibit rapid iteration. However, we disagree with this premise. We believe that the arguments in favor of database schemas are analogous to those in favor of static types in programming langauges. By pairing data with its indended meaning, a schema increases programmer comprehension: a programmer may not know what do with a record field called \emph{widgetId}, but a good schema could convey this information, specifying that a widgetId refers to a structure stored in a specific location of the database.
 
-The type syntax of a standard programming lanaguage such as Typescript is, for the most part, an appropriate tool to describe the structure of modern hierarchical databases. However, two common features of hierarchical databases lie beyond the reach of standard type systems. First, a database may store \emph{foreign keys}: values used to refer to entities stored elsewhere in the database. Second, a database may replicate a dataset in multiple configurations, or \emph{secondary indices}, to accomodate multiple access patterns in an efficient, spatially local manner. 
+The type syntax of a standard programming lanaguage such as Typescript is, for the most part, an appropriate tool to describe the structure of modern hierarchical databases. However, two common features of hierarchical databases lie beyond the reach of standard type systems. First, a database may store \emph{foreign keys}: values, such as the aforementioned \emph{widgetId}, used to refer to entities stored elsewhere in the database. Second, a database may replicate a dataset in multiple configurations (a.k.a. \emph{secondary indices}) to accomodate multiple access patterns in an efficient, spatially local manner. 
 
-The prevalence of foreign keys in hierarchical databases constrasts sharply against the in-memory data structures one typically finds in general purpose lanaguages. A pointer in a language such as C++ is not a foreign key, because statically our concern is the type of referenced data rather than its location. In contrast, consider an e-commerce database which records purchases performed by customers. Each purchase refers to the credit card used for payment; however, this card is not drawn from a global pool of all cards, but instead the pool of cards owned by the customer which made the purchase. 
+The prevalence of foreign keys in hierarchical databases constrasts sharply against the in-memory data structures one typically finds in general purpose lanaguages. A pointer in a language such as C++ is not a foreign key, because statically our concern is the type of referenced data rather than its location. In contrast, a foreign key is drawn from a specific subset of references of a given type. For example, consider an e-commerce database which records purchases performed by customers. Each purchase holds a \emph{creditCardId} foreign key referring to the credit card used for the payment; this card is not drawn from a global pool of all cards, but instead the pool of cards owned by the customer which made the purchase. 
 
 Secondary indices are also common and useful database structure beyond the reach of traditional type systems. Consider this example demonstrating the utility of secondary indices. An e-commerce company wishes to issue a recall on a product. To do so, it must obtain a list of all customers that have purchased an item known to be defective; to compute this list efficiently, the set of all customers which purchased each item must be stored in nearby addresses. At another time, a customer may wish to obtain a list of all items he has purchased from the site; to perform this operation efficiently, we must store the set of all of a customer's purchased items in nearby addresses. These two requirements are at odds if our database merely stores a single collection of all purchases processed. However, if we redundantly store customer-to-item and item-to-customers map, we can satisfy both requirements at once. Such redundant data structures are called secondary indices.
 
-In practice, foreign keys often refer to deleted entities. Such a foreign key is a time-bomb which will raise an exception the next time the data is accessed. Secondary indices can become out-of-sync due to programmer errors. A formal schema language including notions of foreign keys and indices could be compiled to validation routines to detect these errors. 
+In practice, foreign keys often refer to deleted entities. Such a foreign key is a time-bomb which will raise an exception the next time the data is accessed. Secondary indices can become out-of-sync due to programmer errors. A formal schema language including notions of foreign keys and indices could be compiled to validation routines to detect these errors.
+
+We make the following contributions.
 \begin{itemize}   
 \item We design an expressive schema language for hierarchical databases featuring foreign keys and secondary indices. 
-\item We provide a category-theoretic characterization of the dependently-sorted equivalent of simple products. This characterization is similar to, but more general than, exisiting characterizations e.g. by Palmgren \cite{palmgren2019categories}; in particular, we identify a \emph{transpose distribution} property necessary for dependent simple products in models whose total categories, unlike Palmgren's, are not thin.
+\item We provide a category-theoretic characterization of the dependently-sorted equivalent of simple products, which plays a central role in our schema language. This characterization is similar to, but more general than, exisiting characterizations e.g. by Palmgren \cite{palmgren2019categories}; in particular, we identify a \emph{transpose distribution} property necessary for dependent simple products in models whose total categories, unlike Palmgren's, are not thin.
 
 \end{itemize}
 
@@ -131,25 +133,25 @@ type Customer = `$\lambda$(\blu{cust : str}).$\lambda$(\blu{prf (CustId cust)}).
 \label{fig:ecommerce}
 \end{figure}
 
-The purpose of a schema is to identify a set of database instances, so before examining our first schema we briefly define some formalisms for describing database instances. We consider \emph{database instances} (also called \emph{instances}) as partial mappings from lists of strings to strings. Given a database instance $f$, and a list of strings $\sigma$, we obtain $f |_\sigma$, \emph{the restriction of $f$ to $\sigma$}, defined for lists $\sigma'$ as $f |_\sigma(\sigma') \defeq f(\sigma + \! \! +~\sigma')$, where $\sigma + \! \! +~ \sigma'$ is the concatenation of $\sigma$ and $\sigma'$. By an abuse of language, we say ``$f$ maps $\sigma$ to $f |_{\sigma}$''. We write $[s_1, \ldots, s_n]$ for the list containing the $n$ strings $s_1,\ldots,s_n$. 
+The purpose of a schema is to identify a set of database instances, so before examining our first schema we briefly define some formalisms for describing database instances. We consider \emph{database instances} (also called \emph{instances}) as partial mappings from lists of strings to strings. Given a database instance $f$ and a list of strings $\sigma$, we obtain an instance $f |_\sigma$ called \emph{the restriction of $f$ to $\sigma$}, defined for lists $\sigma'$ as $f |_\sigma(\sigma') \defeq f(\sigma + \! \! +~\sigma')$, where $\sigma + \! \! +~ \sigma'$ is the concatenation of $\sigma$ and $\sigma'$. By an abuse of language, we say ``$f$ maps $\sigma$ to $f |_{\sigma}$''. We write $[s_1, \ldots, s_n]$ for the list containing the $n$ strings $s_1,\ldots,s_n$. 
 
-Figure \ref{fig:ecommerce} shows a schema fragment for an e-commerce database. It begins by declaring five predicates: first four unary predicates for item ids, customer ids, purchase ids, and card types. Finally, it declares a ternary predicate for card ids. The predicate variables and their classifiers have been bolded and colored blue to indicate that they are part of the \emph{index language}. This simple language defines conceptual entities such as predicates and relations, divorced from the physical details of where these entities are stored. The index langauge is layered beneath our schema language, i.e. schemas may depend on indices but not vice versa. 
+Figure \ref{fig:ecommerce} shows a schema fragment for an e-commerce database. It begins by declaring five predicates: first four unary predicates for item ids, customer ids, purchase ids, and card types, and then a ternary predicate for card ids. The predicate variables and their classifiers have been bolded and colored blue to indicate that they are part of the \emph{index language}. This simple language defines conceptual entities such as predicates and relations, divorced from the physical details of where these entities are stored. The index langauge is layered beneath our schema language, i.e. schemas may depend on indices but not vice versa. 
 
-Lines 7-10, use the record type constructor to define a subschema representing credit cards. It denotes the set of instances which map the list [``billingAddr''] to any string and the list [``cardType''] to any string satisfying the \lstinline[mathescape]{$\blu{CardType}$} predicate. 
+Lines 7-10 use the record type constructor to define a subschema representing credit cards. It denotes the set of instances which map the list [``billingAddr''] to any string and the list [``cardType''] to any string satisfying the \lstinline[mathescape]{$\blu{CardType}$} predicate. We consider the latter a foreign key; rather than taking the naive view that a foreign key is a reference to a specific location in the database, we instead take it to be a string satisfying a predicate in our index-level context (i.e. an element of a conceptual set). We believe our approach is cleaner and more declarative than the naive approach. Because a conceptual set may be replicated at multiple locations in a database, it would not make sense for a foreign key to refer to one of these locations rather than another.
 
 %The field \emph{cardId} is an instance of a foreign key. In this schema language, foreign keys don't refer directly to locations in the database; instead, they refer to index-level unary predicates. By separating conceptual sets (index-level predicates) from their physical  
 
-Lines 12-15 define an index-to-type operator called \emph{Purchase}, which maps a string \lstinline[mathescape]{$\blu{cust}$} and a proof that \lstinline[mathescape]{$\blu{cust}$} satisfies the \lstinline[mathescape]{$\blu{CustId}$} predicate to a type denoting representing purchases made by customer \lstinline[mathescape]{$\blu{cust}$}. In the application \lstinline[mathescape]{$\blu{CardId cust card}$}, the second argument to  \lstinline[mathescape]{CardId} is missing. This is because it is a proof; since any two proofs of the same proposition are interchangeable, we apply proofs implicitly to reduce visual clutter. 
+Lines 12-15 define an index-to-type operator called \emph{Purchase}, which maps a string \lstinline[mathescape]{$\blu{cust}$} and a proof that \lstinline[mathescape]{$\blu{cust}$} satisfies the \lstinline[mathescape]{$\blu{CustId}$} predicate to a type representing purchases made by customer \lstinline[mathescape]{$\blu{cust}$}. In the application \lstinline[mathescape]{$\blu{CardId cust card}$}, the second argument to  \lstinline[mathescape]{$\blu{CardId}$} is missing. This is because it is a proof; since any two proofs of the same proposition are interchangeable, we apply proofs implicitly to reduce visual clutter. 
 
-On lines 17-24 define a index-to-type operator \lstinline{Customer} mapping a string \lstinline[mathescape]{$\blu{cust}$} and a proof that \lstinline[mathescape]{$\blu{CustId cust}$} holds to a type representing customers with id \lstinline[mathescape]{$\blu{cust}$}. It denotes the set of instances which
+Lines 17-24 define a index-to-type operator \lstinline{Customer} mapping a string \lstinline[mathescape]{$\blu{cust}$} and a proof of \lstinline[mathescape]{$\blu{CustId cust}$} to a type representing customers with id \lstinline[mathescape]{$\blu{cust}$}. It denotes the set of instances which
 \begin{itemize}
-\item Map all lists [``purchases'', \lstinline[mathescape]{$\blu{p}$}] such that \lstinline[mathescape]{$\blu{purchaseId p}$} holds to instances of type \lstinline[mathescape]{Purchase $\blu{cust}$}. 
+\item Map all lists [``purchases'', \lstinline[mathescape]{$\blu{p}$}] such that \lstinline[mathescape]{$\blu{purchaseId p}$} holds to instances of type \lstinline[mathescape]{Purchase $\blu{cust}$}, and 
 \item Map all lists [``cards'', \lstinline[mathescape]{$\blu{card}$}] such that \lstinline[mathescape]{$\blu{CardId cust card}$} holds to instances of type \lstinline{Card}.
 \end{itemize}
 
-Finally, lines 26-29 define the schema using a record type. It denotes the set of instances which: 
+Finally, lines 26-29 define the schema using a record type. It denotes the set of instances which 
 \begin{itemize}
-\item Map [``cardTypes''] to a subinstance that stores the set of all card types by mapping each \lstinline[mathescape]{Purchase $\blu{x}$} satisfying the \lstinline[mathescape]{$\blu{CardType}$} predicate to the string \lstinline[mathescape]{"*"}
+\item Map [``cardTypes''] to a subinstance that stores the set of all card types by mapping each string \lstinline[mathescape]{$\blu{x}$} satisfying the \lstinline[mathescape]{$\blu{CardType}$} predicate to the string \lstinline[mathescape]{"*"}, and
 \item Map [``customers''] to a dictionary that maps every \lstinline[mathescape]{$\blu{x}$} satisfying the \lstinline[mathescape]{$\blu{CustId}$} predicate to a subschema of type \lstinline[mathescape]{Customer $\blu{x}$}. 
 \end{itemize}
 
@@ -240,7 +242,7 @@ $\blu{a}, \blu{b}, \blu{P}$ & $\in$ & $\mathit{IndexVars}$ & ~ \\
 $\blu{s},\blu{t}$ & $\in$ & $\mathit{Strings}$ & ~ \\
 \end{tabular}\\~\\~\\
 \begin{tabular}{llll}
-$\blu{i},\blu{j},\blu{k}$ (indices) & ::=  & $\blum{s}$ & (string literal) \\
+$\blu{i},\blu{j},\blu{k}$ (index) & ::=  & $\blum{s}$ & (string literal) \\
                           & $\mid$ & $\blum{App}_{\blum{[a : q],p}}\blum{(j,k)}$ & (index application) \\
                           & $\mid$ & $\blu{a}$ & (index variable) \\
                           & $\mid$ & $\blu{true}$ & (true proposition) \\
@@ -266,7 +268,7 @@ $\kappa,\rho$ (pre-kind) & $::=$ & $\ast$ & (proper type pre-kind) \\
 \begin{tabular}{llll}
 $\blum{\Omega}, \blum{\Psi}$ (pre-sort-context) & $::=$  & $\blum{\Omega,a : q}$ & (extension) \\
                                      & $\mid$ & $\blum{\diamond}$ & (empty) \\~\\
-$\Gamma$ (kind context) & $::=$ & $\Gamma,x : \kappa$ & (extension) \\
+$\Gamma$ (pre-kind-context) & $::=$ & $\Gamma,x : \kappa$ & (extension) \\
                         & $\mid$ & $\diamond$ & (empty) 
 \end{tabular}
 \caption{Syntax}
@@ -278,11 +280,11 @@ Index-level terms $\blum{i,j,k}$ consist of string literals, variables, applicat
 
 Following \cite{xi2007dependent}, index level classifiers are called \emph{sorts}. Sorts are written using the variables $\blum{p,q,r}$. We include the sorts $\blum{str}$ for strings, $\blum{prop}$ for propositions, $\blum{prf}~j$ proofs of the proposition $\blum{j}$, and the sort constructor $\blum{(a : q) \to r}$ for constructing dependen function sorts, which are essentially index-level $\Pi$-types.
 
-Our types $\tau,\sigma$ are also called \emph{schemas}. The type constructor $\{ [\blum{a : str}] : \tau \}$ is used for dictionaries of value type $\tau$. The type $\tau$ depends on the index variable $\blum{a}$, and such a dictionary type describes the set of database instances which contains exactly those keys $\blum{a}$ which $\tau$ maps to a non-empty set of database instances. The record types, type-type applications, and type-type abstractions in our type syntax are standard. A string refinement type of the form $\{ \blum{a : str} \mid \blum{i} \}$ denotes the set of all strings which satisfy the proposition $\blum{i}$.
+Our types $\tau,\sigma$ are also called \emph{schemas}. The type $\{ [\blum{a : str}] : \tau \}$ represents string-keyed dictionaries of value type $\tau$. The type $\tau$ depends on the index variable $\blum{a}$, and $\{ [\blum{a : str}] : \tau \}$ describes the set of database instances which contains exactly those root-level keys $\blum{s}$ such that $\tau[\blum{s/a}]$ represents a non-empty set of database instances. Record types, type-type applications, and type-type abstractions in our type syntax are standard. A string refinement type of the form $\{ \blum{a : str} \mid \blum{i} \}$ represents the set of all strings $\blum{s}$ such that $\blum{i[s/a]}$ holds.
 
 Finally, our type syntax include index-type abstractions $\lambda (\blum{a : q}). \tau$, index-type application $\tau~[~\blum{j}~]$, and union $\bigvee \tau$. In a well-kinded union type $\bigvee \tau$, the type $\tau$ is an index-type function whose codomain is $\ast$ (the kind of proper types). $\tau$ then denotes a function which maps a semantic index to a set of database instances; $\bigvee \tau$ denotes the union over the applications of $\tau$ to all semantic indices in its domain. 
    
-In figures \ref{fig:ecommerce} and \ref{fig:reconfigurations}, a dictionary type of the form $\{ [\blum{a :str}] : \blum{i_1, \ldots, i_n} > \tau \}$ is sugar for $$\{ [\blum{a :str}] : \bigvee \lambda \blum{(a_1 : prf~i_1}) \ldots \bigvee \lambda (\blum{a_n : prf~i_n}). \tau \}$$
+In figures \ref{fig:ecommerce} and \ref{fig:ecommerce-indices}, a dictionary type of the form $\{ [\blum{a :str}] : \blum{i_1, \ldots, i_n} > \tau \}$ is sugar for $$\{ [\blum{a :str}] : \bigvee \lambda \blum{(a_1 : prf~i_1}) \ldots \bigvee \lambda (\blum{a_n : prf~i_n}). \tau \}$$
 
 \section{Static semantics}
 
@@ -394,13 +396,13 @@ Index-level judgment rules are shown in Figure \ref{fig:sorting}. A judgment of 
 \Description[Kinding and kind formation]{Kinding, kind formation, and kind context formation rules}
 \end{figure}
 
-Type-level judgment rules are shown in Figure \ref{fig:kinding}. A judgment of the form $\blum{\Omega} \vdash \kappa$ means that the kind $\kappa$ is a well-formed kind under context $\blum{\Omega}$. A judgment of the form $\blum{\Omega} \vdash \Gamma$ means that $\Gamma$ is a well-formed kind context under sort context $\blum{\Omega}$. Finally, a judgment of the form $\blum{\Omega} \mid \Gamma \vdash \tau : \kappa$ means that the type $\tau$ has kind $\kappa$ under sort context $\blum{\Omega}$ and kind context $\Gamma$.
+Type-level judgment rules are shown in Figure \ref{fig:kinding}. A judgment of the form $\blum{\Omega} \vdash \kappa$ means that the pre-kind $\kappa$ is a well-formed kind under context $\blum{\Omega}$. A judgment of the form $\blum{\Omega} \vdash \Gamma$ means that $\Gamma$ is a well-formed kind context under sort context $\blum{\Omega}$. Finally, a judgment of the form $\blum{\Omega} \mid \Gamma \vdash \tau : \kappa$ means that the type $\tau$ has kind $\kappa$ under sort context $\blum{\Omega}$ and kind context $\Gamma$.
 
 \section{Denotational Semantics}
 
 \subsection{Index Language}
 
-We interpret our index langauage using Dybjer's \emph{Categories-with-Families} (CwF) framework for semantically modeling dependently typed languages \cite{dybjer1995internal}. We first review the definition of CwF, then review the standard set-theoretic CwF, and finally provide an interpretation of the index language with respect to a CwF. There is nothing novel about our index language, so the entirety of this section is standard. However, we rename some of the standard terminology to fit into the present setting, e.g. instead of dependent types we have dependent sorts.
+We interpret our index langauage using Dybjer's \emph{Categories-with-Families} (CwF) framework for semantically modeling dependently typed languages \cite{dybjer1995internal}. We first review the definition of CwF, then review the standard set-theoretic CwF, and finally provide an interpretation of the index language with respect to a CwF. The entirety of this section is standard. However, we rename some of the standard terminology to fit into the present setting, e.g. instead of dependent types we have dependent sorts.
 
 \subsubsection{Categories with Families}
 
@@ -434,7 +436,7 @@ Our index language will be interpreted using a standard set-theoretic CwF. This 
 
 \subsubsection{Interpretation}
 
-Our index langauge is a fragment of the calculus of constructions, with the unnotable addition of strings. Its interpretation appears, for example, in \cite{Hofmann97syntaxand}, and is displayed in Figure \ref{fig:index-interp} for convenience. 
+Our index langauge is a fragment of the calculus of constructions, with the unnotable addition of strings. Its interpretation appears, for example, in Hoffman's tutorial\cite{Hofmann97syntaxand}, and is displayed in Figure \ref{fig:index-interp} for convenience. 
 
 \begin{figure}
 \begin{small}
@@ -455,7 +457,7 @@ $\sem{\blum{\Omega};\blum{s}} \defeq \fm{s}{\omega \in \sem{\blum{\Omega}}}$
 \label{fig:index-interp}
 \end{figure}
 
-We also state the fragment of the standard soundness theorem which will be relevant in the sequel. 
+We also state the fragment of the standard soundness theorem which will be relevant in the sequel: 
 
 \begin{theorem} Our interpretation satisfies the following properties.
 \begin{itemize}
@@ -518,7 +520,7 @@ $\sem{\bigvee \tau}_{\omega} \gamma \defeq \bigcup_{M \in \sem{\blum{q}}_\omega}
 \caption{Semantics for abstraction and application}
 \end{figure}
 
-Our kinding and kind formation judgments are interpreted in terms of the fibration $\mathit{Fam}(\mbf{Sets})$. We assume basic knowledge of fibrations \cite{jacobs1999categorical}. A kind-in-sorting-context $\blum{\Omega} \vdash \kappa$ is interpreted as an object of $\mathit{Fam}(\mbf{Sets})_{\sem{\blum{\Omega}}}$, concretely a $\sem{\blum{\Omega}}$-indexed family of sets. For kind contexts $\Gamma = x_1:\kappa_1,\ldots,x_n : \kappa_n$, the kinding context formation judgment $\blum{\Omega} \vdash \Gamma$ is interpreted as the product $\sem{\blum{\Omega} \vdash \kappa_1} \times \cdots \times \sem{\blum{\Omega} \vdash \kappa_n}$ in $\mathit{Fam}(\mbf{Sets})_{\sem{\blum{\Omega}}}$. A kinding judgment $\blum{\Omega} \mid \Gamma \vdash \tau : \kappa$ is interpreted as a arrow of $\mathit{Fam}(\mbf{Sets})_{\sem{\blum{\Omega}}}$ from $\sem{\blum{\Omega} \vdash \Gamma}$ to $\sem{\blum{\Omega} \vdash \kappa}$. 
+Our kinding and kind formation judgments are interpreted in terms of the fibration $\mathit{Fam}(\mbf{Sets})$. We assume basic knowledge of fibrations \cite{jacobs1999categorical}. A kind-in-sorting-context $\blum{\Omega} \vdash \kappa$ is interpreted as an object of $\mathit{Fam}(\mbf{Sets})_{\sem{\blum{\Omega}}}$, concretely a $\sem{\blum{\Omega}}$-indexed family of sets. For pre-kind contexts $\Gamma = x_1:\kappa_1,\ldots,x_n : \kappa_n$, the kinding context formation judgment $\blum{\Omega} \vdash \Gamma$ is interpreted as the product $\sem{\blum{\Omega} \vdash \kappa_1} \times \cdots \times \sem{\blum{\Omega} \vdash \kappa_n}$ in $\mathit{Fam}(\mbf{Sets})_{\sem{\blum{\Omega}}}$. A kinding judgment $\blum{\Omega} \mid \Gamma \vdash \tau : \kappa$ is interpreted as a arrow of $\mathit{Fam}(\mbf{Sets})_{\sem{\blum{\Omega}}}$ from $\sem{\blum{\Omega} \vdash \Gamma}$ to $\sem{\blum{\Omega} \vdash \kappa}$. 
 
 \subsubsection{Dependent Simple Products}
 
@@ -558,7 +560,7 @@ $= (\frak p(X) \circ \langle u \circ \frak p^*(X \{ u \}), \frak v_{X \{ u \}} \
 $= (u \circ \frak p(X \{ u \})^*)^*$\\
 $\cong \frak p(X \{ u \})^* u^*$\\
 
-In the second point, it is not immediately clear that the right-hand side of the isomorphism is ``well-typed''. However, applying our isomorphism to the domain of $\frak q(z, X)^* f$ gives $\frak q(u,X)^* \frak p(X)^*(\Gamma) \cong \frak p(X \{ u \})^* u^*(\Gamma)$.
+In the second point, it is not immediately clear that the right-hand side of the isomorphism is ``well-typed''. However, applying our isomorphism to the domain of $\frak q(z, X)^* f$ gives $\frak q(u,X)^* \frak p(X)^*(\Gamma) \cong \frak p(X \{ u \})^* u^*(\Gamma)$. Agreement of codomains follows from the Beck-Chevalley condition.
 
 In the third point, the \emph{canonical transformation} is obtained as the transpose of
 $$\frak p(X \{u \})^* u^* \Pi_X \overset{\cong}{\to} \frak q(u,X)^* \frak p(X)^* \Pi_X \overset{\frak q(u,X) \epsilon}{\to} \frak q(u,X)^*$$
@@ -825,7 +827,7 @@ We also have
  &\quad \sem{\blum{\Omega,\Psi'[j/a], b : q[j/a]} \mid \Gamma[\blum{j}/\blum{a}] \vdash \tau'[\blum{j}/\blum{a}] : \kappa'[\blum{j} / \blum{a}] }^\sharp\\
 \cong&\qquad \{ \text{IH} \}\\
  &\quad (\mbf{T}(\blum{\Omega}; \blum{p} ; \blum{(\Psi, b:q)} ; \blum{j})^* \sem{\blum{\Omega, a : p, \Psi, b : q} \mid \Gamma \vdash \tau' : \kappa'})^\sharp\\
-=&\qquad \{ \text{Transpose distribution} \} \\
+\cong&\qquad \{ \text{Transpose distribution} \} \\
  &\quad \mbf{T}(\blum{\Omega} ; \blum{p} ; \blum{\Psi} ; \blum{j})^*\sem{\blum{\Omega, a : p, \Psi, b : q} \mid \Gamma \vdash \tau' : \kappa'}^\sharp\\
 =& \qquad \{ \text{Interpretation of \begin{sc}K-IndAbs\end{sc}} \}\\
  &\quad \mbf{T}(\blum{\Omega} ; \blum{p} ; \blum{\Psi} ; \blum{j})^*\sem{\blum{\Omega, a : p, \Psi} \mid \Gamma \vdash \lambda \blum{b : q}. \tau' : \forall \blum{q}. \kappa'}
