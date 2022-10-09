@@ -17,14 +17,24 @@
 \usepackage{tikz}
 
 \usetikzlibrary{cd}
- 
+
+\tikzset{
+absepi to/.tip={Glyph[glyph math command=triangleright]},
+}
+
 \newtheorem{lemma}{Lemma}
 
 %example: \limit{j \in J}{F_j}
 \newcommand{\limit}[2]{\underset{\overset{\longleftarrow}{#1}}{\text{lim}}~#2}
 \newcommand{\lims}[1]{\underset{\longleftarrow}{\text{lim}}~#1}
 \newcommand{\mbf}{\mathbf}
+\newcommand{\absepi}{~\stackinset{r}{}{c}{}{\scalebox{0.5}{$\triangleright$}}{$-$}~}
+\newcommand{\absmono}{\mapsto}
 
+\newcommand{\inconsist}{\mathrel{\substack{\smile \\ \frown}}}
+\newcommand{\consist}{\mathrel{\substack{\frown \\ \smile}}}
+
+\newcommand{\defeq}{\overset{\mathit{def}}{=}}
 
 \newcommand{\vrt}[2]{
 \pile{
@@ -168,8 +178,8 @@ TODO: could be proven inductively. not that interesting.
 
 \subsection*{2.2.2}
 
-1. This is a colist; i.e., it is either a finite list or an infinite stream. \\
-2. A tree with both binary (two-child) and unary (one-child) nodes, in which paths may be finite or infinite.
+1. This is a non-empty colist; i.e., it is either a finite list or an infinite stream with at least one element. \\
+2. A non-empty tree with both binary (two-child) and unary (one-child) nodes, in which paths may be finite or infinite.
 
 \subsection*{2.2.3}
 
@@ -181,19 +191,20 @@ $2 \times \mathcal P(X)^A$ & ~ & ~
 \end{tabular}
 
 \subsection*{2.2.4}
-
-1.) We take a bottom-up approach. First, for the left summand $B$ we have the arity map $\# : B \to \mathbb N$ which
+ 
+1.) $X \mapsto B + (X \times A \times X)$\\~\\ 
+We take a bottom-up approach. First, for the left summand $B$ we have the arity map $\# : B \to \mathbb N$ which
 is constantly 0. Likewise for $A$ in the right summand. The right summand $(X \times A \times X)$ can be rewritten
-as $((X \times A) \times X)$. The arity for $(X \times A)$ is $\# : 1 \times A \to \mathbb N$ defined as $\# (\ast, a) \doteq 1 + 0 = 1$. Now consider the functor corresponding to this arity:
+as $((X \times A) \times X)$. The arity for $(X \times A)$ is $\# : 1 \times A \to \mathbb N$ defined as $\# (\ast, a) \defeq 1 + 0 = 1$. Now consider the functor corresponding to this arity:
 $$F_{\#} (X) = \coprod_{(\ast,a) \in 1 \times A} X^{1}$$ 
 It's not hard to see that $F_{\#}(X)$ is isomorphic to $X \times A$.\\~\\
 Now, consider $(X \times A) \times X$. The arity for this functor is $\# : (1 \times A) \times 1 \to \mathbb N$ defined
-as $\#((\ast,a),\ast) \doteq 1 + 1 = 2$. The arity functor is then:
+such that $\#((\ast,a),\ast) \defeq \#(\ast,a) + \# \ast = 1 + 1 = 2$. The arity functor is then:
 $$F_{\#}(X) = \coprod_{((\ast,a),\ast) \in (1 \times A) \times 1} X^{2} $$
 It's not hard to see that this is isomorphic to $(X \times A) \times X$.\\~\\
 Now, consider $B + ((X \times A) \times X)$. The arity for this functor $\# : (B + ((1 \times A) \times 1)) \to \mathbb N$
-is defined as $\# (b,1) \doteq 0$ and $\# (((\ast, a),\ast),2) \doteq 2$. This generates a functor
-$$F_{\#}(X) \cong B + \coprod_{((\ast,a),\ast)} X^2 \cong B + ((X \times A) \times X)$$ 
+has $\# (b,1) = 0$ and $\# (((\ast, a),\ast),2) = 2$. This generates a functor
+$$F_{\#}(X) \cong \coprod_{z \in B + 1 \times A \times 1} X^{\# z} \cong \coprod_{z \in B} X^{\#z} + \coprod_{z \in 1 \times A \times 1} X^{\# z} \cong  B + \coprod_{((\ast,a),\ast)} X^2 \cong B + ((X \times A) \times X)$$ 
 
 2.) TODO.
 
@@ -286,7 +297,22 @@ $\delta^*(x, (a \cdot \sigma'') \cdot \sigma') = \delta^*(x, a \cdot (\sigma'' \
 
 \subsection*{2.2.10}
 
-Hello. TODO.
+We curry $\delta^*$ to obtain $\gamma^* : A^{\star} \to S^S$ defined as
+$$\gamma^*(\sigma)(s) \defeq \delta^{*}(s, \sigma)$$
+Likewise we curry $\delta$ to obtain $\gamma : A \to S^S$ defined as
+$$\gamma(a)(s) \defeq \delta(a,s)$$
+We just need to prove that the following diagram commutes:
+\[\begin{tikzcd}
+	{A^\star} && {S^S} \\
+	\\
+	A
+	\arrow["\gamma"', from=3-1, to=1-3]
+	\arrow["\eta", from=3-1, to=1-1]
+	\arrow["{\gamma^*}", from=1-1, to=1-3]
+\end{tikzcd}\]
+To this end, we have
+$$\gamma^*(\eta(a))(s) = \delta^*(s, a \cdot \langle \rangle) = \delta^*(\delta(s,a), \langle \rangle) = \delta(s,a) = \gamma(a)(s)$$
+therefore the above diagram commutes, i.e. $\eta;\gamma^* = \gamma$.
 
 \subsection*{2.2.12}
 
@@ -773,6 +799,22 @@ the right a coalgebra map.
 
 \subsection*{3.3.4}
 
+\section*{Notes 4.2}
+
+\subsection*{Theorem 4.2.4}
+
+Here is an additional hint to help show that $\mathit{Eq}(\mathit{beh}_c, \mathit{beh}_d) \overset{\langle r_1, r_2 \rangle}{\rightarrowtail} X \times Y$ is an Aczel-Mendler bisimulation:
+\begin{center}
+\begin{tabular}{l}
+$c;F(\mathit{beh}_C) = \mathit{beh}_{c};\zeta$ \\
+$\therefore r_1;c;F(\mathit{beh}_c) = r_1;\mathit{beh}_{c};\zeta$ \\
+$\text{Likewise, } r_2;d;F(\mathit{beh}_d) = r_2;\mathit{beh}_d;\zeta$ \\~\\
+But since $r_1;\mathit{beh}_c = r_2;\mathit{beh}_d$ we have $r_1;c;F(\mathit{beh}_c) = r_2;d;F(\mathit{beh}_d)$
+\end{tabular}
+\end{center}~\\
+At this point, it's not hard to see that the resultant mediating morphism is a coalgebra and that $r_1$ and
+$r_2$ are coalgebra morphisms. 
+
 \section*{Exercises 4.2}
 
 \subsection*{4.2.3}
@@ -866,6 +908,58 @@ Y \ar[r, "\frak e(f)"] \ar[dr,"f"] \ar[ddr, "f;m" left] & A \ar[d, "\frak m(f)" 
 
 nuf said
 
+\subsection*{Notes 4.3}
+
+\subsubsection*{Factorisation in $\mbf{CohL}$}
+
+I propose a factorisation system in the category $\mbf{CohL}$ of coherent spaces and linear functions.
+It set of abstract monos $\frak M$ consists of all monic linear functions. Its set of abstract epis $\frak E$
+consists of all epic linear functions. I will treat linear functions as sets of tokens, because that way
+they are easier to work with.
+
+\begin{lemma}
+A linear function $f : \mathcal A \to \mathcal B = \{ \alpha_i \to \beta_i \mid i \in I \}$ is monic iff 
+we have both $\{ \alpha \mid \alpha \mapsto \beta \in f \} = |\mathcal A|$.  
+\end{lemma}
+
+\begin{proof}
+A linear function's underlying ``function between token spaces'' is always injective, so
+the only way that two distinct points can map to the same point in the codomain is that 
+there is some non-empty point that maps to the empty set. 
+\end{proof}
+
+
+\begin{lemma}
+A linear function $f : \mathcal A \to \mathcal B$ is epic iff its set of tokens representation is epic.
+\end{lemma}
+
+\begin{proof}
+TODO.
+\end{proof}
+
+
+\begin{lemma}
+Let $f : \mathcal A \to \mathcal B$ be a linear map. Then there exists $\frak m(f) \in \frak M$
+and $\frak e(f) \in \frak E$ such that $f = \frak e(f);\frak m(f)$.
+\end{lemma}
+
+\begin{proof}
+Let $\coprod_f A$ be the coherence space whose tokens set is 
+$\{ b \mid a \mapsto b \in f \wedge a \in |\mathcal A| \}$  
+and with $b \consist b'$ (mod $\coprod_f \mathcal A$) iff 
+$b \consist b'$ (mod $\mathcal B$).
+
+We define $\frak e(f) : \mathcal A \to \coprod_f \mathcal A = \{ a \mapsto b \mid a \in |A| \}$.
+We define $\frak m(f) : \coprod_f A \to B$.
+
+TODO: finish this proof.
+\end{proof}
+
+\begin{lemma}
+
+\end{lemma}
+
+
 \subsection*{4.3.2}
 
 helo
@@ -931,6 +1025,33 @@ of $\kappa_1;\frak e([m,n]) : U \to \coprod_{[m,n]}(X)$ in $\mit{Pred}(X)$.\\~\\
 Now assume some upper bound $w : W \mapsto X$ of $m : U \mapsto X$ and $n : V \mapsto X$ in $\mit{Pred}(X)$:
 
 TODO: finish the exercise
+
+\section*{Notes 4.4}
+
+\subsection*{Kripke Polynomial Functors as a Special Case}
+
+We can show that the $\mathit{Rel}(F)$ functor defined earlier for 
+Kripke polynomial functors conforms to the general categorical
+definition of $\mathit{Rel}(F)$ defined in this chapeter.
+
+The cases for $F(X) \doteq X$ and $F(X) \doteq A$ are easy. Products $F(X) \doteq F_1(X) \times F_2(X)$ are 
+more interesting. Let $R \absmono X \times Y$ be a relation. As our inductive hypotheses, for $i \in \{1, 2\}$ 
+we have~\\
+\begin{tikzcd}
+F_i(R) \ar[r,two heads,"e_i"] \ar[dr,"\langle F_i r_1 \text{,} F_i r_2 \rangle~~~~~~~~~~~" below] & \ar[d,mapsto,"m_i"] \mathit{Rel}(F_i)(R) \\
+~ & F_iX \times F_i Y
+\end{tikzcd}~\\
+Then, noting that $e_1 \times e_2$ is an epi (epis and abstract epis are one and the same in the $\mbf{Sets}$ factorisation system) and that $m_1 \times m_2$ is a mono, we have~\\~\\
+\begin{tabular}{ll}
+$(e_1 \times e_2);(m_1 \times m_2)$ & ~ \\
+$= (e_1;m_1) \times (e_2;m_2)$ & ~ \\
+$= \langle F_1 r_1 , F_1 r_2 \rangle \times \langle F_2 r_1 , F_2 r_2 \rangle$ & ~ \\
+$= \langle \pi_1;\langle F_1 r_1 , F_1 r_2 \rangle , \pi_2 \langle F_2 r_1 , F_2 r_2 \rangle \rangle$ & ~ \\
+$= \langle \langle \pi_1 ; F_1 r_1 , \pi_1 ; F_1 r_2 \rangle , \langle \pi_2 ; F_2 r_1 , \pi_2 ; F_2 r_2 \rangle \rangle$ & ~\\
+$= \langle F_1 r_1 \times F_2 r_1 , F_2 r_2 \times F_2 r_2 \rangle;\langle \langle \pi_1;\pi_1,\pi_2;\pi_1 \rangle , \langle \pi_1 ; \pi_2 , \pi_2 ; \pi_2 \rangle \rangle$ & ~
+\end{tabular}~\\~\\
+Now post-compose the inverse of $\langle \langle \pi_1;\pi_1,\pi_2;\pi_1 \rangle , \langle \pi_1 ; \pi_2 , \pi_2 ; \pi_2 \rangle \rangle$ with both sides of the equation.
+
 
 \section*{Exercises 4.4}
 
@@ -1083,7 +1204,89 @@ On the other hand, we have:\\~\\
 $\bigcup~\mathcal P \mathit{supp}_{X}(\mathit{supp}_{\mathcal D X}(\Sigma_{i=1}^n r_i \mid \Sigma_{j=1}^m q_{i,j} \mid x_{i,j} \rangle \rangle))$\\
 $= \bigcup~\mathcal P \mathit{supp}_{X}(\{ \Sigma_{j=1}^m q_{i,j} \mid x_{i,j} \rangle \mid i \in 1..n \})$\\
 $= \bigcup~\{ \{x_{11},\ldots,x_{1m} \}, \ldots, \{ x_{n1}, \ldots, x_{nm} \} \}$\\
-$= \{ x_{i,j} \mid i \in 1..n, j \in 1..m \}$ 
+$= \{ x_{i,j} \mid i \in 1..n, j \in 1..m \}$
+
+\subsection*{5.1.11}
+
+\subsubsection*{Part 1: $-^M$}
+
+The counit and comultiplication of the comonad $-^M$ are:
+
+\begin{mathpar}
+\alpha \overset{\epsilon}{\mapsto} \alpha(e)
+\and
+\alpha \overset{\delta}{\mapsto} \lambda m. \lambda n. \alpha(m \cdot n)
+\end{mathpar}
+For naturality of $\epsilon$ we have\\
+\begin{mathpar}
+\alpha \overset{f^M;\epsilon_Y}{\mapsto} f(\alpha(e))
+\and
+\alpha \overset{\epsilon_X;f}{\mapsto} f(\alpha(e))
+\end{mathpar}
+For the counit laws:
+
+\[\begin{tikzcd}
+	&& {X^M} \\
+	\\
+	{X^M} && {(X^M)^M} && {X^M}
+	\arrow[no head, from=3-1, to=1-3]
+	\arrow[no head, from=1-3, to=3-5]
+	\arrow["{\delta_X}", from=1-3, to=3-3]
+	\arrow["{(\epsilon_X)^M}", from=3-3, to=3-1]
+	\arrow["{\epsilon_{X^M}}"', from=3-3, to=3-5]
+\end{tikzcd}\]
+We have\\~\\
+$\delta_X;\epsilon_{X^M} = \alpha \mapsto \epsilon_{X^M}(\lambda m. \lambda n. \alpha(m \cdot n)) = \lambda n. \alpha(e \cdot n) = \lambda n.\alpha(n) = \alpha$
+\\~\\
+$\delta_X;(\epsilon_X)^M = \alpha \mapsto (\epsilon_X)^M(\lambda m. \lambda n. \alpha(m \cdot n)) = \lambda m. \epsilon_X(\lambda n. \alpha(m \cdot n)) = \lambda m. \alpha(m \cdot e)\\ = \lambda m. \alpha(m) = \alpha$\\~\\
+For the comultiplication law
+\[\begin{tikzcd}
+	{((X^M)^M)^M} && {(X^M)^M} \\
+	\\
+	{(X^M)^M} && {X^M}
+	\arrow["{\delta_X}", from=3-3, to=3-1]
+	\arrow["{\delta_X}"', from=3-3, to=1-3]
+	\arrow["{\delta_{X^M}}", from=3-1, to=1-1]
+	\arrow["{(\delta_X)^M}"', from=1-3, to=1-1]
+\end{tikzcd}\]
+We have\\~\\
+$\alpha \overset{\delta_X;\delta_{X^M}}{\mapsto} \delta_{X^M}(\lambda n. \lambda m. \alpha(n \cdot m)) = \lambda k. \lambda l. ((\lambda n. \lambda m. \alpha(n \cdot m))~(k \cdot l))\\ = \lambda k. \lambda l. \lambda m. \alpha((k \cdot l) \cdot m)$\\~\\
+$\alpha \overset{\delta_X;(\delta_{X})^M}{\mapsto} (\lambda n. \delta_X(\lambda m. \alpha(n \cdot m))) = \lambda n. \lambda k. \lambda l. (\lambda m. \alpha(n \cdot m))~(k \cdot l) \\ = \lambda n. \lambda k. \lambda l. \alpha(n \cdot (k \cdot l))$
+
+\subsubsection*{Part 2: $-^E \times E$}
+
+The counit and comultiplication of the comonad $-^E \times E$ are:
+
+\begin{mathpar}
+(\alpha, e) \overset{\epsilon}{\mapsto} \alpha(e) 
+\and
+(\alpha, e) \overset{\delta}{\mapsto} (~(\lambda d. (\alpha, d))~,~ e~)
+\end{mathpar}
+
+For naturality of $\epsilon$ we have\\
+\begin{mathpar}
+(\alpha, e) \overset{(f^E \times E);\epsilon_Y}{\mapsto} \epsilon_Y(\alpha;f, e) = f(\alpha(e))
+\and
+(\alpha, e) \overset{\epsilon_X;f}{\mapsto} f(\alpha(e))
+\end{mathpar}
+For the counit laws
+
+\[\begin{tikzcd}
+	&& {X^E \times E} \\
+	\\
+	{(X^E \times E)^E} && {X^E \times E} && {(X^E \times E)^E \times E}
+	\arrow["{\delta_X}", from=3-3, to=3-1]
+	\arrow["{(\epsilon_X)^E \times E}", from=3-1, to=1-3]
+	\arrow[no head, from=1-3, to=3-3]
+	\arrow["{\delta_X}"', from=3-3, to=3-5]
+	\arrow["{\epsilon_{X^E \times E}}"', from=3-5, to=1-3]
+\end{tikzcd}\]
+
+we have\\~\\
+$(\alpha,e) \overset{\delta_X;((\epsilon_X)^E \times E)}{\mapsto} (\epsilon_X^E \times E)~(\lambda d. (\alpha,d), e) = (\lambda d. \alpha(d), e) = (\alpha, e)$\\~\\
+$(\alpha,e) \overset{\delta_X;\epsilon_{(X^E \times E)}}{\mapsto} \epsilon_{X^E \times E}~(\lambda d. (\alpha,d), e) = (\alpha,e)$
+
+
 \subsection*{5.1.15}
 
 First, we see that $F^{\infty}$ is functorial with the below diagram:
@@ -1516,6 +1719,9 @@ T(G_1 X \times G_2 X) \ar[rr,"\langle T\pi_1;\rho_1 \text{,} T \pi_2;\rho_2 \ran
 \end{center}
 
 TODO: demonstrate that multiplication is satisfied.
+
+\subsection*{5.4.8}
+
 
 \section*{Chpt 6.4 Exercises}
 
