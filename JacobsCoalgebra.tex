@@ -16,6 +16,8 @@
 \usepackage{diagrams}
 \usepackage{tikz}
 
+\usepackage{quiver}
+
 \usetikzlibrary{cd}
 
 \tikzset{
@@ -171,6 +173,49 @@ $(\prod_f;\prod_g)(U)$ &  &
 The Galois connection is straightforward.
 
 \subsection*{2.1.13}
+
+\subsection*{2.1.14}
+
+\subsubsection*{1}
+
+\subsubsection*{2}
+
+\[\begin{tikzcd}
+	X && Y && {Y/R} \\
+	\\
+	&&&& Z
+	\arrow["i", dashed, from=1-5, to=3-5]
+	\arrow["f", shift left=2, from=1-1, to=1-3]
+	\arrow["{[-]_R}", from=1-3, to=1-5]
+	\arrow["h"', from=1-3, to=3-5]
+	\arrow["g"', shift right=2, from=1-1, to=1-3]
+\end{tikzcd}\]
+
+Assume an arbitrary $h : Y \to Z$ such that $f;h = g;h$. 
+
+\begin{lemma}
+If $(y,y') \in R$ then $h(y) = h(y')$.
+\end{lemma}
+
+\begin{proof}
+$(y,y') \in R$ is proven using the reflexivity, symmetric, and transitivity rules. We proceed by induction on the proof that $(y,y') \in R$.
+
+\begin{description}
+
+\item[Reflexivity]~\\
+Since equality is reflexive we have $h(y) = h(y)$.
+
+\item[Symmetry: $y' R y$]~\\
+The premise is $y' R y$. Applying the $IH$ gives $f(y') = f(y)$. Since equality is symmetric we conclude $f(y) = f(y')$.
+
+\item[Transitivity: $\exists y''.~y R y'' \wedge y'' R y'$]~\\
+Applying the IH to the premises gives $h(y) = h(y'')$ and $h(y'') = h(y')$. Since equality is transitive we conclude $h(y) = h(y')$.
+
+\end{description}
+
+\end{proof}
+
+In the above diagram, $[-]_R : Y \to Y/R$ maps each $y \in Y$ to its equivalnce class modulo $R$. Clearly $[-]_R$ is surjective. The arrow $i$ maps each equivalence class to the common element of $z$ that all of its members map to via $h$. By definition this makes the triangle commute, and because $[-]_R$ is an epi, $i$ is the only arrow making the triangle commute.   
 
 \subsection*{2.2.1}
 
@@ -773,7 +818,25 @@ Hullo
 
 \subsection*{3.3.1}
 
-TODO
+First, we ignore coalgebra structure and show that the unique morphism determined by the diagonal-fill-in property is an iso.
+
+\[\begin{tikzcd}
+	&& U \\
+	X &&&& Y \\
+	&& V
+	\arrow[two heads, from=2-1, to=3-3]
+	\arrow[two heads, from=2-1, to=1-3]
+	\arrow[tail, from=1-3, to=2-5]
+	\arrow[tail, from=3-3, to=2-5]
+	\arrow["i"', curve={height=12pt}, dashed, from=1-3, to=3-3]
+	\arrow["j"', curve={height=12pt}, dashed, from=3-3, to=1-3]
+\end{tikzcd}\]
+
+The diagonal-fill-in property gives us $i$ such that $h;i = k$ and $j$ such that $k;j = h$. Then $h;i;j = k;j = h = h;\mathit{id}_U$. Since $h$ is an epi, we deduce $i;j = \mathit{id}_U$. A symmetric 
+argument shows that $j;i = \mathit{id}_V$. Hence $i$ is an iso with $i^\circ = j$.
+
+Now look at theorem 3.3.4.
+
 
 \subsection*{3.3.2}
 
