@@ -243,7 +243,11 @@ Since $\mathbb C$ has coequalizers, the existence of coalgebra morphisms $f,g : 
 
 We have $$f;b;Fq = a;Ff;Fq = a;F(f;q) = a;F(g;q) = a;Fg;Fq = g;b;Fq$$ Hence there exists an $i_{(b;Fq)} : Q \to FQ$ such that $q;i_{(b;Fq)} = b;Fq$. This means that $q$ is a coalgebra morphism from $b$ to $i_{(b;Fq)}$.
 
-TODO: finish this
+Let $c : Z \to FZ$ be an $F$-coalgebra and assume a coalgebra morphism $h : Y \to Z$ with $f;h = g;h$. Since $q$ is a coequalizer there is a unique $\mathbb C$-morphism  $i_h : Q \to Z$ such that $q;i_h = h$.
+It turns out that $i_h$ is a coalgebra morphism: we have 
+$$q;i_h;c = b;Fq;F(i_h) = q;i_{(b;Fq)};F(i_h)$$
+Since $q$ is is a coequalizer in $\mathbb C$ and therefore epic this gives
+$$i_h;c = i_{b;Fq};F(i_h)$$
 
 \subsection*{2.2.1}
 
