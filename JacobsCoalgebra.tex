@@ -846,6 +846,26 @@ Hullo
 
 \end{description}
 
+\section*{Notes 3.3}
+
+\subsection*{Theorem 3.3.4 (2)}
+
+To see that the given coequalizer implies $f$ is epic, focus on the base category:
+
+\[\begin{tikzcd}
+	X && {Y + Y} && Y \\
+	\\
+	&&&& Z
+	\arrow["{f;\kappa_2}", shift left=2, from=1-1, to=1-3]
+	\arrow["{f;\kappa_1}"', shift right=2, from=1-1, to=1-3]
+	\arrow["{[\mathit{id}, \mathit{id}]}"', from=1-3, to=1-5]
+	\arrow["{[g,h]}"', from=1-3, to=3-5]
+	\arrow["i", dashed, from=1-5, to=3-5]
+\end{tikzcd}\]
+
+We have that $f;g = f;\kappa_1;[g,h] = f;\kappa_2;[g,h] = f;h$ implies $$\exists ! i.~[i, i] = [\mathit{id},\mathit{id}];i = [g,h]$$ i.e. $$g = i = h$$
+
+
 \section*{Exercises 3.3}
 
 \subsection*{3.3.1}
@@ -872,7 +892,30 @@ Now look at theorem 3.3.4.
 
 \subsection*{3.3.2}
 
-TODO
+\[\begin{tikzcd}
+	FX && FR && FX \\
+	\\
+	X && R && X \\
+	\\
+	&& X
+	\arrow["\alpha"', from=1-1, to=3-1]
+	\arrow["\alpha", from=1-5, to=3-5]
+	\arrow["{Fr_1}", curve={height=-6pt}, from=1-3, to=1-1]
+	\arrow["Fq", curve={height=-6pt}, dashed, from=1-1, to=1-3]
+	\arrow["{r_1}", curve={height=-6pt}, from=3-3, to=3-1]
+	\arrow["q", curve={height=-6pt}, dashed, from=3-1, to=3-3]
+	\arrow[from=1-3, to=3-3]
+	\arrow["{Fr_2}"', curve={height=6pt}, from=1-3, to=1-5]
+	\arrow["Fq"', curve={height=6pt}, dashed, from=1-5, to=1-3]
+	\arrow["{r_2}"', curve={height=6pt}, from=3-3, to=3-5]
+	\arrow["q"', curve={height=6pt}, dashed, from=3-5, to=3-3]
+	\arrow["{\mathit{id}}", from=5-3, to=3-1]
+	\arrow["{\mathit{id}}"', from=5-3, to=3-5]
+	\arrow["q"', dashed, from=5-3, to=3-3]
+\end{tikzcd}\]
+
+By initiality, we have a unique coalgebra morphism $q : X \to R$. Since $q;r_1 : X \to X$ and $\mathit{id}_X : X \to X$ are both coalgebra homomorphisms we have $q;r_1 = \mathit{id}_X$ by initiality. 
+Likewise, $q;r_2 = \mathit{id}_X$. Hence $q;\langle r_1, r_2 \rangle = \langle q;r_1, q;r_2 \rangle = \langle \mathit{id}, \mathit{id} \rangle$ i.e. $\mathit{Eq}(X)$ is contained in $R$.
 
 \subsection*{3.3.3}
 
