@@ -914,8 +914,7 @@ Now look at theorem 3.3.4.
 	\arrow["q"', dashed, from=5-3, to=3-3]
 \end{tikzcd}\]
 
-By initiality, we have a unique coalgebra morphism $q : X \to R$. Since $q;r_1 : X \to X$ and $\mathit{id}_X : X \to X$ are both coalgebra homomorphisms we have $q;r_1 = \mathit{id}_X$ by initiality. 
-Likewise, $q;r_2 = \mathit{id}_X$. Hence $q;\langle r_1, r_2 \rangle = \langle q;r_1, q;r_2 \rangle = \langle \mathit{id}, \mathit{id} \rangle$ i.e. $\mathit{Eq}(X)$ is contained in $R$.
+Let $\alpha : FX \to X$ above be an initial $F$-algebra. By initiality, we have a unique coalgebra morphism $q : X \to R$. Since $q;r_1 : X \to X$ and $\mathit{id}_X : X \to X$ are both coalgebra homomorphisms we have $q;r_1 = \mathit{id}_X$ by initiality. Likewise, $q;r_2 = \mathit{id}_X$. Hence $q;\langle r_1, r_2 \rangle = \langle q;r_1, q;r_2 \rangle = \langle \mathit{id}, \mathit{id} \rangle$ i.e. $\mathit{Eq}(X)$ is contained in $R$.
 
 \subsection*{3.3.3}
 
@@ -952,6 +951,47 @@ But since $r_1;\mathit{beh}_c = r_2;\mathit{beh}_d$ we have $r_1;c;F(\mathit{beh
 \end{center}~\\
 At this point, it's not hard to see that the resultant mediating morphism is a coalgebra and that $r_1$ and
 $r_2$ are coalgebra morphisms. 
+
+\section*{Notes 4.1}
+
+\subsection*{Commutative Monoid of Roles/Permissions}
+
+In Solidity, the OpenZeppelin AccessControlUpgradeable contract allows us to restrict calling certain public-facing functions by assigning roles to sender addresses.
+Letting $\mathit{Roles}$ be the set of all roles, we can represent role-based access control using the commutative monoid $$A \defeq (\mathcal P(\mathit{Roles}), \emptyset, \cup)$$
+A state transition graph is then represented via a coalgebra $c : X \to \mathcal M_A(X)$. For some $\varphi \in \mathcal M_A(X)$ and $P \subseteq \mathit{Roles}$ we have that\\~\\
+\begin{tabular}{ll}
+$\varphi(x) = P$ & means that we can transition to $x$ if we have any of the roles in P \\
+$\varphi(x) = \emptyset$ & means that it is impossible to transition to $x$ from the current state  
+\end{tabular}\\~\\
+There are many complicating factors. 
+
+\begin{itemize}
+\item A transaction may make calls to contracts that have different roles from the transaction's originator.
+\item We may wish to consider all transactions in a block as a single state transition. This would generally involve senders with different roles.
+\item Other resources such as gas are required for a transaction.
+\end{itemize}
+
+\section*{Exercises 4.1}
+
+\subsubsection*{4.1.1}
+
+Let $g$ be a homomorphism of monoids. Then we have a natural transformation $\mathcal M_M \overset{\alpha(g)}{\Rightarrow} M_L$ where the component $\alpha(g)_X : \mathcal M_M X \to \mathcal M_L X$ is defined as $$\phi \in \mathcal M_M X \mapsto (g \circ \varphi) \in \mathcal M_L X$$
+$(g \circ \varphi)$ has finite support because $\varphi$ has finite support and $g$ preserves $0$.
+We next prove that $\alpha$ is natural, i.e. that the following diagram commutes
+\[\begin{tikzcd}
+	{\mathcal M_M X} && {\mathcal M_L X} \\
+	\\
+	{\mathcal M_M Y} && {\mathcal M_L Y}
+	\arrow["{\mathcal M_M f}"', from=1-1, to=3-1]
+	\arrow["{\mathcal M_L f}", from=1-3, to=3-3]
+	\arrow["{\psi \mapsto (g \circ \psi)}"', from=3-1, to=3-3]
+	\arrow["{\varphi \mapsto (g \circ \varphi)}", from=1-1, to=1-3]
+\end{tikzcd}\]
+
+It commutes because 
+$$\mathcal M_L f (g~\circ~\varphi)(y) = \Sigma_{x \in \varphi^{-1}(y)} g(\varphi(x)) = g(\Sigma_{x \in \varphi^{-1}(y)} \varphi(x)) = g(\mathcal M_M f(\varphi)(y)) = (g~\circ~\mathcal M_M f(\varphi))(y)$$
+
+TODO: Prove that $\mathcal M_{-}$ preserves composition of monoid homomorphisms.
 
 \section*{Exercises 4.2}
 
