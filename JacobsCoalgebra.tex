@@ -25,6 +25,7 @@ absepi to/.tip={Glyph[glyph math command=triangleright]},
 }
 
 \newtheorem{lemma}{Lemma}
+\newtheorem{corollary}{Corollary}
 
 %example: \limit{j \in J}{F_j}
 \newcommand{\limit}[2]{\underset{\overset{\longleftarrow}{#1}}{\text{lim}}~#2}
@@ -936,22 +937,6 @@ the right a coalgebra map.
 
 \subsection*{3.3.4}
 
-\section*{Notes 4.2}
-
-\subsection*{Theorem 4.2.4}
-
-Here is an additional hint to help show that $\mathit{Eq}(\mathit{beh}_c, \mathit{beh}_d) \overset{\langle r_1, r_2 \rangle}{\rightarrowtail} X \times Y$ is an Aczel-Mendler bisimulation:
-\begin{center}
-\begin{tabular}{l}
-$c;F(\mathit{beh}_C) = \mathit{beh}_{c};\zeta$ \\
-$\therefore r_1;c;F(\mathit{beh}_c) = r_1;\mathit{beh}_{c};\zeta$ \\
-$\text{Likewise, } r_2;d;F(\mathit{beh}_d) = r_2;\mathit{beh}_d;\zeta$ \\~\\
-But since $r_1;\mathit{beh}_c = r_2;\mathit{beh}_d$ we have $r_1;c;F(\mathit{beh}_c) = r_2;d;F(\mathit{beh}_d)$
-\end{tabular}
-\end{center}~\\
-At this point, it's not hard to see that the resultant mediating morphism is a coalgebra and that $r_1$ and
-$r_2$ are coalgebra morphisms. 
-
 \section*{Notes 4.1}
 
 \subsection*{Commutative Monoid of Roles/Permissions}
@@ -971,6 +956,39 @@ There are many complicating factors.
 \item Other resources such as gas are required for a transaction.
 \end{itemize}
 
+\subsection*{Semiring of Roles/Permissions}
+
+We can form a monad for roles/permissions if we can represent them using a semi-ring. Given a set $\mathit{Roles}$ of roles, we defined the following semiring:
+\begin{itemize}
+\item Its carrier $A$ is the set of mutually incomparable sets of subsets of $\mathit{Roles}$. By mutually incomparable, we mean that if $P \in A$ and $p,q \in P$ then neither $p \subseteq q$ nor $q \subseteq p$. 
+        An element $P \in A$ means that we have ``the necessary permission'' whenever there is some $p \in P$ such that we own all roles $a \in p$.
+\item For a set of sets $T$ we define $$\downarrow T \defeq \{ t \in T \mid \not \exists. s \in T \text{ with } t \subseteq s \}$$ 
+\item Our addition operator is a modified union where comparable sets are culled from the result. E.g. a ``role-multiset'' $\{ \{ a \} \} \mid x \rangle + \{ \{ b \} \} \mid x \rangle$ means we have access to state $x$ whenever we have either role $a$ or role $b$. Formally, we have $$P + Q \defeq \downarrow(P \cup Q) = \{ p \in P \mid \not \exists q \in Q. p \subseteq q \} \cup \{ q \in Q \mid \not \exists p \in P. q \subseteq p \}$$
+\item Our multiplication operator is defined as $$P \cdot Q \defeq \downarrow \{ p \cup q \mid p \in P \text{ and } q \in Q \}$$ Explanation: To access state $z$ from $x$ indirectly via $y$ ($x \to y \to z$),  we first use $p$ to get from $x$ to $y$ and then use $q$ to get from $y$ to $z$. The total set of required permissions is then $p \cup q$.
+\item Our additive unit is clearly $\{ \}$ and our multiplicative unit is $\{ \{ \} \}$
+\item The only semiring laws that are not obvious are associativity of addition, associativity of multiplication, left distributivity of multiplication over addition, and right distributivity of multiplication over addition we proceed to prove them below.
+\end{itemize}
+
+\begin{lemma}
+For $P,Q,R \in A$ we have $\downarrow(\downarrow(P \cup Q) \cup R) = \downarrow((P \cup Q) \cup R)$.
+\end{lemma}
+
+\begin{proof}
+
+$x \in \downarrow(\downarrow(P \cup Q) \cup R)$ \\
+$\Leftrightarrow (x \in \downarrow(P \cup Q) \vee (x \in R)) \wedge (\not \exists y \in \downarrow(P \cup Q) \cup R. x \subset y)$\\
+$\Leftrightarrow (((x \in P \cup Q) \wedge \not \exists y \in P \cup Q. x \subset y) \vee x \in R) \wedge (\not \exists y \in \downarrow (P \cup Q) \cup R. x \subset y)$\\
+$\Leftrightarrow (((x \in P \cup Q) \wedge \not \exists y \in P \cup Q. x \subset y) \vee x \in R) \wedge (\not \exists y \in (P \cup Q) \cup R. x \subset y)$\\
+$\Leftrightarrow ((x \in P \cup Q) \wedge \not \exists y \in (P \cup Q) \cup R. x \subset y) \vee (x \in R \wedge (\not \exists y \in (P \cup Q) \cup R. x \subset y)$\\
+$\Leftrightarrow ((x \in P \cup Q) \wedge \not \exists y \in (P \cup Q) \cup R. x \subset y) \vee (x \in R \wedge (\not \exists y \in (P \cup Q) \cup R. x \subset y)$\\
+$\Leftrightarrow ((x \in P \cup Q) \vee x \in R) \wedge (\not \exists y \in (P \cup Q) \cup R. x \subset y)$\\
+$\Leftrightarrow (x \in \downarrow((P \cup Q) \cup R))$
+\end{proof}
+
+\begin{corollary}
+For $P,Q,R \in A$ we have $(P + Q) + R = P + (Q + R)$.
+\end{corollary}
+ 
 \section*{Exercises 4.1}
 
 \subsubsection*{4.1.1}
@@ -993,7 +1011,60 @@ $$\mathcal M_L f (g~\circ~\varphi)(y) = \Sigma_{x \in \varphi^{-1}(y)} g(\varphi
 
 TODO: Prove that $\mathcal M_{-}$ preserves composition of monoid homomorphisms.
 
+\section*{Notes 4.2}
+
+\subsection*{Theorem 4.2.4}
+
+Here is an additional hint to help show that $\mathit{Eq}(\mathit{beh}_c, \mathit{beh}_d) \overset{\langle r_1, r_2 \rangle}{\rightarrowtail} X \times Y$ is an Aczel-Mendler bisimulation:
+\begin{center}
+\begin{tabular}{l}
+$c;F(\mathit{beh}_C) = \mathit{beh}_{c};\zeta$ \\
+$\therefore r_1;c;F(\mathit{beh}_c) = r_1;\mathit{beh}_{c};\zeta$ \\
+$\text{Likewise, } r_2;d;F(\mathit{beh}_d) = r_2;\mathit{beh}_d;\zeta$ \\~\\
+But since $r_1;\mathit{beh}_c = r_2;\mathit{beh}_d$ we have $r_1;c;F(\mathit{beh}_c) = r_2;d;F(\mathit{beh}_d)$
+\end{tabular}
+\end{center}~\\
+At this point, it's not hard to see that the resultant mediating morphism is a coalgebra and that $r_1$ and
+$r_2$ are coalgebra morphisms. 
+
 \section*{Exercises 4.2}
+
+\subsection*{4.2.1}
+
+\[\begin{tikzcd}
+	{\mathit{Graph}(f)} && Y \\
+	\\
+	X && Y
+	\arrow["f"', from=3-1, to=3-3]
+	\arrow[from=1-1, to=3-1]
+	\arrow[from=1-1, to=1-3]
+	\arrow["\lrcorner"{anchor=center, pos=0.125}, draw=none, from=1-1, to=3-3]
+	\arrow["{\mathit{id}}", from=1-3, to=3-3]
+\end{tikzcd}\]
+
+\subsection*{4.2.2}
+
+\[\begin{tikzcd}
+	Z \\
+	& X && \bullet \\
+	\\
+	& \bullet && \bullet
+	\arrow["a"', from=4-2, to=4-4]
+	\arrow["b", from=2-2, to=2-4]
+	\arrow["{m'}"', from=2-2, to=4-2]
+	\arrow["m", from=2-4, to=4-4]
+	\arrow["h"', shift right=1, from=1-1, to=2-2]
+	\arrow["k", shift left=1, from=1-1, to=2-2]
+	\arrow["{h;b = k;b}", curve={height=-12pt}, from=1-1, to=2-4]
+	\arrow["{h;m'}"', curve={height=12pt}, from=1-1, to=4-2]
+\end{tikzcd}\]\\~\\
+Assume some $h,k : Z \to X$ such $h;m' = k;m'$. Then 
+$$h;b;m = h;m';a = k;m';a = k;b;m$$
+Since $m$ is a mono this gives 
+$$h;b = k;b$$
+Since $(h;m');a = (h;b);m$, by the UMP of pullbacks
+there is a unique $z : Z \to X$ with $z;b = h;b$ and 
+$z;m' = h;m'$. But both $h$ and $k$ satisfy the properties of $z$, so $h = k$.
 
 \subsection*{4.2.3}
 Suppose we have the following pullback square.
