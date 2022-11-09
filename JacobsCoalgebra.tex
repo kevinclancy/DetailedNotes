@@ -1108,6 +1108,35 @@ A \ar[rrd, "h_2" above] \ar[ddr, "h_1" left] \ar[dr,"r" below, dashed] & & \\
 
 I.e., $r;p_1 = h_1$ and $r;p_2 = h_2$. But then $r;\langle p_1, p_2 \rangle = \langle r;p_1, r;p_2 \rangle = \langle h_1, h_2 \rangle$, as desired. Furthermore, $r;(p_1;f) = h_1;f = k$.
 
+\subsubsection*{4.2.7}
+
+\[\begin{tikzcd}
+	FP &&& FC \\
+	& P &&& C \\
+	\\
+	FA &&& FB \\
+	& A &&& B
+	\arrow["a", from=4-1, to=5-2]
+	\arrow["h"', from=5-2, to=5-5]
+	\arrow["g", from=2-5, to=5-5]
+	\arrow["c", from=1-4, to=2-5]
+	\arrow["b", from=4-4, to=5-5]
+	\arrow["{p_2}"', from=2-2, to=5-2]
+	\arrow["{p_1}"', from=2-2, to=2-5]
+	\arrow["Fg", from=1-4, to=4-4]
+	\arrow["Fh", from=4-1, to=4-4]
+	\arrow["{q_2}"', from=1-1, to=4-1]
+	\arrow["{q_1}", from=1-1, to=1-4]
+	\arrow["\lrcorner"{anchor=center, pos=0.125}, draw=none, from=2-2, to=5-5]
+	\arrow["\lrcorner"{anchor=center, pos=0.125}, draw=none, from=1-1, to=4-4]
+\end{tikzcd}\]
+
+We have $q_1;Fg;b = q_2;Fh;b = q_2;a;h$. Hence there is a unique $p : FP \to P$ such that $q_2;a = p;p_2$ and $q_1;c=p;p_1$. 
+
+Now, consider some algebra $z : FZ \to Z$ and algebra morphisms $s : z \to c$ and $t : z \to a$ such that $s;g = t;h$.
+Then the UMP of pullbacks gives a base category morphism $r : Z \to P$ with $r;p_1 = s$ and $r;p_2 = t$.
+Then $Fr;p$ TODO: finish
+
 \section*{Exercises 4.3}
 
 \subsection*{4.3.1}
@@ -1157,61 +1186,9 @@ Y \ar[r, "\frak e(f)"] \ar[dr,"f"] \ar[ddr, "f;m" left] & A \ar[d, "\frak m(f)" 
 
 nuf said
 
-\subsection*{Notes 4.3}
-
-\subsubsection*{Factorisation in $\mbf{CohL}$}
-
-I propose a factorisation system in the category $\mbf{CohL}$ of coherent spaces and linear functions.
-It set of abstract monos $\frak M$ consists of all monic linear functions. Its set of abstract epis $\frak E$
-consists of all epic linear functions. I will treat linear functions as sets of tokens, because that way
-they are easier to work with.
-
-\begin{lemma}
-A linear function $f : \mathcal A \to \mathcal B = \{ \alpha_i \to \beta_i \mid i \in I \}$ is monic iff 
-we have both $\{ \alpha \mid \alpha \mapsto \beta \in f \} = |\mathcal A|$.  
-\end{lemma}
-
-\begin{proof}
-A linear function's underlying ``function between token spaces'' is always injective, so
-the only way that two distinct points can map to the same point in the codomain is that 
-there is some non-empty point that maps to the empty set. 
-\end{proof}
-
-
-\begin{lemma}
-A linear function $f : \mathcal A \to \mathcal B$ is epic iff its set of tokens representation is epic.
-\end{lemma}
-
-\begin{proof}
-TODO.
-\end{proof}
-
-
-\begin{lemma}
-Let $f : \mathcal A \to \mathcal B$ be a linear map. Then there exists $\frak m(f) \in \frak M$
-and $\frak e(f) \in \frak E$ such that $f = \frak e(f);\frak m(f)$.
-\end{lemma}
-
-\begin{proof}
-Let $\coprod_f A$ be the coherence space whose tokens set is 
-$\{ b \mid a \mapsto b \in f \wedge a \in |\mathcal A| \}$  
-and with $b \consist b'$ (mod $\coprod_f \mathcal A$) iff 
-$b \consist b'$ (mod $\mathcal B$).
-
-We define $\frak e(f) : \mathcal A \to \coprod_f \mathcal A = \{ a \mapsto b \mid a \in |A| \}$.
-We define $\frak m(f) : \coprod_f A \to B$.
-
-TODO: finish this proof.
-\end{proof}
-
-\begin{lemma}
-
-\end{lemma}
-
-
 \subsection*{4.3.2}
 
-helo
+this exercise is hard
 
 \subsection*{4.3.3}
 
@@ -1273,7 +1250,27 @@ We can see that both triangles commute, and so $(\kappa_1;\frak e([m,n]));\frak 
 of $\kappa_1;\frak e([m,n]) : U \to \coprod_{[m,n]}(X)$ in $\mit{Pred}(X)$.\\~\\
 Now assume some upper bound $w : W \mapsto X$ of $m : U \mapsto X$ and $n : V \mapsto X$ in $\mit{Pred}(X)$:
 
-TODO: finish the exercise
+\[\begin{tikzcd}
+	U & V & W & {U+V} && {\coprod_{[m,n]}(X)} \\
+	\\
+	\\
+	& X
+	\arrow["n", maps to, from=1-2, to=4-2]
+	\arrow["m"', maps to, from=1-1, to=4-2]
+	\arrow["w", maps to, from=1-3, to=4-2]
+	\arrow["\psi"', dashed, from=1-2, to=1-3]
+	\arrow["\varphi", curve={height=-12pt}, dashed, from=1-1, to=1-3]
+	\arrow["{\kappa_1}", curve={height=-30pt}, from=1-1, to=1-4]
+	\arrow["{\kappa_2}", curve={height=-18pt}, from=1-2, to=1-4]
+	\arrow["{\frak e([m,n])}", two heads, from=1-4, to=1-6]
+	\arrow["{\frak m([m,n])}", maps to, from=1-6, to=4-2]
+	\arrow["{[m,n]}", maps to, from=1-4, to=4-2]
+	\arrow["{[\varphi,\psi]}"', dashed, from=1-4, to=1-3]
+\end{tikzcd}\]
+
+The UMP of coproducts in the base category gives us a $[\varphi, \psi] : U + V \to W$.\\~\\
+Since $\frak e([m,n]);\frak m([m,n]) = [m,n] = [\varphi, \psi];w$ the diagonal fill-in property gives us $\alpha : \coprod_{[m,n]}(X) \to W$ with
+$\frak e([m,n]);\alpha = [\varphi, \psi]$ and $\frak m([m,n]) = \alpha;w$. The latter means $\coprod_{[m,n]}(X) \leq W$.
 
 \section*{Notes 4.4}
 
