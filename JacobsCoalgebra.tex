@@ -1272,6 +1272,36 @@ The UMP of coproducts in the base category gives us a $[\varphi, \psi] : U + V \
 Since $\frak e([m,n]);\frak m([m,n]) = [m,n] = [\varphi, \psi];w$ the diagonal fill-in property gives us $\alpha : \coprod_{[m,n]}(X) \to W$ with
 $\frak e([m,n]);\alpha = [\varphi, \psi]$ and $\frak m([m,n]) = \alpha;w$. The latter means $\coprod_{[m,n]}(X) \leq W$.
 
+\subsection*{4.3.5}
+
+A factorization system (not necessarily a \emph{logical} factorization system) for a category $\mathbb C$ consists of two collections $\frak M$ and $\frak E$ satisfying the following properties:
+\begin{enumerate}
+\item Both $\frak M$ and $\frak E$ contain all isomorphisms in $\mathbb C$
+\item Both $\frak M$ and $\frak E$ are closed under composition
+\item Each map $f : X \to Y$ in $\mathbb C$ can be factored as a map $\frak e(f) \in \frak E$ followed by $\frak m(f) \in \frak M$.
+\item The diagonal-fill-in property holds.
+\end{enumerate}
+
+\subsubsection*{1}
+
+Left-to-right is assumed, so we need only prove the right-to-left direction.\\~\\
+Since $f \bot m$ for all abstract monos $m$, in particular we have $f \bot \frak m(f)$, and so both triangles commute below:
+
+\[\begin{tikzcd}
+	\bullet && \bullet \\
+	\\
+	\bullet && \bullet
+	\arrow["f", from=1-1, to=1-3]
+	\arrow["{\frak m(f)}"', from=3-1, to=3-3]
+	\arrow["{\frak e(f)}"', from=1-1, to=3-1]
+	\arrow["{\mathit{id}}", from=1-3, to=3-3]
+	\arrow["h"', dashed, from=1-3, to=3-1]
+\end{tikzcd}\]
+
+Since we have a factorization system, we know that $\mathit{id}$ can be uniquely factored into an abstract epi followed by an abstract mono: $\mathit{id};\mathit{id}$ is one 
+such factoring, and so is $h;\frak m(f)$. Hence $h = \mathit{id}$ and $\frak m(f) = \mathit{id}$. Finally, $f = \frak e(f);\frak m(f) = \frak e(f);\mathit{id} = \frak e(f)$. Therefore $f \in \frak E$.
+
+
 \section*{Notes 4.4}
 
 \subsection*{Kripke Polynomial Functors as a Special Case}
